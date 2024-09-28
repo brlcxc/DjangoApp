@@ -1,16 +1,16 @@
 # Back-End Dev Guide
 
-`Note`: These commands were made on a Linux OS and might differ for a different OS  
+`Note`: These commands were made on a Linux OS and might differ for a different OS
 
 ### Setting Up Virtual Python Enviroment
 The first step is to create the Python virtual enviroment  
 This is done in the root directory  
-`Note`: If python3-venv is not installed follow the steps posted here https://stackoverflow.com/a/63716116  
+`Note`: If python3-venv is not installed follow the steps posted here https://stackoverflow.com/a/63716116
 ```
 python3 -m venv env
 ```
 
-`Note`: All further commands should be done in the backend directory  
+`Note`: All further commands should be done in the backend directory
 
 The virtual enviroment then needs to be acticated  
 ```
