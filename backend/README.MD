@@ -12,7 +12,7 @@ python3 -m venv env
 
 `Note`: All further commands should be done in the backend directory
 
-The virtual enviroment then needs to be acticated  
+The virtual enviroment then needs to be activated  
 ```
 source env/bin/activate
 ```
