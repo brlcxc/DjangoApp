@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from rest_framework import generics
 from .serializers import UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Note
+from .models import Note, User
 
 # serializer checks to make sure all data is correct
 
@@ -38,6 +38,7 @@ class NoteDelete(generics.DestroyAPIView):
         # makes it so that only notes made by you can be deleted
         return Note.objects.filter(author=user)
 
+#rather than a custom user model being used the default one is
 class CreateUserView(generics.CreateAPIView):
     # specifying list of objects when creating a new one to make sure not to make one which already exists
     queryset = User.objects.all()

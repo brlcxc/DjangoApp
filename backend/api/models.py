@@ -1,5 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+
+#note: use uuid for unique ID
+class User(AbstractUser):
+    pass
 
 # note serializer needs to be made for this
 class Note(models.Model):
