@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # The fields contain all fields we want to serialize when accpeting or returning new user
-        fields = ["id", "username", "password"]
+        fields = ["id", "email", "password"]
         # Tells Django that a password should be accepted when a new user is created but we don't want to return password
         extra_kwargs = {"password": {"write_only": True}}
     
