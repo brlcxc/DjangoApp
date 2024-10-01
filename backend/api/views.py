@@ -43,7 +43,7 @@ class NoteDelete(generics.DestroyAPIView):
 class CreateUserView(generics.CreateAPIView):
     # specifying list of objects when creating a new one to make sure not to make one which already exists
     queryset = User.objects.all()
-    # tells view which data needs to be accpeted to make new user (ie username and password)
+    # tells view which data needs to be accepted to make new user (ie username and password)
     serializer_class = UserSerializer
     # specifies who can all this view - in this case anyone
     permission_classes = [AllowAny]

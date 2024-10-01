@@ -23,6 +23,9 @@ class UserManager(BaseUserManager):
 
 # AbstractUser contains all fields of User but has the ability to be extended off
 class User(AbstractUser):
+    # Removing the username field from the model
+    username = None
+
     USERNAME_FIELD = 'email'
     email = models.EmailField(('email address'), unique=True)
     objects = UserManager()
