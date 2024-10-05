@@ -26,6 +26,9 @@ class User(AbstractUser):
     # Removing the username field from the model
     username = None
 
+    # TODO remove null from display name
+    display_name = models.CharField(max_length=100, null=True)
+
     USERNAME_FIELD = 'email'
     email = models.EmailField(('email address'), unique=True)
     objects = UserManager()

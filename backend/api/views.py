@@ -39,6 +39,7 @@ class NoteDelete(generics.DestroyAPIView):
         # filter makes it so that only notes made by you can be deleted
         return Note.objects.filter(author=user)
 
+# TODO add display name
 # rather than a custom user model being used the default one is
 class CreateUserView(generics.CreateAPIView):
     # specifying list of objects when creating a new one to make sure not to make one which already exists
