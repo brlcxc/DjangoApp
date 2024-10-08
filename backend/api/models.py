@@ -66,7 +66,7 @@ class Group(models.Model):
     group_name = models.CharField(max_length=100)
     description = models.CharField(max_length=100, null=True)
     group_owner_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owned_groups")
-    members = models.ManyToManyField(User, related_name='groups')
+    members = models.ManyToManyField(User, related_name='member_groups')
 
     def __str__(self):
         return f"group: ${self.group_name}"
