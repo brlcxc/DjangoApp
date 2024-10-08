@@ -2,7 +2,7 @@ import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL // Base url is set from env variable
+    baseURL: import.meta.env.VITE_API_URL
 })
 
 // HTTP request interceptor
