@@ -10,12 +10,13 @@ This is done in the root directory
 python3 -m venv env
 ```
 
-`Note`: All further commands should be done in the backend directory
-
 The virtual environment then needs to be activated  
 ```
 source env/bin/activate
-```
+```  
+
+`Note`: All further commands should be done in the backend directory  
+
 ### Downloading Required Dependencies  
 ```
 pip install -r requirements.txt
