@@ -47,10 +47,12 @@ class User(AbstractUser):
     username = None
 
     # Additional User fields
-    user_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    # Note: changing the name of id requires a new view to be made
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     display_name = models.CharField(max_length=100)
     email = models.EmailField(('email address'), unique=True)
     user_verified = models.BooleanField(default=False)
+    # I might need to alter password so that it has certain restrictions such as char length
 
     objects = UserManager()
 

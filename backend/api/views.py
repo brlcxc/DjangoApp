@@ -39,6 +39,17 @@ from .models import User
 #         # filter makes it so that only notes made by you can be deleted
 #         return Note.objects.filter(author=user)
 
+
+
+class TransactionListCreate(generics.ListCreateAPIView):
+    pass
+
+class TransactionDelete(generics.DestroyAPIView):
+    pass
+
+
+# modify?
+
 # TODO add display name
 # rather than a custom user model being used the default one is
 class CreateUserView(generics.CreateAPIView):
