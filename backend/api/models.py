@@ -77,9 +77,9 @@ class Transaction(models.Model):
     category = models.CharField(max_length=100, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)    
     description = models.CharField(max_length=100, null=True)
-    start_date = models.DateTimeField(Null=False)
+    start_date = models.DateTimeField(null=False)
     end_date = models.DateTimeField(null=True)
-    is_recurrent = models.BooleanField(Null=False)
+    is_recurrent = models.BooleanField(null=False)
     frequency = models.IntegerField()
     group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="added_transactions")
 
