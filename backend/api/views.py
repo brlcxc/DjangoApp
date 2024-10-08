@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import UserSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import User
+from .models import User, Group, Transaction, Invite
 
 # Note: views => serializers => models
 # serializer checks to make sure all data is correct before being sent to model

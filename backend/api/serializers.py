@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import User, Group, Transaction, Invite
 
+# Note: fields = '__all__' can be used if all fields need to be serialized
+
 class UserSerializer(serializers.ModelSerializer):    
     class Meta:
         model = User
@@ -21,22 +23,27 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
 class GroupSerializer(serializers.ModelSerializer):
+    # I need to double check that this is actually read_only
+    members = UserSerializer(read_only=True, many=True)
+
     class Meta:
         model = Group
+        fields = ["group_id", "group_name", "description", "group_owner_id", "members"]
+        extra_kwargs = {"group_owner_id": {"read_only": True}}
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-
+        fields = ["transaction_id", "category", "amount", "description", "start_date", "end_date", "is_recurrent", "frequency", "group_id"]
+        extra_kwargs = {"group_id": {"read_only": True}}
+ 
 class InviteSerializer(serializers.ModelSerializer):
+    recipients = UserSerializer(read_only=True, many=True)
+
     class Meta:
         model = Invite
+        fields = ["invite_id", "content", "sender_id", "recipients"]
 
-
-# class NoteSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Note
-#         fields = ["id", "title", "content", "created_at", "author"]
-#         # in this case "author" is read since the author is manually set based off who creates it
-#         # we only want the author set by backend which is why writing is restricted
-#         extra_kwargs = {"author": {"read_only": True}}
+        # foreign keys are set as "read_only" since they are automatically set
+        # we only want the sender set by backend which is why writing is restricted
+        extra_kwargs = {"sender_id": {"read_only": True}}
