@@ -18,10 +18,10 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
     
-class NoteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Note
-        fields = ["id", "title", "content", "created_at", "author"]
-        # in this case "author" is read since the author is manually set based off who creates it
-        # we only want the author set by backend which is why writing is restricted
-        extra_kwargs = {"author": {"read_only": True}}
+# class NoteSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Note
+#         fields = ["id", "title", "content", "created_at", "author"]
+#         # in this case "author" is read since the author is manually set based off who creates it
+#         # we only want the author set by backend which is why writing is restricted
+#         extra_kwargs = {"author": {"read_only": True}}
