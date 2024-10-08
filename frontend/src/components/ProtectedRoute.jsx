@@ -12,7 +12,20 @@ function ProtectedRoute({children}) {
     }
 
     const auth = async () => {
-
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if(!token){
+            setIsAuthorized(false);
+            return;
+        }
+        const decoded = jwtDecode(token);
+        const tokenExpiration = decoded.exp;
+        const now = Date.now() / 1000;
+        if (tokenExpiration < now) {
+            await refreshToken();
+        }
+        else{
+            setIsAuthorized(true);
+        }
     }
 
     if (isAuthorized === null){
