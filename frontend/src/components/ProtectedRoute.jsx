@@ -7,10 +7,11 @@ import { useState, useEffect } from "react";
 function ProtectedRoute({children}) {
     const [isAuthorized, setIsAuthorized] = useState(null);
 
-    // Run once on mount to check authorization
+    // Check authorization
     useEffect(()=>{
         auth().catch(()=>setIsAuthorized(false));
-    }, []);
+    }, []); 
+    // Empty dependency array [] ensures this only runs once on mount (DOM loaded)
 
     const refreshToken = async () => {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
