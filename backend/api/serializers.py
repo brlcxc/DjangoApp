@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # The fields var contains all fields we want to serialize when accepting or returning new user
-        fields = ["id", "email", "password", "display_name"]
+        fields = ["user_id", "email", "password", "display_name"]
         # ensures that password will be accepted when a new user is created but that we won't return the password
         extra_kwargs = {"password": {"write_only": True}}
     
