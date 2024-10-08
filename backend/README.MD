@@ -2,7 +2,7 @@
 
 `Note`: These commands were made on a Linux OS and might differ for a different OS
 
-### Setting Up Virtual Python Enviroment
+### Setting Up Virtual Python Environment
 The first step is to create the Python virtual environment  
 This is done in the root directory  
 `Note`: If python3-venv is not installed follow the steps posted here https://stackoverflow.com/a/63716116
@@ -37,6 +37,8 @@ python manage.py runserver
 
 ### Resources I used
 Initial project setup  
-https://www.youtube.com/watch?v=c-QsfbznSXI
-Creation of custom user
-https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser
+https://www.youtube.com/watch?v=c-QsfbznSXI  
+Creation of custom user  
+https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser  
+Adding more fields to registration  
+https://stackoverflow.com/questions/53969386/how-to-save-extra-fields-on-registration-using-custom-user-model-in-drf-django  

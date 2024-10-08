@@ -3,10 +3,20 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from uuid import uuid4
 
-# TODO: switch sequential ID to uuid
+# General Notes
 
-# customer UserManager is used since we want to use email in place of username
+# Customer UserManager is used since we want to use email in place of username
 # This overrides existing actions which will not be needed for other models
+# For Most models the basic "models" functionality is fine
+
+# Instead of having a derived attribute in a model field it might be better to have it in a serializer
+
+# null=True means that field is allowed to be null
+
+# __str__ is used so that a call more readable to a DBA
+
+# an id field is automatically made for each relation and made as the pk but this can be overridden
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -19,7 +29,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    # password = None does not seem necessary 
     def create_user(self, email, password, **extra_fields):
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(email, password, **extra_fields)
@@ -35,58 +44,56 @@ class UserManager(BaseUserManager):
 # AbstractUser contains all fields of User but has the ability to be extended off
 class User(AbstractUser):
     # Removing the username field from the model
-    # Note: could I technically set any default field I dont want to none?
     username = None
 
-    # TODO remove null from display name
-    #Additional User fields
-    display_name = models.CharField(max_length=100, null=True)
+    # Additional User fields
     user_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    display_name = models.CharField(max_length=100)
     email = models.EmailField(('email address'), unique=True)
     user_verified = models.BooleanField(default=False)
 
     objects = UserManager()
 
-    # changes the default username field from username to email on registration
-    # Authentication settings?
+    # Changes the default username field from username to email on registration
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['display_name']
-    
-# note: serializer needs to be made for this
-class Note(models.Model):
-    title = models.CharField(max_length=100)
-    content = models.TextField()
-    # auto automatically populates field on creation
-    created_at = models.DateTimeField(auto_now_add=True)
-    # foreign key here links User to the collection of Notes - each user can have many notes
-    # one to many
-    # related name is the field name which references all the notes 
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notes")
 
     def __str__(self):
-        return self.title
+        return f"user: ${self.username}"
 
 class Group(models.Model):
     group_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     group_name = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
-    group_owner_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, null=True)
+    group_owner_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owned_groups")
+    members = models.ManyToManyField(User, related_name='groups')
+
+    def __str__(self):
+        return f"group: ${self.group_name}"
     
 
 class Transaction(models.Model):
     transaction_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    category = models.CharField(max_length=100, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)    
+    description = models.CharField(max_length=100, null=True)
+    start_date = models.DateTimeField(Null=False)
+    end_date = models.DateTimeField(null=True)
+    is_recurrent = models.BooleanField(Null=False)
+    frequency = models.IntegerField()
+    group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="added_transactions")
 
     class Meta:
-        ordering = ['published_date']  # Orders by `published_date` ascending
+        ordering = ['start_date']
 
     def __str__(self):
-        return self.title
+        return f"transaction: ${self.transaction_id}"
 
 class Invite(models.Model):
     invite_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    content = models.TextField()
+    sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="senders")
+    recipients = models.ManyToManyField(User, related_name='received_invites')
 
-# class GroupMembers(models.Model):
-#     pass
-
-# class InviteRecipients(models.Model):
-#     pass
+    def __str__(self):
+        return f"transaction: ${self.invite_id}"
