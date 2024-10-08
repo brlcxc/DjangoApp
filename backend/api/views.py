@@ -47,11 +47,30 @@ class TransactionListCreate(generics.ListCreateAPIView):
 class TransactionDelete(generics.DestroyAPIView):
     pass
 
+class GroupListCreate(generics.ListCreateAPIView):
+    serializer_class = GroupSerializer
+    permission_classes = [IsAuthenticated]
 
-# modify?
+    def get_queryset(self):
+        # self.request.user returns user object
+        user = self.request.user
+        # filters users according to note owner
+        return Group.objects.filter(group_owner_id=user)
 
-# TODO add display name
-# rather than a custom user model being used the default one is
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            serializer.save(group_owner_id=self.request.user)
+        else:
+            print(serializer.errors)
+
+class GroupDelete(generics.DestroyAPIView):
+    serializer_class = GroupSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # filter makes it so that only notes made by you can be deleted
+        return Group.objects.filter(group_owner_id=self.request.user)
+
 class CreateUserView(generics.CreateAPIView):
     # specifying list of objects when creating a new one to make sure not to make one which already exists
     queryset = User.objects.all()

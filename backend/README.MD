@@ -58,6 +58,8 @@ python manage.py createsuperuser
 ### Resources I used
 Initial project setup tutorial 
 https://www.youtube.com/watch?v=c-QsfbznSXI  
+Corresponding Repo  
+https://github.com/techwithtim/Django-React-Full-Stack-App  
 Creation of custom user  
 https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser  
 Adding more fields to registration  
