@@ -56,11 +56,11 @@ python manage.py createsuperuser
 ```
 
 ### Resources I used
-Initial project setup  
+Initial project setup tutorial 
 https://www.youtube.com/watch?v=c-QsfbznSXI  
 Creation of custom user  
 https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser  
 Adding more fields to registration  
 https://stackoverflow.com/questions/53969386/how-to-save-extra-fields-on-registration-using-custom-user-model-in-drf-django  
-Serializing many to many
+Serializing many to many  
 https://stackoverflow.com/questions/33182092/django-rest-framework-serializing-many-to-many-field
