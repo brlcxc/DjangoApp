@@ -1,15 +1,17 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Group, Transaction, Invite
 
 class UserSerializer(serializers.ModelSerializer):    
-   # display_name = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
         # The fields var contains all fields we want to serialize when accepting or returning new user
         fields = ["id", "email", "password", "display_name"]
         # ensures that password will be accepted when a new user is created but that we won't return the password
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {
+                "password": {"write_only": True},
+                "email": {"required": True},
+                "display_name": {"required": True}
+            }
     
     # method called when we want to create new version of user
     # we accept validated data which has already passed the checks in the serializer
@@ -18,6 +20,19 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
     
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+
+class InviteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invite
+
+
 # class NoteSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Note

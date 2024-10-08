@@ -46,17 +46,22 @@ class User(AbstractUser):
     # Removing the username field from the model
     username = None
 
-    # Additional User fields
-    # Note: changing the name of id requires a new view to be made
+    # Adding more security tod default ID by using uuid
+    # Note: changing the name of id requires a new view to be made for refreshing the token
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    display_name = models.CharField(max_length=100)
+
+    # TODO For now unique is set to True however this could allow someone to create an account with an email that isn't their's and prevent the actual owner of the email from using it
     email = models.EmailField(('email address'), unique=True)
+
+    # Additional User fields
+    display_name = models.CharField(max_length=100)
     user_verified = models.BooleanField(default=False)
-    # I might need to alter password so that it has certain restrictions such as char length
+
+    # TODO Added security should be added to the password such as requiring a character minimum
 
     objects = UserManager()
 
-    # Changes the default username field from username to email on registration
+    # Changes the default username field from username to email on registration - this might be done in serializer 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['display_name']
 
@@ -85,6 +90,7 @@ class Transaction(models.Model):
     frequency = models.IntegerField()
     group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="added_transactions")
 
+    # Orders relation by 'start_date'
     class Meta:
         ordering = ['start_date']
 
