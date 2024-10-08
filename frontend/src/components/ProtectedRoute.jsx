@@ -7,17 +7,20 @@ import { useState, useEffect } from "react";
 function ProtectedRoute({children}) {
     const [isAuthorized, setIsAuthorized] = useState(null);
 
+    // Run once on mount to check authorization
     useEffect(()=>{
         auth().catch(()=>setIsAuthorized(false));
-    });
+    }, []);
 
     const refreshToken = async () => {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
         try{
+            // Request new access token
             const res = await api.post("/api/token/refresh/", {
                 refresh: refreshToken
             });
             if (res.status === 200){
+                // Refresh successful; save new access token and set authorized to true
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 setIsAuthorized(true);
             }
@@ -32,15 +35,18 @@ function ProtectedRoute({children}) {
     }
 
     const auth = async () => {
+        // Get access token from local storage
         const token = localStorage.getItem(ACCESS_TOKEN);
         if(!token){
             setIsAuthorized(false);
             return;
         }
+        // Decode jwt token (looking for expiration)
         const decoded = jwtDecode(token);
         const tokenExpiration = decoded.exp;
         const now = Date.now() / 1000;
         if (tokenExpiration < now) {
+            // If token expired, attempt refresh
             await refreshToken();
         }
         else{
@@ -48,10 +54,12 @@ function ProtectedRoute({children}) {
         }
     }
 
+    // Show loading state while checking authorization (could change this)
     if (isAuthorized === null){
         return <div>Loading...</div>;
     }
 
+    // If authorized, render protected components (children), otherwise send user to login
     return isAuthorized ? children : <Navigate to = "/login"/>;
 }
 
