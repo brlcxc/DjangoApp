@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # for viewing or creating notes
-    path("notes/", views.NoteListCreate.as_view(), name="note-list"),
-    # for deleting notes
-    path("notes/delete/<int:pk>/", views.NoteDelete.as_view(), name="delete-note"),
+    # for viewing or creating groups
+    path("groups/", views.GroupListCreate.as_view(), name="group-list"),
+    # for deleting groups
+    path("groups/delete/<uuid:pk>/", views.GroupDelete.as_view(), name="delete-group"),
 ]
