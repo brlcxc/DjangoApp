@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, Group, Transaction, Invite
+from django.contrib.auth.password_validation import validate_password
 
 # Note: fields = '__all__' can be used if all fields need to be serialized
 
@@ -14,6 +15,12 @@ class UserSerializer(serializers.ModelSerializer):
                 "email": {"required": True},
                 "display_name": {"required": True}
             }
+
+    # ensures that the password passes the checks within the settings.py
+    def validate(self, attrs):
+        password = attrs.get('password')
+        validate_password(password)  # Ensures password is validated
+        return attrs
     
     # method called when we want to create new version of user
     # we accept validated data which has already passed the checks in the serializer
