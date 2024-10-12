@@ -1,3 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+input:invalid:not(:placeholder-shown) {
+  @apply border-red-500;
+}
+
+input:valid {
+  @apply border-blue-500;
+}
+
+@layer utilities {
+  .bg-custom-gradient {
+    background: linear-gradient(
+    to right,
+    #62BFED,
+    #C2BBF0,
+    #F698BB,
+    #C2BBF0,
+    #62BFED,
+    #C2BBF0,
+    #F698BB
+    );
+    background-size: 300% 300%;
+  }
+}
