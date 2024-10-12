@@ -47,7 +47,10 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 class RetrieveUserView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]  # Customize permissions as needed
-    # lookup_field = 'pk'
+    permission_classes = [IsAuthenticated]  # Customize permissions as needed
+
+    # normally you would need a pk for get_object but we want to do it just with the token
+    def get_object(self):
+        return self.request.user
