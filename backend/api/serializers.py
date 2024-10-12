@@ -24,7 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
     
 class GroupSerializer(serializers.ModelSerializer):
     # I need to double check that this is actually read_only
-    members = UserSerializer(read_only=True, many=True)
+    # members = UserSerializer(read_only=True, many=True)
+    members = UserSerializer(many=True)
 
     class Meta:
         model = Group

@@ -45,3 +45,9 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     # specifies who can all this view - in this case anyone
     permission_classes = [AllowAny]
+
+class RetrieveUserView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]  # Customize permissions as needed
+    # lookup_field = 'pk'
