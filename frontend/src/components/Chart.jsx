@@ -106,46 +106,6 @@ const App = () => {
     <div className="w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg grid grid-cols-2 gap-4">
       {/* Left Column - Transaction Table */}
       <div>
-        {/* <h1 className="text-2xl font-bold mb-5 text-black">Transaction List</h1> */}
-
-        {/* Advanced Filters */}
-        {/* <div className="flex justify-between mb-5">
-          <div>
-            <label className="mr-2">Filter by Type:</label>
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="All" className="bg-white text-black">All</option>
-              <option value="Direct Payment" className="bg-white text-black">Direct Payment</option>
-              <option value="Deposit" className="bg-white text-black">Deposit</option>
-            </select>
-          </div>
-          <div>
-            <label className="mr-2">Sort by:</label>
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="date" className="bg-white text-black">Date</option>
-              <option value="amount" className="bg-white text-black">Amount</option>
-              <option value="status" className="bg-white text-black">Status</option>
-            </select>
-          </div>
-        </div> */}
-
-        {/* Transaction Table */}
-        {/* <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
-          <div>Date</div>
-          <div>Description</div>
-          <div>Type</div>
-          <div>Amount</div>
-          <div>Status</div>
-          <div>Current Balance</div>
-        </div> */}
-
         {/* Display transactions or empty state */}
         {filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
@@ -157,75 +117,12 @@ const App = () => {
 
         {/* Add Transaction Form */}
         <form className="mt-8" onSubmit={addTransaction}>
-          {/* <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2> */}
           <div className="grid grid-cols-4 gap-4">
-            {/* Date Input */}
-            {/* <input
-              type="date"
-              value={newTransaction.date}
-              onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
-              required
-              placeholder="mm/dd/yyyy"
-              className="border rounded p-2 bg-white text-black w-full appearance-none"
-            /> */}
-            {/* Description Input */}
-            {/* <input
-              type="text"
-              placeholder="Description"
-              value={newTransaction.description}
-              onChange={(e) => setNewTransaction({ ...newTransaction, description: e.target.value })}
-              required
-              className="border rounded p-2 bg-white text-black"
-            /> */}
-            {/* Transaction Type Select */}
-            {/* <select
-              value={newTransaction.type}
-              onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value })}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="Direct Payment" className="bg-white text-black">Direct Payment</option>
-              <option value="Deposit" className="bg-white text-black">Deposit</option>
-            </select> */}
-            {/* Amount Input */}
-            {/* <input
-              type="number"
-              placeholder="Amount"
-              value={newTransaction.amount}
-              onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
-              required
-              className="border rounded p-2 bg-white text-black"
-            /> */}
           </div>
 
           <div className="grid grid-cols-2 gap-4 mt-4">
-            {/* Status Select */}
-            {/* <select
-              value={newTransaction.status}
-              onChange={(e) => setNewTransaction({ ...newTransaction, status: e.target.value })}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="Pending" className="bg-white text-black">Pending</option>
-              <option value="Completed" className="bg-white text-black">Completed</option>
-              <option value="Failed" className="bg-white text-black">Failed</option>
-            </select> */}
-
-            {/* Submit Button */}
-            {/* <button
-              type="submit"
-              className="bg-green-300 hover:bg-green-400 text-black px-4 py-2 rounded"
-            >
-              Add Transaction
-            </button> */}
           </div>
         </form>
-
-        {/* Current Balance */}
-        {/* <div className="mt-8 text-xl">
-          <span className="font-semibold text-black">Current Balance: </span>
-          <span className={currentBalance >= 0 ? 'text-green-500' : 'text-red-500'}>
-            {currentBalance.toFixed(2)}
-          </span>
-        </div> */}
       </div>
 
       {/* Right Column - Pie Chart */}
