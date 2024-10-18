@@ -6,5 +6,5 @@ urlpatterns = [
     path("groups/", views.GroupListCreate.as_view(), name="group-list"),
     # for deleting groups
     path("groups/delete/<uuid:pk>/", views.GroupDelete.as_view(), name="delete-group"),
-    path("user/retrieve/", views.RetrieveUserView.as_view(), name="user-retrieve"),
+    path("user/me/", views.UserRetrieveDeleteView.as_view(), name="user-retrieve"),
 ]
