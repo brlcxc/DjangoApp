@@ -35,7 +35,7 @@ class GroupDelete(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # filter makes it so that only notes made by you can be deleted
+        # filter makes it so that only groups made by you can be deleted
         return Group.objects.filter(group_owner_id=self.request.user)
 
 class CreateUserView(generics.CreateAPIView):
@@ -46,10 +46,10 @@ class CreateUserView(generics.CreateAPIView):
     # specifies who can all this view - in this case anyone
     permission_classes = [AllowAny]
 
-class RetrieveUserView(generics.RetrieveAPIView):
-    # queryset = User.objects.all()
+# Note: issue of using pk or not has conflicting info
+class UserRetrieveDeleteView(generics.RetrieveDestroyAPIView):
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]  # Customize permissions as needed
+    permission_classes = [IsAuthenticated]
 
     # normally you would need a pk for get_object but we want to do it just with the token
     def get_object(self):
