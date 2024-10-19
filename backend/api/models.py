@@ -47,7 +47,7 @@ class User(AbstractUser):
     # Removing the username field from the model
     username = None
 
-    # Adding more security tod default ID by using uuid
+    # Adding more security to default ID by using uuid
     # Note: changing the name of id requires a new view to be made for refreshing the token
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
@@ -57,8 +57,6 @@ class User(AbstractUser):
     # Additional User fields
     display_name = models.CharField(max_length=100)
     user_verified = models.BooleanField(default=False)
-
-    # TODO Added security should be added to the password such as requiring a character minimum
 
     objects = UserManager()
 
@@ -98,10 +96,14 @@ class Transaction(models.Model):
     def __str__(self):
         return f"transaction: ${self.transaction_id}"
 
+# This must be modified to specify which group the invite is for
+# for right now the user will be added when an invite is sent
+# a user does not have to accept and invite
 class Invite(models.Model):
     invite_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     content = models.TextField()
     sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="senders")
+    group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="added_transactions")
     recipients = models.ManyToManyField(User, related_name='received_invites')
 
     def __str__(self):
