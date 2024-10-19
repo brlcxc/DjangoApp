@@ -1,10 +1,15 @@
-from django.shortcuts import render
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import User, Group, Transaction, Invite
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from .models import User, Group, Transaction
 
 # Note: views => serializers => models
+# TODO check if Update and Destroy for Transaction need their methods overwritten
+# TODO check if Update for Group needs their method overwritten
+# TODO ensure logic for grabbing uuid is consistent with all instances
+# TODO pass multiple recipient uuid to the invite
 
 class UserCreateView(generics.CreateAPIView):
     # specifying list of objects when creating a new one to make sure not to make one which already exists
@@ -14,16 +19,14 @@ class UserCreateView(generics.CreateAPIView):
     # specifies who can all this view - in this case anyone
     permission_classes = [AllowAny]
 
-# Note: issue of using pk or not has conflicting info
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
-    # normally you would need a pk for get_object but we want to do it just with the token
+    # normally you would need a pk for get_object but in this case it is just done with the token
     def get_object(self):
         return self.request.user
 
-# I also need to list all groups where the user is a member
 class GroupListCreate(generics.ListCreateAPIView):
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticated]
@@ -31,50 +34,134 @@ class GroupListCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         # self.request.user returns user object
         user = self.request.user
-        # filters users according to note owner
-        return Group.objects.filter(group_owner_id=user)
 
+        # Query for groups where the user is either the owner or a member
+        # An owner is not listed as a member which is why this needs to be done
+        return Group.objects.filter(
+            Q(members=user) | Q(group_owner_id=user)
+        )
+    
     def perform_create(self, serializer):
         if serializer.is_valid():
             serializer.save(group_owner_id=self.request.user)
         else:
             print(serializer.errors)
 
-# might need to divide this down further because the members should still be able to update and retrieve but only the owner should delete
-# the user still needs a way to remove themselves from the group though
-# maybe an if else on if group member or not?
 class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Group.objects.filter(group_owner_id=self.request.user)
+        # self.request.user returns user object
+        user = self.request.user
 
-# any member of a group should have this right
-class TransactionListCreate(generics.ListCreateAPIView):
+        # Query for groups where the user is either the owner or a member
+        return Group.objects.filter(
+            Q(members=user) | Q(group_owner_id=user)
+        )
+        
+    def get_object(self):
+        # Override to ensure object-level permission checks if necessary
+        queryset = self.get_queryset()
+        
+        # The UUID for the transaction is passed via the URL kwargs as 'pk'
+        obj = get_object_or_404(queryset, group_id=self.kwargs["pk"])
+        
+        # Check object-level permissions if needed
+        self.check_object_permissions(self.request, obj)
+        
+        return obj
+    
+    # Only an owner is allowed to delete a group but a member will still be able to leave the group
+    def perform_destroy(self, instance):
+        user = self.request.user
+        # Check if the user is the owner of the group
+        if instance.group_owner_id == user:
+            # If the user is the owner, delete the entire group
+            instance.delete()
+        else:
+            # If the user is just a member, remove them from the group
+            instance.members.remove(user)
+
+# create and List are not combined because List takes in multiple uuid while create needs one
+class TransactionCreate(generics.CreateAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Get the single group UUID from the URL
+        group_uuid = self.kwargs.get('group_uuid')
+
+        # Find the group instance based on the UUID
+        group = Group.objects.get(id=group_uuid)
+        
+        if serializer.is_valid():
+            serializer.save(group_id=group)
+        else:
+            print(serializer.errors)
+
+# multiple uuid are input allowing transactions from multiple groups to show at once
+class TransactionList(generics.ListAPIView):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # self.request.user returns user object
+        # Get the currently authenticated user
         user = self.request.user
-        # filters users according to note owner
 
-        #must have ID of member in connected group
-        return Group.objects.filter(group_owner_id=user)
+        # Extract group UUIDs from the URL route
+        group_uuid_list = self.kwargs.get('group_uuid_list')
 
-# restricted to members of a group
+        # Convert the group_uuid_list string into a list of UUIDs
+        group_uuids = group_uuid_list.split(',')
+
+        # Query for groups where the user is either the owner or a member
+        user_groups = Group.objects.filter(
+            (Q(members=user) | Q(group_owner_id=user)) & Q(id__in=group_uuids)
+        )
+
+        # Return transactions that belong to the filtered groups
+        return Transaction.objects.filter(group_id__in=user_groups)
+
 class TransactionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # self.request.user returns user object
+        # Get the currently authenticated user
         user = self.request.user
-        # filters users according to note owner
-        return Group.objects.filter(group_owner_id=user)
 
-# does it even make sense to store this since an invite will be in the service layer    
+        # Query for groups where the user is either the owner or a member
+        user_groups = Group.objects.filter(
+            Q(members=user) | Q(group_owner_id=user)
+        )
+
+        # Return transactions that belong to the user's groups (either owned or member)
+        return Transaction.objects.filter(group_id__in=user_groups)
+    
+    def get_object(self):
+        # Override to ensure object-level permission checks if necessary
+        queryset = self.get_queryset()
+        
+        # The UUID for the transaction is passed via the URL kwargs as 'pk'
+        obj = get_object_or_404(queryset, transaction_id=self.kwargs["pk"])
+        
+        # Check object-level permissions if needed
+        self.check_object_permissions(self.request, obj)
+        
+        return obj
+
+# even though invites will be done in the service layer they will still be stored here
 class InviteCreateView(generics.CreateAPIView):
     serializer_class = InviteSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Get the recipient and group UUIDs from the URL parameters
+        recipient_id = self.kwargs.get('recipient_uuid')
+        group_id = self.kwargs.get('group_uuid')
+
+        if serializer.is_valid():
+            serializer.save(sender_id=self.request.user, recipients=recipient_id, group_id=group_id)
+        else:
+            print(serializer.errors)
