@@ -158,10 +158,10 @@ class InviteCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         # Get the recipient and group UUIDs from the URL parameters
-        recipient_id = self.kwargs.get('recipient_uuid')
-        group_id = self.kwargs.get('group_uuid')
+        recipient = self.kwargs.get('recipient_uuid')
+        group = self.kwargs.get('group_uuid')
 
         if serializer.is_valid():
-            serializer.save(sender_id=self.request.user, recipients=recipient_id, group_id=group_id)
+            serializer.save(sender_id=self.request.user, received_invites=recipient, group_id=group)
         else:
             print(serializer.errors)

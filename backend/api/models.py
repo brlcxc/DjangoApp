@@ -103,7 +103,7 @@ class Invite(models.Model):
     invite_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     content = models.TextField()
     sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="senders")
-    group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="added_transactions")
+    group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="invite_origin")
     recipients = models.ManyToManyField(User, related_name='received_invites')
 
     def __str__(self):
