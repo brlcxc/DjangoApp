@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from uuid import uuid4
 
+#TODO add password confirmation
+
 # General Notes
 
 # Customer UserManager is used since we want to use email in place of username

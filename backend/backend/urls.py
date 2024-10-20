@@ -5,8 +5,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/users/register/', UserCreateView.as_view(), name='user-register'),  # Create a user
-    path('api/users/me/', UserRetrieveUpdateDestroyView.as_view(), name='user-retrieve-update-destroy'),  # Retrieve, update, or destroy current user
+    path('api/users/register/', UserCreateView.as_view(), name='user-register'),  # create a user
+    path('api/users/me/', UserRetrieveUpdateDestroyView.as_view(), name='user-retrieve-update-destroy'),  # retrieve, update, or destroy current user
     path("api/token/", TokenObtainPairView.as_view(), name="get_token"),  # obtains token
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),  # refreshes token
     path("api-auth/", include("rest_framework.urls")),  # includes all urls from rest framework
