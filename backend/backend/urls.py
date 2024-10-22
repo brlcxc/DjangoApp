@@ -1,23 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
-# CreateUser view we just created
-from api.views import CreateUserView
-# pre built views for obtaining access and refresh tokens
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from api.views import UserCreateView, UserRetrieveUpdateDestroyView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView  # pre built views for obtaining access and refresh tokens
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # going to that specific route will call the specified view
-    path("api/user/register/", CreateUserView.as_view(), name="register"),
-    # obtains token
-    path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
-    # refreshes token
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
-    # includes all urls from rest framework
-    path("api-auth/", include("rest_framework.urls")),
-    # makes it so remainder of path is fowarded to be handled elsewhere
-    # why though? - to seperate roots better?
-    path("api/", include("api.urls")),
+    path('api/users/register/', UserCreateView.as_view(), name='user-register'),  # create a user
+    path('api/users/me/', UserRetrieveUpdateDestroyView.as_view(), name='user-retrieve-update-destroy'),  # retrieve, update, or destroy current user
+    path("api/token/", TokenObtainPairView.as_view(), name="get_token"),  # obtains token
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),  # refreshes token
+    path("api-auth/", include("rest_framework.urls")),  # includes all urls from rest framework
+    path("api/", include("api.urls")),  # we want to forward certain urls to the api urls file for better separation
 ] 
-
-# we want to foward certain urls to the api urls file

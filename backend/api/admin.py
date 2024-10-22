@@ -2,12 +2,15 @@ from django.contrib import admin
 # from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, Group, Transaction, Invite
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 
 # TODO fix the add user button not working
 
 class UserAdmin(BaseUserAdmin):
-    # Use email for ordering instead of username
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
     list_display = ('email', 'display_name', 'id', 'user_verified', 'is_staff')
+    # Use email for ordering instead of username
     ordering = ['email']
 
 class GroupAdmin(admin.ModelAdmin):
