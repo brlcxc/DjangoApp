@@ -4,22 +4,22 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const TransactionRow = ({ transaction }) => {
-  return (
-    <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
-      <div>{transaction.date}</div>
-      <div>{transaction.description}</div>
-      <div>{transaction.type}</div>
-      <div className={transaction.amount > 0 ? "text-green-500" : "text-red-500"}>
-        {transaction.amount > 0 ? `+${transaction.amount.toFixed(2)}` : transaction.amount.toFixed(2)}
-      </div>
-      <div>{transaction.status}</div>
-      <div>{transaction.balance.toFixed(2)}</div>
-    </div>
-  );
-};
+// const TransactionRow = ({ transaction }) => {
+//   return (
+//     <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
+//       <div>{transaction.date}</div>
+//       <div>{transaction.description}</div>
+//       <div>{transaction.type}</div>
+//       <div className={transaction.amount > 0 ? "text-green-500" : "text-red-500"}>
+//         {transaction.amount > 0 ? `+${transaction.amount.toFixed(2)}` : transaction.amount.toFixed(2)}
+//       </div>
+//       <div>{transaction.status}</div>
+//       <div>{transaction.balance.toFixed(2)}</div>
+//     </div>
+//   );
+// };
 
-const App = () => {
+const Charts = () => {
   const [transactions, setTransactions] = useState([]);
   const [newTransaction, setNewTransaction] = useState({
     date: '',
@@ -137,4 +137,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Charts;

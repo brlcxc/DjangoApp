@@ -6,8 +6,8 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
-import TransactionList from "./components/TransactionList";
-import Charts from "./components/Chart";
+import TransactionList from "./pages/TransactionList";
+import Charts from "./pages/Charts";
 
 // ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -35,7 +35,7 @@ function App() {
           }
         />
         <Route path="/list" element={<TransactionList/>}/>
-        <Route path="/chart" element={<Charts/>}/>
+        <Route path="/charts" element={<Charts/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/logout" element={<Logout/>}/>
         <Route path="/register" element={<RegisterAndLogout/>}/>

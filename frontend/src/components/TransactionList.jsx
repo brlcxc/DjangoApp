@@ -1,89 +1,96 @@
 import React, { useState } from 'react';
 
-const TransactionRow = ({ transaction }) => {
-  return (
-    <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
-      <div>{transaction.date}</div>
-      <div>{transaction.description}</div>
-      <div>{transaction.type}</div>
-      <div className={transaction.amount > 0 ? "text-green-500" : "text-red-500"}>
-        {transaction.amount > 0 ? `+${transaction.amount.toFixed(2)}` : transaction.amount.toFixed(2)}
-      </div>
-      <div>{transaction.status}</div>
-      <div>{transaction.balance.toFixed(2)}</div>
+const TransactionRow = ({ transaction }) => (
+  <div className="grid grid-cols-5 py-3 border-b hover:bg-gray-100 transition text-black">
+    <div>{transaction.date}</div>
+    <div>{transaction.description}</div>
+    <div>{transaction.type}</div>
+    <div className={transaction.amount > 0 ? 'text-green-500' : 'text-red-500'}>
+      {transaction.amount > 0 ? `+${transaction.amount.toFixed(2)}` : transaction.amount.toFixed(2)}
     </div>
-  );
-};
+    <div>{transaction.balance.toFixed(2)}</div>
+  </div>
+);
 
-const App = () => {
+const TransactionList = () => {
   const [transactions, setTransactions] = useState([]);
   const [newTransaction, setNewTransaction] = useState({
     date: '',
     description: '',
-    type: 'Direct Payment',
+    type: '', // Category input
     amount: '',
     status: 'Pending',
   });
+
+  const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
+  const [customCategory, setCustomCategory] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [sortOption, setSortOption] = useState('date');
+  const [isCustomSelected, setIsCustomSelected] = useState(false);
 
-  const currentBalance = transactions.reduce((acc, transaction) => acc + (transaction.status !== 'Failed' ? transaction.amount : 0), 0);
+  const currentBalance = transactions.reduce(
+    (acc, transaction) =>
+      acc + (transaction.status !== 'Failed' ? transaction.amount : 0),
+    0
+  );
 
   const addTransaction = (e) => {
     e.preventDefault();
-    
     const transactionAmount = parseFloat(newTransaction.amount);
     let updatedBalance = currentBalance;
 
-    // Only update the balance if the status is NOT "Failed"
     if (newTransaction.status !== 'Failed') {
       updatedBalance += transactionAmount;
     }
+
+    const category = isCustomSelected ? customCategory : newTransaction.type;
 
     const updatedTransactions = [
       ...transactions,
       {
         ...newTransaction,
+        type: category,
         amount: transactionAmount,
         balance: updatedBalance,
       },
     ];
 
     setTransactions(updatedTransactions);
-    setNewTransaction({ date: '', description: '', type: 'Direct Payment', amount: '', status: 'Pending' });
+    setNewTransaction({ date: '', description: '', type: '', amount: '', status: 'Pending' });
+
+    // Add the custom category if it's new
+    if (isCustomSelected && customCategory && !categories.includes(customCategory)) {
+      setCategories([...categories, customCategory]);
+    }
+
+    // Reset custom category input
+    setCustomCategory('');
+    setIsCustomSelected(false);
   };
 
   const filteredTransactions = transactions
-    .filter(transaction => filterType === 'All' || transaction.type === filterType)
-    .sort((a, b) => {
-      if (sortOption === 'date') {
-        return new Date(a.date) - new Date(b.date);
-      } else if (sortOption === 'amount') {
-        return b.amount - a.amount;
-      } else if (sortOption === 'status') {
-        return a.status.localeCompare(b.status);
-      }
-      return 0;
-    });
+    .filter((transaction) => filterType === 'All' || transaction.type === filterType)
+    .sort((a, b) => (sortOption === 'date' ? new Date(a.date) - new Date(b.date) : b.amount - a.amount));
 
   return (
     <div className="w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg grid grid-cols-1 gap-4">
-      {/* Transaction Table Section */}
       <div>
         <h1 className="text-2xl font-bold mb-5 text-black">Transaction List</h1>
 
-        {/* Advanced Filters */}
         <div className="flex justify-between mb-5">
           <div>
-            <label className="mr-2">Filter by Type:</label>
+            <label className="mr-2">Filter by Category:</label>
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
               className="border rounded p-2 bg-white text-black"
             >
-              <option value="All" className="bg-white text-black">All</option>
-              <option value="Direct Payment" className="bg-white text-black">Direct Payment</option>
-              <option value="Deposit" className="bg-white text-black">Deposit</option>
+              <option value="All">All</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -93,24 +100,20 @@ const App = () => {
               onChange={(e) => setSortOption(e.target.value)}
               className="border rounded p-2 bg-white text-black"
             >
-              <option value="date" className="bg-white text-black">Date</option>
-              <option value="amount" className="bg-white text-black">Amount</option>
-              <option value="status" className="bg-white text-black">Status</option>
+              <option value="date">Date</option>
+              <option value="amount">Amount</option>
             </select>
           </div>
         </div>
 
-        {/* Transaction Table */}
-        <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
+        <div className="grid grid-cols-5 py-2 border-b font-semibold text-left bg-blue-500 text-white">
           <div>Date</div>
           <div>Description</div>
-          <div>Type</div>
+          <div>Category</div>
           <div>Amount</div>
-          <div>Status</div>
           <div>Current Balance</div>
         </div>
 
-        {/* Display transactions or empty state */}
         {filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
             <TransactionRow key={index} transaction={transaction} />
@@ -119,20 +122,16 @@ const App = () => {
           <div className="text-center py-10 text-gray-500">No transactions found</div>
         )}
 
-        {/* Add Transaction Form */}
         <form className="mt-8" onSubmit={addTransaction}>
           <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2>
           <div className="grid grid-cols-4 gap-4">
-            {/* Date Input */}
             <input
               type="date"
               value={newTransaction.date}
               onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
               required
-              placeholder="mm/dd/yyyy"
-              className="border rounded p-2 bg-white text-black w-full appearance-none"
+              className="border rounded p-2 bg-white text-black"
             />
-            {/* Description Input */}
             <input
               type="text"
               placeholder="Description"
@@ -141,16 +140,36 @@ const App = () => {
               required
               className="border rounded p-2 bg-white text-black"
             />
-            {/* Transaction Type Select */}
-            <select
-              value={newTransaction.type}
-              onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value })}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="Direct Payment" className="bg-white text-black">Direct Payment</option>
-              <option value="Deposit" className="bg-white text-black">Deposit</option>
-            </select>
-            {/* Amount Input */}
+            <div className="relative">
+              <select
+                value={newTransaction.type}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNewTransaction({ ...newTransaction, type: value });
+                  setIsCustomSelected(value === 'custom');
+                }}
+                className="border rounded p-2 bg-white text-black w-full"
+              >
+                <option value="" disabled>
+                  Select Category
+                </option>
+                {categories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+                <option value="custom">Add Custom Category</option>
+              </select>
+              {isCustomSelected && (
+                <input
+                  type="text"
+                  placeholder="Custom Category"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  className="border rounded p-2 mt-2 w-full"
+                />
+              )}
+            </div>
             <input
               type="number"
               placeholder="Amount"
@@ -161,29 +180,14 @@ const App = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {/* Status Select */}
-            <select
-              value={newTransaction.status}
-              onChange={(e) => setNewTransaction({ ...newTransaction, status: e.target.value })}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="Pending" className="bg-white text-black">Pending</option>
-              <option value="Completed" className="bg-white text-black">Completed</option>
-              <option value="Failed" className="bg-white text-black">Failed</option>
-            </select>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="bg-green-300 hover:bg-green-400 text-black px-4 py-2 rounded"
-            >
-              Add Transaction
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="bg-green-300 hover:bg-green-400 text-black px-4 py-2 rounded mt-4"
+          >
+            Add Transaction
+          </button>
         </form>
 
-        {/* Current Balance */}
         <div className="mt-8 text-xl">
           <span className="font-semibold text-black">Current Balance: </span>
           <span className={currentBalance >= 0 ? 'text-green-500' : 'text-red-500'}>
@@ -195,4 +199,6 @@ const App = () => {
   );
 };
 
-export default App;
+export default TransactionList;
+
+
