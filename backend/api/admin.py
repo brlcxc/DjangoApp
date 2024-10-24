@@ -13,6 +13,25 @@ class UserAdmin(BaseUserAdmin):
     # Use email for ordering instead of username
     ordering = ['email']
 
+     # Remove the username field from the fieldsets and use email instead
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('display_name',)}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    # This defines the fields that will be shown when adding a new user
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'display_name', 'password1', 'password2'),
+        }),
+    )
+
+    # Use email for authentication instead of username
+    search_fields = ('email',)
+
 class GroupAdmin(admin.ModelAdmin):
     list_display = ('group_name', 'group_owner_id', 'description')
 
