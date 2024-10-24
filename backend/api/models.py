@@ -67,7 +67,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['display_name']
 
     def __str__(self):
-        return f"user: ${self.username}"
+        return f"user: {self.display_name}"
 
 class Group(models.Model):
     group_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
