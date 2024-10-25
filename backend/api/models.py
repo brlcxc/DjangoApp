@@ -67,7 +67,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['display_name']
 
     def __str__(self):
-        return f"user: ${self.username}"
+        return f"user_email: {self.email}"
 
 class Group(models.Model):
     group_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
@@ -77,7 +77,7 @@ class Group(models.Model):
     members = models.ManyToManyField(User, related_name='member_groups')
 
     def __str__(self):
-        return f"group: ${self.group_name}"
+        return f"group_name: {self.group_name} group_id:{self.group_id}"
     
 
 class Transaction(models.Model):
@@ -96,7 +96,7 @@ class Transaction(models.Model):
         ordering = ['start_date']
 
     def __str__(self):
-        return f"transaction: ${self.transaction_id}"
+        return f"transaction_id: {self.transaction_id}"
 
 # This must be modified to specify which group the invite is for
 # for right now the user will be added when an invite is sent
@@ -109,4 +109,4 @@ class Invite(models.Model):
     recipients = models.ManyToManyField(User, related_name='received_invites')
 
     def __str__(self):
-        return f"transaction: ${self.invite_id}"
+        return f"invite_id: {self.invite_id}"
