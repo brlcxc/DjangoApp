@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     # where are these methods being called
     # ensures that the password passes the checks within the settings.py
+    # TODO add second password for verification
     def validate(self, attrs):
         password = attrs.get('password')
         validate_password(password)  # Ensures password is validated

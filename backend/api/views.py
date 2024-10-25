@@ -27,6 +27,7 @@ class UserCreateView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
+        # why must user_verified be set to false when it is already by default false
         user = serializer.save(user_verified=False)  # save the user and set user_verified to False
         send_verification_email(user, self.request)  # email sent upon user creation
 
@@ -178,6 +179,8 @@ class InviteCreateView(generics.CreateAPIView):
             print(serializer.errors)
 
 # TODO verify this
+# when is this even called?
+# what is request doing here?
 class VerifyEmail(APIView):
     def get(self, request, uuidb64, token):
         try:
