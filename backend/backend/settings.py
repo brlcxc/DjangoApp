@@ -155,3 +155,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'api.User'
+
+# TODO for a production environment we will need to switch to using an actual email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

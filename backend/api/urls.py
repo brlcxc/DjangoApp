@@ -13,4 +13,7 @@ urlpatterns = [
 
     # Invite URLs
     path('groups/<uuid:group_uuid>/invites/<str:recipient_uuids>/', views.InviteCreateView.as_view(), name='invite-create'),  # Create an invite for multiple recipients in a group
+
+    # User verification URL
+    path('verify-email/<uuidb64>/<token>/', views.VerifyEmail.as_view(), name='verify_email')  #idk
 ]
