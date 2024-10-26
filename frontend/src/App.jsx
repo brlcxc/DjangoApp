@@ -5,9 +5,6 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
-import TransactionList from "./pages/TransactionList";
-import Charts from "./pages/Charts";
-import TransactionAdd from "./pages/TransactionAdd";
 import ChartList from "./pages/ChartList";
 
 
@@ -34,10 +31,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/all" element={<ChartList/>}/>
-        <Route path="/add" element={<TransactionAdd/>}/>
-        <Route path="/list" element={<TransactionList/>}/>
-        <Route path="/charts" element={<Charts/>}/>
+        <Route path="/chartList" element={<ChartList/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/logout" element={<Logout/>}/>
         <Route path="/register" element={<RegisterAndLogout/>}/>
