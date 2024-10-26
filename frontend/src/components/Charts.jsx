@@ -28,31 +28,36 @@ const mapCategoryColors = (categories) => {
   return categoryColors;
 };
 
-const Charts = ({ transactions }) => {
+const Charts = ({ transactions = [] }) => {
   const [chartType, setChartType] = useState('bar');
 
-  // Extract categories from transaction data
+  // Extract unique categories from transaction data or provide defaults if none exist
   const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(transactions.map((t) => t.type))];
+    const uniqueCategories = [...new Set(transactions.map((t) => t.category || 'Uncategorized'))];
     return uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit'];
   }, [transactions]);
 
+  // Map categories to colors
   const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
+
+  // Extract active categories and calculate total amounts for each
   const activeCategories = categories.filter((category) =>
-    transactions.some((t) => t.type === category)
+    transactions.some((t) => t.category === category)
   );
 
   const categoryData = activeCategories.map((category) => {
     const totalAmount = transactions
-      .filter((t) => t.type === category)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .filter((t) => t.category === category)
+      .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0); // Fallback to 0 if amount is invalid
     return totalAmount;
   });
 
+  // Prepare chart data
   const chartData = {
     labels: activeCategories,
     datasets: [
       {
+        label: 'Total Amount per Category',
         data: categoryData,
         backgroundColor: activeCategories.map(
           (category) => categoryColors[category]
@@ -62,6 +67,7 @@ const Charts = ({ transactions }) => {
     ],
   };
 
+  // Define chart options based on chart type
   const chartOptions = {
     plugins: {
       legend: {
@@ -78,6 +84,7 @@ const Charts = ({ transactions }) => {
         : {},
   };
 
+  // Render the selected chart type
   const renderChart = () => {
     switch (chartType) {
       case 'bar':

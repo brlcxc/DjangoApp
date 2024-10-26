@@ -1,72 +1,59 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import axios for API requests
 import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
 
-function ChartList() {
-    const fakeTransactions = [
-        {
-          id: 1,
-          date: '2024-10-20',
-          description: 'Grocery Store',
-          type: 'Direct Payment',
-          amount: -50.25,
-          balance: 949.75,
-          status: 'Completed'
-        },
-        {
-          id: 2,
-          date: '2024-10-22',
-          description: 'Paycheck Deposit',
-          type: 'Deposit',
-          amount: 1200.00,
-          balance: 2149.75,
-          status: 'Completed'
-        },
-        {
-          id: 3,
-          date: '2024-10-23',
-          description: 'Coffee Shop',
-          type: 'Direct Payment',
-          amount: -5.75,
-          balance: 2144.00,
-          status: 'Completed'
-        },
-        {
-          id: 4,
-          date: '2024-10-25',
-          description: 'Rent Payment',
-          type: 'Direct Payment',
-          amount: -800.00,
-          balance: 1344.00,
-          status: 'Completed'
-        },
-        {
-          id: 5,
-          date: '2024-10-26',
-          description: 'Gym Membership',
-          type: 'Direct Payment',
-          amount: -60.00,
-          balance: 1284.00,
-          status: 'Completed'
-        },
-      ];
-    
-    return (
-        <div className="grid grid-cols-2 gap-4 w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg">
-            {/* List Section */}
-            <div>
-                <TransactionList transactions={fakeTransactions}/>
-            </div>
-            {/* Chart Section */}
-            <div>
-                <Charts transactions={fakeTransactions}/>
-            </div>
-            {/* Form Section */}
-            <div className="col-span-2">
-                <TransactionAdd />
-            </div>
-        </div>
-    );
+function ChartList({ groupUUIDs }) {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch data from API in a central location
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setLoading(true);
+        // Replace this URL with your actual API endpoint
+        const response = await axios.get(`/api/transactions/c72d0191-c970-4c55-b943-178d564300d7/`);
+        setTransactions(response.data);
+      } catch (error) {
+        setError('Error fetching transactions');
+        console.error('Error fetching transactions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (groupUUIDs) {
+      fetchTransactions();
+    }
+  }, [groupUUIDs]);
+
+  return (
+    <div className="grid grid-cols-2 gap-4 w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg">
+      {/* List Section */}
+      <div>
+        {loading ? (
+          <div>Loading transactions...</div>
+        ) : error ? (
+          <div className="text-red-500">{error}</div>
+        ) : (
+          <TransactionList transactions={transactions} />
+        )}
+      </div>
+      
+      {/* Chart Section */}
+      <div>
+        <Charts transactions={transactions} />
+      </div>
+      
+      {/* Form Section */}
+      <div className="col-span-2">
+        <TransactionAdd />
+      </div>
+    </div>
+  );
 }
 
 export default ChartList;
