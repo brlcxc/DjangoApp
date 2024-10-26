@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import TransactionList from "./pages/TransactionList";
 import Charts from "./pages/Charts";
-// import ChartList from "./pages/ChartList";
+import TransactionAdd from "./pages/TransactionAdd";
 
 // ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -35,7 +35,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route path="/chartList" element={<ChartList/>}/> */}
+        <Route path="/add" element={<TransactionAdd/>}/>
         <Route path="/list" element={<TransactionList/>}/>
         <Route path="/charts" element={<Charts/>}/>
         <Route path="/login" element={<Login/>}/>

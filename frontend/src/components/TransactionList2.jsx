@@ -16,7 +16,6 @@ const TransactionRow = ({ transaction }) => (
 
 const TransactionList = () => {
   const [transactions, setTransactions] = useState([]);
-
   const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
   const [filterType, setFilterType] = useState('All');
   const [sortOption, setSortOption] = useState('date');
