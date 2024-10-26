@@ -59,7 +59,7 @@ function ChartList() {
             </div>
             {/* Chart Section */}
             <div>
-                <Charts />
+                <Charts transactions={fakeTransactions}/>
             </div>
             {/* Form Section */}
             <div className="col-span-2">
