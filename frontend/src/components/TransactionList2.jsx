@@ -1,33 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 ChartJS.register(...registerables);
-
-// Predefined color palette for the first 5 categories (including the 2 predefined categories :) 
-const palette = ['#F1E3F3', '#C2BBF0', '#F699BB', '#62BFED', '#3590F3'];
-
-// generate random colors for the rest after 5
-const generateRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
-// Utility function to map categories to colors from the palette
-const mapCategoryColors = (categories) => {
-  const categoryColors = {};
-  categories.forEach((category, index) => {
-    // Use palette for the first 5 categories, random colors for the rest (keep it on theme!!!!)
-    categoryColors[category] = index < palette.length 
-      ? palette[index] 
-      : generateRandomColor();
-  });
-  return categoryColors;
-};
-
 
 const TransactionRow = ({ transaction }) => (
   <div className="grid grid-cols-5 py-3 border-b hover:bg-gray-100 transition text-black">
@@ -43,60 +16,16 @@ const TransactionRow = ({ transaction }) => (
 
 const TransactionList = () => {
   const [transactions, setTransactions] = useState([]);
-  const [newTransaction, setNewTransaction] = useState({
-    date: '',
-    description: '',
-    type: '',
-    amount: '',
-    status: 'Pending',
-  });
 
   const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
-  const [customCategory, setCustomCategory] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [sortOption, setSortOption] = useState('date');
-  const [isCustomSelected, setIsCustomSelected] = useState(false);
-  const [chartType, setChartType] = useState('bar');
-
-  const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
 
   const currentBalance = transactions.reduce(
     (acc, transaction) =>
       acc + (transaction.status !== 'Failed' ? transaction.amount : 0),
     0
   );
-
-  const addTransaction = (e) => {
-    e.preventDefault();
-    const transactionAmount = parseFloat(newTransaction.amount);
-    let updatedBalance = currentBalance;
-
-    if (newTransaction.status !== 'Failed') {
-      updatedBalance += transactionAmount;
-    }
-
-    const category = isCustomSelected ? customCategory : newTransaction.type;
-
-    const updatedTransactions = [
-      ...transactions,
-      {
-        ...newTransaction,
-        type: category,
-        amount: transactionAmount,
-        balance: updatedBalance,
-      },
-    ];
-
-    setTransactions(updatedTransactions);
-    setNewTransaction({ date: '', description: '', type: '', amount: '', status: 'Pending' });
-
-    if (isCustomSelected && customCategory && !categories.includes(customCategory)) {
-      setCategories((prevCategories) => [...prevCategories, customCategory]);
-    }
-
-    setCustomCategory('');
-    setIsCustomSelected(false);
-  };
 
   const filteredTransactions = transactions
     .filter((transaction) => filterType === 'All' || transaction.type === filterType)
@@ -113,34 +42,6 @@ const TransactionList = () => {
   return totalAmount;
 });
 
-const chartData = {
-  labels: activeCategories,
-  datasets: [
-    {
-      data: categoryData,
-      backgroundColor: activeCategories.map(
-        (category) => categoryColors[category]
-      ),
-      borderWidth: 1,
-    },
-  ],
-};
-
-const chartOptions = {
-  plugins: {
-    legend: {
-      display: chartType === 'pie' || chartType === 'doughnut',
-    },
-  },
-  scales:
-    chartType === 'bar' || chartType === 'line'
-      ? {
-          y: {
-            beginAtZero: true,
-          },
-        }
-      : {},
-};
 return (
   <div>
     <div>
