@@ -1,140 +1,111 @@
-import React, { useState } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, registerables } from 'chart.js';
+ChartJS.register(...registerables);
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+// Predefined color palette for the first 5 categories (including the 2 predefined categories :) 
+const palette = ['#F1E3F3', '#C2BBF0', '#F699BB', '#62BFED', '#3590F3'];
 
-// const TransactionRow = ({ transaction }) => {
-//   return (
-//     <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
-//       <div>{transaction.date}</div>
-//       <div>{transaction.description}</div>
-//       <div>{transaction.type}</div>
-//       <div className={transaction.amount > 0 ? "text-green-500" : "text-red-500"}>
-//         {transaction.amount > 0 ? `+${transaction.amount.toFixed(2)}` : transaction.amount.toFixed(2)}
-//       </div>
-//       <div>{transaction.status}</div>
-//       <div>{transaction.balance.toFixed(2)}</div>
-//     </div>
-//   );
-// };
+// generate random colors for the rest after 5
+const generateRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+// Utility function to map categories to colors from the palette
+const mapCategoryColors = (categories) => {
+  const categoryColors = {};
+  categories.forEach((category, index) => {
+    // Use palette for the first 5 categories, random colors for the rest (keep it on theme!!!!)
+    categoryColors[category] = index < palette.length 
+      ? palette[index] 
+      : generateRandomColor();
+  });
+  return categoryColors;
+};
 
 const Charts = () => {
   const [transactions, setTransactions] = useState([]);
-  const [newTransaction, setNewTransaction] = useState({
-    date: '',
-    description: '',
-    type: 'Direct Payment',
-    amount: '',
-    status: 'Pending',
-  });
-  const [filterType, setFilterType] = useState('All');
-  const [sortOption, setSortOption] = useState('date');
+  const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
+  const [chartType, setChartType] = useState('bar');
 
-  const currentBalance = transactions.reduce((acc, transaction) => acc + (transaction.status !== 'Failed' ? transaction.amount : 0), 0);
+  const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
+  const activeCategories = categories.filter((category) =>
+    transactions.some((t) => t.type === category)
+  );
 
-  const addTransaction = (e) => {
-    e.preventDefault();
-    
-    const transactionAmount = parseFloat(newTransaction.amount);
-    let updatedBalance = currentBalance;
+  const categoryData = activeCategories.map((category) => {
+    const totalAmount = transactions
+    .filter((t) => t.type === category)
+    .reduce((sum, t) => sum + t.amount, 0);
+  return totalAmount;
+});
 
-    // Only update the balance if the status is NOT "Failed"
-    if (newTransaction.status !== 'Failed') {
-      updatedBalance += transactionAmount;
-    }
-
-    const updatedTransactions = [
-      ...transactions,
-      {
-        ...newTransaction,
-        amount: transactionAmount,
-        balance: updatedBalance,
-      },
-    ];
-
-    setTransactions(updatedTransactions);
-    setNewTransaction({ date: '', description: '', type: 'Direct Payment', amount: '', status: 'Pending' });
-  };
-
-  const transactionTypeCounts = transactions.reduce(
-    (acc, transaction) => {
-      if (transaction.type === 'Direct Payment') {
-        acc.directPayment += Math.abs(transaction.amount);
-      } else if (transaction.type === 'Deposit') {
-        acc.deposit += Math.abs(transaction.amount);
-      }
-      return acc;
+const chartData = {
+  labels: activeCategories,
+  datasets: [
+    {
+      data: categoryData,
+      backgroundColor: activeCategories.map(
+        (category) => categoryColors[category]
+      ),
+      borderWidth: 1,
     },
-    { directPayment: 0, deposit: 0 }
-  );
+  ],
+};
 
-  const data = {
-    labels: ['Direct Payment', 'Deposit'],
-    datasets: [
-      {
-        label: 'Transactions',
-        data: [transactionTypeCounts.directPayment, transactionTypeCounts.deposit],
-        backgroundColor: ['#ff6384', '#36a2eb'],
-        hoverBackgroundColor: ['#ff6384', '#36a2eb'],
-      },
-    ],
-  };
+const chartOptions = {
+  plugins: {
+    legend: {
+      display: chartType === 'pie' || chartType === 'doughnut',
+    },
+  },
+  scales:
+    chartType === 'bar' || chartType === 'line'
+      ? {
+          y: {
+            beginAtZero: true,
+          },
+        }
+      : {},
+};
 
-  const onPieClick = (elems) => {
-    if (elems && elems.length > 0) {
-      const clickedIndex = elems[0].index;
-      const clickedLabel = data.labels[clickedIndex];
-      setFilterType(clickedLabel);
-    }
-  };
+const renderChart = () => {
+  switch (chartType) {
+    case 'bar':
+      return <Bar data={chartData} options={chartOptions} />;
+    case 'pie':
+      return <Pie data={chartData} options={chartOptions} />;
+    case 'line':
+      return <Line data={chartData} options={chartOptions} />;
+    case 'doughnut':
+      return <Doughnut data={chartData} options={chartOptions} />;
+    default:
+      return <Bar data={chartData} options={chartOptions} />;
+  }
+};
 
-  const filteredTransactions = transactions
-    .filter(transaction => filterType === 'All' || transaction.type === filterType)
-    .sort((a, b) => {
-      if (sortOption === 'date') {
-        return new Date(a.date) - new Date(b.date);
-      } else if (sortOption === 'amount') {
-        return b.amount - a.amount;
-      } else if (sortOption === 'status') {
-        return a.status.localeCompare(b.status);
-      }
-      return 0;
-    });
-
-  return (
-    <div className="w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg grid grid-cols-2 gap-4">
-      {/* Left Column - Transaction Table */}
-      <div>
-        {/* Display transactions or empty state */}
-        {filteredTransactions.length > 0 ? (
-          filteredTransactions.map((transaction, index) => (
-            <TransactionRow key={index} transaction={transaction} />
-          ))
-        ) : (
-          <div className="text-center py-10 text-gray-500"></div>
-        )}
-
-        {/* Add Transaction Form */}
-        <form className="mt-8" onSubmit={addTransaction}>
-          <div className="grid grid-cols-4 gap-4">
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mt-4">
-          </div>
-        </form>
-      </div>
-
-      {/* Right Column - Pie Chart */}
-      <div className="flex flex-col items-center">
-        <h2 className="text-xl font-bold mb-5">Transaction Overview</h2>
-        <Pie
-          data={data}
-          onClick={(evt, elems) => onPieClick(elems)}
-        />
-      </div>
+return (
+    <div>
+          {/* Chart Section */}
+      <label className="mr-2">Select Chart Type:</label>
+      <select
+        value={chartType}
+        onChange={(e) => setChartType(e.target.value)}
+        className="border rounded p-2 bg-white text-black"
+      >
+        <option value="bar">Bar Chart</option>
+        <option value="pie">Pie Chart</option>
+        <option value="line">Line Chart</option>
+        <option value="doughnut">Doughnut Chart</option>
+      </select>
+      <div className="mt-4">{renderChart()}</div>
     </div>
-  );
+);
 };
 
 export default Charts;
