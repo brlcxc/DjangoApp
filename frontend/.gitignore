@@ -8,3 +8,5 @@ dist-ssr
 *.local
 
 .env
+
+package-lock.json
