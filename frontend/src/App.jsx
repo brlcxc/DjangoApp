@@ -28,11 +28,6 @@ function App() {
               <Dashboard/>
             </ProtectedRoute>
           }/>
-        <Route path="/charts" element={
-          <ProtectedRoute>
-            <ChartList/>
-            </ProtectedRoute>
-          }/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/logout" element={<Logout/>}/>
         <Route path="/register" element={<RegisterAndLogout/>}/>

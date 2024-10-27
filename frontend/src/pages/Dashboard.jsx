@@ -1,39 +1,40 @@
-import { useEffect, useState } from "react";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
 import NavBar from "../components/NavBar";
-import { FaHouse } from "react-icons/fa6";
+import Welcome from "../components/Welcome";
+import ChartList from "./ChartList";
+import Settings from "../components/Settings";
+import UserProfile from "../components/UserProfile";
+import Groups from "../components/Groups";
+import { useState } from "react";
 
 function Dashboard() {
-    const [userName, setUserName] = useState("");
+  const [activePage, setActivePage] = useState("Welcome");
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-          try {
-            const token = localStorage.getItem(ACCESS_TOKEN);
-    
-            const response = await api.get('api/users/me/', {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-    
-            setUserName(response.data.display_name);
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-          }
-        };
-        fetchUserData();
-      }, []);
+  const renderPage = () => {
+    switch(activePage) {
+        case "Welcome":
+            return <Welcome />;
+        case "Budget":
+            return <ChartList/>;
+        case "Groups":
+            return <Groups/>;
+        case "User":
+            return <UserProfile/>;
+        case "Settings":
+            return <Settings/>;
+        default:
+            return <Welcome/>;
+    }
+  };
 
-    return(
-        <div className="flex h-screen">
-            <NavBar/>
-            <div className="flex-1 overflow-y-auto">
-              <h1>Welcome, {userName}!</h1>
-            </div>
-        </div>
-    )
+
+  return(
+      <div className="flex h-screen">
+          <NavBar setActivePage={setActivePage}/>
+          <div className="flex-1 overflow-y-auto">
+            {renderPage()}
+          </div>
+      </div>
+  )
 }
 
 export default Dashboard;
