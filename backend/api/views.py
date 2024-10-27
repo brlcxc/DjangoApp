@@ -122,18 +122,20 @@ class TransactionList(generics.ListAPIView):
         user = self.request.user
 
         # Extract group UUIDs from the URL route
-        group_uuid_list = self.kwargs.get('group_uuid_list')
+        group_uuid_list = self.kwargs.get('group_uuid_list', '')
 
         # Convert the group_uuid_list string into a list of UUIDs
         group_uuids = group_uuid_list.split(',')
 
+        # TODO check syntax
         # Query for groups where the user is either the owner or a member
         user_groups = Group.objects.filter(
-            (Q(members=user) | Q(group_owner_id=user)) & Q(id__in=group_uuids)
+            (Q(members=user) | Q(group_owner_id=user)) & Q(group_id__in=group_uuids)
         )
 
-        # Return transactions that belong to the filtered groups
-        return Transaction.objects.filter(group_id__in=user_groups)
+        # TODO check syntax
+        # Return transactions that belong to the filtered groups by extracting IDs
+        return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True))
 
 class TransactionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer
