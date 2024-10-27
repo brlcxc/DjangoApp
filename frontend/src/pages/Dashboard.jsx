@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
+import NavBar from "../components/NavBar";
+import { FaHouse } from "react-icons/fa6";
 
 function Dashboard() {
     const [userName, setUserName] = useState("");
@@ -25,8 +27,11 @@ function Dashboard() {
       }, []);
 
     return(
-        <div>
-            <h1>Welcome, {userName}!</h1>
+        <div className="flex h-screen">
+            <NavBar/>
+            <div className="flex-1 overflow-y-auto">
+              <h1>Welcome, {userName}!</h1>
+            </div>
         </div>
     )
 }
