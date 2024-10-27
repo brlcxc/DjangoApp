@@ -3,44 +3,46 @@ import axios from 'axios'; // Import axios for API requests
 import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
+import api from "../api";
 
 function ChartList({ groupUUIDs }) {
   const [transactions, setTransactions] = useState([]);
+  // TODO
   const [loading, setLoading] = useState(true);
+  // TODO
   const [error, setError] = useState(null);
+  
 
-  // Fetch data from API in a central location
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        // Replace this URL with your actual API endpoint
-        const response = await axios.get(`/api/transactions/c72d0191-c970-4c55-b943-178d564300d7/`);
-        setTransactions(response.data);
-      } catch (error) {
-        setError('Error fetching transactions');
-        console.error('Error fetching transactions:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const api = axios.create({
+    baseURL: "http://127.0.0.1:8000/"
+});
 
-    if (groupUUIDs) {
-      fetchTransactions();
+useEffect(() => {
+  const fetchTransactions = async () => {
+    try {
+      const response = await api.get('/api/transactions/c72d0191-c970-4c55-b943-178d564300d7/');
+      console.log('API Response:', response.data);
+      setTransactions(response.data); // Update state with fetched transactions
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
-  }, [groupUUIDs]);
+  };
+
+  fetchTransactions();
+}, []);
 
   return (
     <div className="grid grid-cols-2 gap-4 w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg">
       {/* List Section */}
       <div>
-        {loading ? (
+        {/* {loading ? (
           <div>Loading transactions...</div>
         ) : error ? (
           <div className="text-red-500">{error}</div>
         ) : (
           <TransactionList transactions={transactions} />
-        )}
+        )} */}
+         <TransactionList transactions={transactions} />
       </div>
       
       {/* Chart Section */}

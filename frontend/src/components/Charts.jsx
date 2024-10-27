@@ -28,25 +28,31 @@ const mapCategoryColors = (categories) => {
   return categoryColors;
 };
 
-const Charts = ({ transactions = [] }) => {
+const Charts = ({ transactions }) => {
+  // Check if transactions is an array, if not, default to an empty array
+  const validTransactions = Array.isArray(transactions) ? transactions : [];
+
+  // Debugging step: Check the type and content of transactions
+  console.log('Transactions:', validTransactions);
+
   const [chartType, setChartType] = useState('bar');
 
   // Extract unique categories from transaction data or provide defaults if none exist
   const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(transactions.map((t) => t.category || 'Uncategorized'))];
+    const uniqueCategories = [...new Set(validTransactions.map((t) => t.category || 'Uncategorized'))];
     return uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit'];
-  }, [transactions]);
+  }, [validTransactions]);
 
   // Map categories to colors
   const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
 
   // Extract active categories and calculate total amounts for each
   const activeCategories = categories.filter((category) =>
-    transactions.some((t) => t.category === category)
+    validTransactions.some((t) => t.category === category)
   );
 
   const categoryData = activeCategories.map((category) => {
-    const totalAmount = transactions
+    const totalAmount = validTransactions
       .filter((t) => t.category === category)
       .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0); // Fallback to 0 if amount is invalid
     return totalAmount;
