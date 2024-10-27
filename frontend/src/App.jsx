@@ -15,7 +15,7 @@ function Logout(){
 
 function RegisterAndLogout(){
   localStorage.clear();
-  return <Register />;
+  return <Register/>;
 }
 
 function App() {
@@ -23,15 +23,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
+        <Route path="/" element={
             <ProtectedRoute>
               <Dashboard/>
             </ProtectedRoute>
-          }
-        />
-        <Route path="/chartList" element={<ChartList/>}/>
+          }/>
+        <Route path="/chartlist" element={
+          <ProtectedRoute>
+            <ChartList/>
+            </ProtectedRoute>
+          }/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/logout" element={<Logout/>}/>
         <Route path="/register" element={<RegisterAndLogout/>}/>
