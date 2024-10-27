@@ -5,12 +5,16 @@
 @tailwind utilities;
 
 
-input:invalid:not(:placeholder-shown) {
+/* input:invalid:not(:placeholder-shown) {
   @apply border-red-500;
 }
 
 input:valid {
   @apply border-blue-500;
+} */
+
+input:invalid {
+  border-color: inherit; /* Inherit the border color from the parent styles */
 }
 
 @layer utilities {

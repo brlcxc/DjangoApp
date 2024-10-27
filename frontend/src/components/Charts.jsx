@@ -1,12 +1,30 @@
 import React, { useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
+import 'tailwindcss/tailwind.css'; // Make sure Tailwind CSS is properly imported :)
 ChartJS.register(...registerables);
 
-// Predefined color palette for the first 5 categories
-const palette = ['#F1E3F3', '#C2BBF0', '#F699BB', '#62BFED', '#3590F3'];
+// Define color names as available in Tailwind CSS
+const colorNames = [
+  'pale-purple',
+  'periwinkle',
+  'amaranth-pink',
+  'deep-sky-blue',
+  'dodger-blue',
+];
 
-// Generate random colors for categories beyond the first 5
+// Utility function to map categories to Tailwind CSS color classes
+const mapCategoryColors = (categories) => {
+  const categoryColors = {};
+  categories.forEach((category, index) => {
+    // Use Tailwind CSS color names if within range, else fallback to random colors
+    categoryColors[category] =
+      index < colorNames.length ? colorNames[index] : generateRandomColor();
+  });
+  return categoryColors;
+};
+
+// Generate a random color for extra categories
 const generateRandomColor = () => {
   const letters = '0123456789ABCDEF';
   let color = '#';
@@ -16,37 +34,23 @@ const generateRandomColor = () => {
   return color;
 };
 
-// Utility function to map categories to colors from the palette
-const mapCategoryColors = (categories) => {
-  const categoryColors = {};
-  categories.forEach((category, index) => {
-    // Use palette for the first 5 categories, random colors for the rest
-    categoryColors[category] = index < palette.length 
-      ? palette[index] 
-      : generateRandomColor();
-  });
-  return categoryColors;
-};
-
 const Charts = ({ transactions }) => {
-  // Check if transactions is an array, if not, default to an empty array
   const validTransactions = Array.isArray(transactions) ? transactions : [];
-
-  // Debugging step: Check the type and content of transactions
-  console.log('Transactions:', validTransactions);
-
   const [chartType, setChartType] = useState('bar');
 
-  // Extract unique categories from transaction data or provide defaults if none exist
   const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(validTransactions.map((t) => t.category || 'Uncategorized'))];
-    return uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit'];
+    const uniqueCategories = [
+      ...new Set(validTransactions.map((t) => t.category || 'Uncategorized')),
+    ];
+    return uniqueCategories.length > 0
+      ? uniqueCategories
+      : ['Direct Payment', 'Deposit'];
   }, [validTransactions]);
 
-  // Map categories to colors
-  const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
+  const categoryColors = useMemo(() => mapCategoryColors(categories), [
+    categories,
+  ]);
 
-  // Extract active categories and calculate total amounts for each
   const activeCategories = categories.filter((category) =>
     validTransactions.some((t) => t.category === category)
   );
@@ -54,11 +58,11 @@ const Charts = ({ transactions }) => {
   const categoryData = activeCategories.map((category) => {
     const totalAmount = validTransactions
       .filter((t) => t.category === category)
-      .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0); // Fallback to 0 if amount is invalid
+      .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
     return totalAmount;
   });
 
-  // Prepare chart data
+  // Prepare the chart data
   const chartData = {
     labels: activeCategories,
     datasets: [
@@ -66,14 +70,14 @@ const Charts = ({ transactions }) => {
         label: 'Total Amount per Category',
         data: categoryData,
         backgroundColor: activeCategories.map(
-          (category) => categoryColors[category]
+          (category) => `var(--tw-${categoryColors[category]})` // Use Tailwind CSS colors
         ),
         borderWidth: 1,
       },
     ],
   };
 
-  // Define chart options based on chart type
+  // Chart options based on the type
   const chartOptions = {
     plugins: {
       legend: {
@@ -90,7 +94,6 @@ const Charts = ({ transactions }) => {
         : {},
   };
 
-  // Render the selected chart type
   const renderChart = () => {
     switch (chartType) {
       case 'bar':
@@ -108,7 +111,6 @@ const Charts = ({ transactions }) => {
 
   return (
     <div>
-      {/* Chart Type Selector */}
       <label className="mr-2">Select Chart Type:</label>
       <select
         value={chartType}
