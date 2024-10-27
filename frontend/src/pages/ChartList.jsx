@@ -11,11 +11,6 @@ function ChartList({ groupUUIDs }) {
   const [loading, setLoading] = useState(true);
   // TODO
   const [error, setError] = useState(null);
-  
-
-  const api = axios.create({
-    baseURL: "http://127.0.0.1:8000/"
-});
 
 useEffect(() => {
   const fetchTransactions = async () => {
