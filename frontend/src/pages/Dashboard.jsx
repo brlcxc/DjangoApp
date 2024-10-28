@@ -17,7 +17,7 @@ function Dashboard() {
         case "Budget":
             return <ChartList/>;
         case "AI":
-            return 
+            return <AI/>;
         case "Groups":
             return <Groups/>;
         case "User":
