@@ -19,7 +19,7 @@ const ToggleList = () => {
 
   return (
     <div>
-      <h2>Toggle List</h2>
+      <h1 className="text-2xl font-bold mb-5 text-black">Groups</h1>
       <ul>
         {items.map((item) => (
           <li key={item}>

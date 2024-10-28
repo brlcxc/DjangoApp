@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-  // const currentBalance = transactions.reduce(
-  //   (acc, transaction) =>
-  //     acc + (transaction.status !== 'Failed' ? transaction.amount : 0),
-  //   0
-  // );
-
-    // let updatedBalance = currentBalance;
-
-    // if (newTransaction.status !== 'Failed') {
-    //   updatedBalance += transactionAmount;
-    // }
-
-
-
-// TransactionRow to display individual transaction data
-const TransactionRow = ({ transaction }, { balance }) => (
+const TransactionRow = ({ transaction }) => (
   <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
     <div>{transaction.start_date ? new Date(transaction.start_date).toLocaleDateString() : 'N/A'}</div>
     <div>{transaction.description || 'No description'}</div>
@@ -24,81 +9,73 @@ const TransactionRow = ({ transaction }, { balance }) => (
     </div>
     <div>{transaction.category || 'Uncategorized'}</div>
     <div>{'group'}</div>
-    {/* Placeholder for current balance if it exists */}
-    {/* <div>{balance += parseFloat(transaction.amount)}</div> */}
     <div>{0}</div>
-
   </div>
 );
 
 const TransactionList = ({ transactions = [] }) => {
-  // Dynamic categories based on transactions; fallback to defaults if empty
-  const [categories, setCategories] = useState(() => {
-    if (transactions && transactions.length > 0) {
-      const uniqueCategories = [...new Set(transactions.map((t) => t.category || 'Uncategorized'))];
-      return uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit'];
-    }
-    return ['Direct Payment', 'Deposit'];
-  });
-
+  const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
   const [filterType, setFilterType] = useState('All');
   const [sortOption, setSortOption] = useState('date');
 
-  // Filter and sort transactions
+  useEffect(() => {
+    if (transactions && transactions.length > 0) {
+      const uniqueCategories = [...new Set(transactions.map((t) => t.category || 'Uncategorized'))];
+      setCategories(uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit']);
+    }
+  }, [transactions]);
+
   const filteredTransactions = transactions
     .filter((transaction) => filterType === 'All' || transaction.category === filterType)
-    .sort((a, b) => 
-      sortOption === 'date' 
-        ? new Date(a.start_date) - new Date(b.start_date) 
+    .sort((a, b) =>
+      sortOption === 'date'
+        ? new Date(a.start_date) - new Date(b.start_date)
         : parseFloat(b.amount) - parseFloat(a.amount)
     );
 
   return (
     <div>
-      <div>
-        <h1 className="text-2xl font-bold mb-5 text-black">Transaction List</h1>
+      <h1 className="text-2xl font-bold mb-5 text-black">Transaction List</h1>
 
-        {/* Filter and Sort Options */}
-        <div className="flex justify-between mb-5">
-          <div>
-            <label className="mr-2">Filter by Category:</label>
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="All">All</option>
-              {categories.map((category, index) => (
-                <option key={index} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="mr-2">Sort by:</label>
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="border rounded p-2 bg-white text-black"
-            >
-              <option value="date">Date</option>
-              <option value="amount">Amount</option>
-            </select>
-          </div>
+      <div className="flex justify-between mb-5">
+        <div>
+          <label className="mr-2">Filter by Category:</label>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="border rounded p-2 bg-white text-black"
+          >
+            <option value="All">All</option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
-
-        {/* Transaction Table Header */}
-        <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
-          <div>Date</div>
-          <div>Description</div>
-          <div>Amount</div>
-          <div>Category</div>
-          <div>Group</div>
-          <div>Current Balance</div>
+        <div>
+          <label className="mr-2">Sort by:</label>
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="border rounded p-2 bg-white text-black"
+          >
+            <option value="date">Date</option>
+            <option value="amount">Amount</option>
+          </select>
         </div>
+      </div>
 
-        {/* Render Transactions or Display No Data Message */}
+      <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
+        <div>Date</div>
+        <div>Description</div>
+        <div>Amount</div>
+        <div>Category</div>
+        <div>Group</div>
+        <div>Current Balance</div>
+      </div>
+
+      <div className="overflow-y-auto max-h-[350px]">
         {filteredTransactions && filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
             <TransactionRow key={index} transaction={transaction} />

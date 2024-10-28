@@ -81,6 +81,7 @@ const Charts = ({ transactions }) => {
 
   // Chart options based on the type
   const chartOptions = {
+    // maintainAspectRatio: false,
     plugins: {
       legend: {
         display: chartType === 'pie' || chartType === 'doughnut',
@@ -124,7 +125,7 @@ const Charts = ({ transactions }) => {
         <option value="pie">Pie Chart</option>
         <option value="line">Line Chart</option>
       </select>
-      <div className="flex items-center justify-center h-full mt-4">
+      <div className="flex items-center justify-center h-[480px] mt-4">
         {renderChart()}
       </div>
     </div>

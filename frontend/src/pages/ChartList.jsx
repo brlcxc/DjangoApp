@@ -4,6 +4,7 @@ import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
 import 'tailwindcss/tailwind.css'; // Make sure Tailwind CSS is properly imported :)
 import ToggleList from "../components/toggle";
+import Calendar from "../components/calendar";
 import api from "../api";
 
 function ChartList({ groupUUIDs }) {
@@ -12,7 +13,7 @@ function ChartList({ groupUUIDs }) {
   const [loading, setLoading] = useState(true);
   // TODO
   const [error, setError] = useState(null);
-  const style = "bg-white p-8 rounded-xl";
+  const style = "bg-white p-8 rounded-xl shadow-lg";
 
 
 useEffect(() => {
@@ -29,21 +30,27 @@ useEffect(() => {
   fetchTransactions();
 }, []);
 
-
+//maybe split in 3
   return (
-    <div className="grid grid-cols-2 gap-4 w-full p-8 bg-custom-gradient animate-gradient">
+    <div className="grid grid-cols-2 gap-8 w-full p-8 bg-custom-gradient animate-gradient">
       {/* List Section */}
-      <div className={style}>
+      <div  className={style}>
+        <ToggleList/>
+      </div>
+      <div  className={style}>
+        <Calendar/>
+      </div>
+      <div className="bg-white p-8 rounded-xl h-[600px] shadow-lg">
          <TransactionList transactions={transactions} />
       </div>
       
       {/* Chart Section */}
-      <div  className={style}>
+      <div  className="bg-white p-8 rounded-xl h-[600px] shadow-lg">
         <Charts transactions={transactions} />
       </div>
       
       {/* Form Section */}
-      <div className="col-span-2 bg-white p-8 rounded-xl">
+      <div className="col-span-2 bg-white p-8 rounded-xl  shadow-lg">
         <TransactionAdd transactions={transactions} />
       </div>
       {/* <div>
