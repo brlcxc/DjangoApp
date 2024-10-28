@@ -4,24 +4,13 @@ import { Chart as ChartJS, registerables } from 'chart.js';
 import 'tailwindcss/tailwind.css'; // Make sure Tailwind CSS is properly imported :)
 ChartJS.register(...registerables);
 
-// Define color names as available in Tailwind CSS
-const colorNames = [
-  'pale-purple',
-  'periwinkle',
-  'amaranth-pink',
-  'deep-sky-blue',
-  'dodger-blue',
-];
-
-// Utility function to map categories to Tailwind CSS color classes
-const mapCategoryColors = (categories) => {
-  const categoryColors = {};
-  categories.forEach((category, index) => {
-    // Use Tailwind CSS color names if within range, else fallback to random colors
-    categoryColors[category] =
-      index < colorNames.length ? colorNames[index] : generateRandomColor();
-  });
-  return categoryColors;
+// Tailwind color mapping
+const colorMap = {
+  'pale-purple': '#F1E3F3',
+  'periwinkle': '#C2BBF0',
+  'amaranth-pink': '#F698BB',
+  'deep-sky-blue': '#62BFED',
+  'dodger-blue': '#3590F3',
 };
 
 // Generate a random color for extra categories
@@ -32,6 +21,18 @@ const generateRandomColor = () => {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
+};
+
+// Utility function to map categories to colors (uses Tailwind colors if possible)
+const mapCategoryColors = (categories) => {
+  const categoryColors = {};
+  categories.forEach((category, index) => {
+    const colorKeys = Object.keys(colorMap);
+    // Use Tailwind color if available, otherwise generate a random color
+    categoryColors[category] =
+      index < colorKeys.length ? colorKeys[index] : generateRandomColor();
+  });
+  return categoryColors;
 };
 
 const Charts = ({ transactions }) => {
@@ -69,9 +70,10 @@ const Charts = ({ transactions }) => {
       {
         label: 'Total Amount per Category',
         data: categoryData,
-        backgroundColor: activeCategories.map(
-          (category) => `var(--tw-${categoryColors[category]})` // Use Tailwind CSS colors
-        ),
+        backgroundColor: activeCategories.map((category) => {
+          const color = categoryColors[category];
+          return colorMap[color] || color; // Use Tailwind color if available, else fallback to random
+        }),
         borderWidth: 1,
       },
     ],
