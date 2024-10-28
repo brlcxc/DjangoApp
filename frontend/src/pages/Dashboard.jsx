@@ -4,6 +4,7 @@ import ChartList from "./ChartList";
 import Settings from "../components/Settings";
 import UserProfile from "../components/UserProfile";
 import Groups from "../components/Groups";
+import AI from "../components/AI";
 import { useState } from "react";
 
 function Dashboard() {
@@ -15,6 +16,8 @@ function Dashboard() {
             return <Welcome />;
         case "Budget":
             return <ChartList/>;
+        case "AI":
+            return 
         case "Groups":
             return <Groups/>;
         case "User":
