@@ -124,7 +124,9 @@ const Charts = ({ transactions }) => {
         <option value="line">Line Chart</option>
         <option value="doughnut">Doughnut Chart</option>
       </select>
-      <div className="mt-4">{renderChart()}</div>
+      <div className="flex items-center justify-center h-full mt-4">
+        {renderChart()}
+      </div>
     </div>
   );
 };

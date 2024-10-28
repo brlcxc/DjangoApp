@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios for API requests
 import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
@@ -30,13 +29,6 @@ useEffect(() => {
     <div className="grid grid-cols-2 gap-4 w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg">
       {/* List Section */}
       <div>
-        {/* {loading ? (
-          <div>Loading transactions...</div>
-        ) : error ? (
-          <div className="text-red-500">{error}</div>
-        ) : (
-          <TransactionList transactions={transactions} />
-        )} */}
          <TransactionList transactions={transactions} />
       </div>
       
@@ -47,7 +39,7 @@ useEffect(() => {
       
       {/* Form Section */}
       <div className="col-span-2">
-        <TransactionAdd />
+        <TransactionAdd transactions={transactions} />
       </div>
     </div>
   );

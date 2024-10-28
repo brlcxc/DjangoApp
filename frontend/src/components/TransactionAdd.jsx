@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import axios from 'axios';
+import { ACCESS_TOKEN } from "../constants";
+import api from "../api";
 
-const TransactionAdd = () => {
-  const [transactions, setTransactions] = useState([]);
+const TransactionAdd = ({ groupUuid, transactions = [] }) => {
   const [newTransaction, setNewTransaction] = useState({
     date: '',
     description: '',
@@ -10,9 +12,18 @@ const TransactionAdd = () => {
     status: 'Pending',
   });
 
-  const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
   const [customCategory, setCustomCategory] = useState('');
   const [isCustomSelected, setIsCustomSelected] = useState(false);
+
+  // Use unique categories or default options
+  const categories = useMemo(() => {
+    const uniqueCategories = [
+      ...new Set(transactions.map((t) => t.category || 'Uncategorized')),
+    ];
+    return uniqueCategories.length > 0
+      ? uniqueCategories
+      : ['Direct Payment', 'Deposit'];
+  }, [transactions]);
 
   const currentBalance = transactions.reduce(
     (acc, transaction) =>
@@ -20,7 +31,7 @@ const TransactionAdd = () => {
     0
   );
 
-  const addTransaction = (e) => {
+  const addTransaction = async (e) => {
     e.preventDefault();
     const transactionAmount = parseFloat(newTransaction.amount);
     let updatedBalance = currentBalance;
@@ -31,31 +42,45 @@ const TransactionAdd = () => {
 
     const category = isCustomSelected ? customCategory : newTransaction.type;
 
-    const updatedTransactions = [
-      ...transactions,
-      {
-        ...newTransaction,
-        type: category,
-        amount: transactionAmount,
-        balance: updatedBalance,
-      },
-    ];
+    const transactionData = {
+      category,
+      amount: transactionAmount,
+      description: newTransaction.description,
+      start_date: newTransaction.date,
+      end_date: null,
+      is_recurrent: false,
+      frequency: 0,
+    };
 
-    setTransactions(updatedTransactions);
-    setNewTransaction({
-      date: '',
-      description: '',
-      type: '',
-      amount: '',
-      status: 'Pending',
-    });
+    try {
+      const response = await api.post(
+        `/api/groups/${groupUuid}/transactions/`,
+        transactionData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${ACCESS_TOKEN}`, 
+          },
+        }
+      );
 
-    if (isCustomSelected && customCategory && !categories.includes(customCategory)) {
-      setCategories((prevCategories) => [...prevCategories, customCategory]);
+      setNewTransaction({
+        date: '',
+        description: '',
+        type: '',
+        amount: '',
+        status: 'Pending',
+      });
+
+      if (isCustomSelected && customCategory && !categories.includes(customCategory)) {
+        categories.push(customCategory); // Dynamically add custom category
+      }
+
+      setCustomCategory('');
+      setIsCustomSelected(false);
+    } catch (error) {
+      console.error('Failed to add transaction:', error);
     }
-
-    setCustomCategory('');
-    setIsCustomSelected(false);
   };
 
   return (
@@ -117,7 +142,6 @@ const TransactionAdd = () => {
           </div>
         </div>
 
-        {/* Bottom Row: Button and Custom Category Input */}
         <div className="grid grid-cols-4 gap-4 mt-4 items-center">
           <button
             type="submit"
