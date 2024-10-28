@@ -4,17 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* input:invalid:not(:placeholder-shown) {
-  @apply border-red-500;
+input:invalid {
+  border-color: inherit;
 }
 
-input:valid {
-  @apply border-blue-500;
-} */
-
-input:invalid {
-  border-color: inherit; /* Inherit the border color from the parent styles */
+@layer components {
+  .nav-button{
+    @apply relative flex justify-center items-center h-20 w-20 mt-2 mb-2 
+    mx-auto shadow-lg bg-deep-sky-blue rounded-full hover:bg-white
+    transition-all duration-300 ease-linear cursor-pointer;
+  }
+  .tooltip{
+    @apply absolute w-auto p-2 m-2 min-w-max left-24 rounded-md shadow-md
+    text-white bg-dodger-blue text-lg font-bold transition-all duration-100
+    scale-0 origin-left border-white border;
+  }
 }
 
 @layer utilities {
