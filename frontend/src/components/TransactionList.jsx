@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
+  // const currentBalance = transactions.reduce(
+  //   (acc, transaction) =>
+  //     acc + (transaction.status !== 'Failed' ? transaction.amount : 0),
+  //   0
+  // );
+
+    // let updatedBalance = currentBalance;
+
+    // if (newTransaction.status !== 'Failed') {
+    //   updatedBalance += transactionAmount;
+    // }
+
+
+
 // TransactionRow to display individual transaction data
-const TransactionRow = ({ transaction }) => (
+const TransactionRow = ({ transaction }, { balance }) => (
   <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
     <div>{transaction.start_date ? new Date(transaction.start_date).toLocaleDateString() : 'N/A'}</div>
     <div>{transaction.description || 'No description'}</div>
@@ -11,7 +25,9 @@ const TransactionRow = ({ transaction }) => (
     <div>{transaction.category || 'Uncategorized'}</div>
     <div>{'group'}</div>
     {/* Placeholder for current balance if it exists */}
-    {/* <div>{transaction.current_balance !== undefined ? transaction.current_balance : 'N/A'}</div> */}
+    {/* <div>{balance += parseFloat(transaction.amount)}</div> */}
+    <div>{0}</div>
+
   </div>
 );
 

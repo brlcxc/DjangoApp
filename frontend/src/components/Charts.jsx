@@ -37,7 +37,7 @@ const mapCategoryColors = (categories) => {
 
 const Charts = ({ transactions }) => {
   const validTransactions = Array.isArray(transactions) ? transactions : [];
-  const [chartType, setChartType] = useState('bar');
+  const [chartType, setChartType] = useState('doughnut');
 
   const categories = useMemo(() => {
     const uniqueCategories = [
@@ -119,10 +119,10 @@ const Charts = ({ transactions }) => {
         onChange={(e) => setChartType(e.target.value)}
         className="border rounded p-2 bg-white text-black"
       >
+        <option value="doughnut">Doughnut Chart</option>
         <option value="bar">Bar Chart</option>
         <option value="pie">Pie Chart</option>
         <option value="line">Line Chart</option>
-        <option value="doughnut">Doughnut Chart</option>
       </select>
       <div className="flex items-center justify-center h-full mt-4">
         {renderChart()}

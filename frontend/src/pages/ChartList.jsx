@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
+import 'tailwindcss/tailwind.css'; // Make sure Tailwind CSS is properly imported :)
+import ToggleList from "../components/toggle";
 import api from "../api";
 
 function ChartList({ groupUUIDs }) {
@@ -10,6 +12,8 @@ function ChartList({ groupUUIDs }) {
   const [loading, setLoading] = useState(true);
   // TODO
   const [error, setError] = useState(null);
+  const style = "bg-white p-8 rounded-xl";
+
 
 useEffect(() => {
   const fetchTransactions = async () => {
@@ -25,22 +29,26 @@ useEffect(() => {
   fetchTransactions();
 }, []);
 
+
   return (
-    <div className="grid grid-cols-2 gap-4 w-full max-w-6xl mx-auto mt-10 p-5 bg-white shadow-lg rounded-lg">
+    <div className="grid grid-cols-2 gap-4 w-full p-8 bg-custom-gradient animate-gradient">
       {/* List Section */}
-      <div>
+      <div className={style}>
          <TransactionList transactions={transactions} />
       </div>
       
       {/* Chart Section */}
-      <div>
+      <div  className={style}>
         <Charts transactions={transactions} />
       </div>
       
       {/* Form Section */}
-      <div className="col-span-2">
+      <div className="col-span-2 bg-white p-8 rounded-xl">
         <TransactionAdd transactions={transactions} />
       </div>
+      {/* <div>
+        <ToggleList/>
+      </div> */}
     </div>
   );
 }

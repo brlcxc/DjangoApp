@@ -25,21 +25,9 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
       : ['Direct Payment', 'Deposit'];
   }, [transactions]);
 
-  const currentBalance = transactions.reduce(
-    (acc, transaction) =>
-      acc + (transaction.status !== 'Failed' ? transaction.amount : 0),
-    0
-  );
-
   const addTransaction = async (e) => {
     e.preventDefault();
     const transactionAmount = parseFloat(newTransaction.amount);
-    let updatedBalance = currentBalance;
-
-    if (newTransaction.status !== 'Failed') {
-      updatedBalance += transactionAmount;
-    }
-
     const category = isCustomSelected ? customCategory : newTransaction.type;
 
     const transactionData = {
