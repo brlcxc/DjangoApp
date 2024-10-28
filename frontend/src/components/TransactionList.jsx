@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 // TransactionRow to display individual transaction data
 const TransactionRow = ({ transaction }) => (
-  <div className="grid grid-cols-5 py-3 border-b hover:bg-gray-100 transition text-black">
+  <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
     <div>{transaction.start_date ? new Date(transaction.start_date).toLocaleDateString() : 'N/A'}</div>
     <div>{transaction.description || 'No description'}</div>
     <div>{transaction.category || 'Uncategorized'}</div>
     <div className={parseFloat(transaction.amount) > 0 ? 'text-green-500' : 'text-red-500'}>
       {transaction.amount ? (parseFloat(transaction.amount) > 0 ? `+${parseFloat(transaction.amount).toFixed(2)}` : parseFloat(transaction.amount).toFixed(2)) : '0.00'}
     </div>
+    <div>{'group'}</div>
     {/* Placeholder for current balance if it exists */}
     {/* <div>{transaction.current_balance !== undefined ? transaction.current_balance : 'N/A'}</div> */}
   </div>
@@ -72,11 +73,12 @@ const TransactionList = ({ transactions = [] }) => {
         </div>
 
         {/* Transaction Table Header */}
-        <div className="grid grid-cols-5 py-2 border-b font-semibold text-left bg-blue-500 text-white">
+        <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
           <div>Date</div>
           <div>Description</div>
           <div>Category</div>
           <div>Amount</div>
+          <div>Group</div>
           <div>Current Balance</div>
         </div>
 
