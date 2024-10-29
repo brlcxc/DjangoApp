@@ -5,6 +5,7 @@ import Settings from "../pages/Settings";
 import UserProfile from "../pages/UserProfile";
 import Groups from "../pages/Groups";
 import AI from "../pages/AI";
+import Calendar from "../pages/Calendar";
 import { useState } from "react";
 
 function Dashboard() {
@@ -16,6 +17,8 @@ function Dashboard() {
             return <Welcome />;
         case "Budget":
             return <Budget/>;
+        case "Calendar":
+            return <Calendar/>;
         case "AI":
             return <AI/>;
         case "Groups":
