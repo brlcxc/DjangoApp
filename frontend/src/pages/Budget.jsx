@@ -6,8 +6,10 @@ import "tailwindcss/tailwind.css"; // Make sure Tailwind CSS is properly importe
 import GroupList from "../components/toggle";
 import { TransactionProvider } from "../TransactionContext";
 import { GroupProvider } from "../GroupContext";
+import { SelectedGroupProvider, useSelectedGroup } from '../SelectedGroupContext';
 
-function Budget({ groupUUIDs }) {
+
+function Budget() {
   const style = "bg-white p-8 mb-8 rounded-xl shadow-lg mb-8 ";
 
   return (
