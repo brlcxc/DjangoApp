@@ -9,7 +9,7 @@ const TransactionRow = ({ transaction }) => (
       {transaction.amount ? (parseFloat(transaction.amount) > 0 ? `+${parseFloat(transaction.amount).toFixed(2)}` : parseFloat(transaction.amount).toFixed(2)) : '0.00'}
     </div>
     <div>{transaction.category || 'Uncategorized'}</div>
-    <div>{'group'}</div>
+    <div>{transaction.group_name}</div>
     <div>{0}</div>
   </div>
 );

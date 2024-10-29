@@ -136,7 +136,7 @@ class TransactionList(generics.ListAPIView):
         # Return transactions that belong to the filtered groups by extracting IDs
         # when __in is used with group_id in this case it checks if each transaction's group_id is part of the user_groups filter
         # flat=true flattens the result so that instead of getting a list of tuples, you get a simple list of values when requesting a single field
-        return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True))
+        return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True)).select_related('group_id')
 
 class TransactionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer
