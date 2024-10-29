@@ -1,10 +1,10 @@
 import NavBar from "../components/NavBar";
-import Welcome from "../components/Welcome";
-import Budget from "./Budget";
-import Settings from "../components/Settings";
-import UserProfile from "../components/UserProfile";
-import Groups from "../components/Groups";
-import AI from "../components/AI";
+import Welcome from "../pages/Welcome";
+import Budget from "../pages/Budget";
+import Settings from "../pages/Settings";
+import UserProfile from "../pages/UserProfile";
+import Groups from "../pages/Groups";
+import AI from "../pages/AI";
 import { useState } from "react";
 
 function Dashboard() {

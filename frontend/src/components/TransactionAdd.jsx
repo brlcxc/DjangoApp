@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useContext } from 'react';
-import { TransactionContext } from '../TransactionContext'; // Adjust the path as necessary
+import { TransactionContext } from '../context/TransactionContext';
 
 const TransactionAdd = ({ groupUuid }) => {
     const { addTransaction, transactions } = useContext(TransactionContext);

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
-import "tailwindcss/tailwind.css"; // Make sure Tailwind CSS is properly imported :)
-import ToggleList from "../components/toggle";
-import { TransactionProvider } from '../TransactionContext'; // Adjust the path as needed
+import ToggleList from "../components/Toggle";
+import { TransactionProvider } from "../context/TransactionContext";
 
 function Budget({ groupUUIDs }) {
   const style = "bg-white p-8 mb-8 rounded-xl shadow-lg mb-8 ";
