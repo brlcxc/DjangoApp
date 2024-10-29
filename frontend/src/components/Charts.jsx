@@ -1,27 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import 'tailwindcss/tailwind.css'; // Make sure Tailwind CSS is properly imported :)
+import 'tailwindcss/tailwind.css';
+import { TransactionContext } from '../TransactionContext';
 ChartJS.register(...registerables);
 
-// Define color names as available in Tailwind CSS
-const colorNames = [
-  'pale-purple',
-  'periwinkle',
-  'amaranth-pink',
-  'deep-sky-blue',
-  'dodger-blue',
-];
-
-// Utility function to map categories to Tailwind CSS color classes
-const mapCategoryColors = (categories) => {
-  const categoryColors = {};
-  categories.forEach((category, index) => {
-    // Use Tailwind CSS color names if within range, else fallback to random colors
-    categoryColors[category] =
-      index < colorNames.length ? colorNames[index] : generateRandomColor();
-  });
-  return categoryColors;
+// Tailwind color mapping
+const colorMap = {
+  'pale-purple': '#F1E3F3',
+  'periwinkle': '#C2BBF0',
+  'amaranth-pink': '#F698BB',
+  'deep-sky-blue': '#62BFED',
+  'dodger-blue': '#3590F3',
 };
 
 // Generate a random color for extra categories
@@ -34,9 +24,20 @@ const generateRandomColor = () => {
   return color;
 };
 
-const Charts = ({ transactions }) => {
+// Utility function to map categories to colors
+const mapCategoryColors = (categories) => {
+  const categoryColors = {};
+  categories.forEach((category, index) => {
+    const colorKeys = Object.keys(colorMap);
+    categoryColors[category] =
+      index < colorKeys.length ? colorKeys[index] : generateRandomColor();
+  });
+  return categoryColors;
+};
+const Charts = () => {
+  const { transactions, loading, error } = useContext(TransactionContext);
   const validTransactions = Array.isArray(transactions) ? transactions : [];
-  const [chartType, setChartType] = useState('bar');
+  const [chartType, setChartType] = useState('doughnut');
 
   const categories = useMemo(() => {
     const uniqueCategories = [
@@ -47,9 +48,7 @@ const Charts = ({ transactions }) => {
       : ['Direct Payment', 'Deposit'];
   }, [validTransactions]);
 
-  const categoryColors = useMemo(() => mapCategoryColors(categories), [
-    categories,
-  ]);
+  const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
 
   const activeCategories = categories.filter((category) =>
     validTransactions.some((t) => t.category === category)
@@ -62,22 +61,25 @@ const Charts = ({ transactions }) => {
     return totalAmount;
   });
 
-  // Prepare the chart data
+  // Handle loading and error states after hooks
+  if (loading) return <div>Loading transactions...</div>;
+  if (error) return <div>Error fetching transactions: {error.message}</div>;
+
   const chartData = {
     labels: activeCategories,
     datasets: [
       {
         label: 'Total Amount per Category',
         data: categoryData,
-        backgroundColor: activeCategories.map(
-          (category) => `var(--tw-${categoryColors[category]})` // Use Tailwind CSS colors
-        ),
+        backgroundColor: activeCategories.map((category) => {
+          const color = categoryColors[category];
+          return colorMap[color] || color;
+        }),
         borderWidth: 1,
       },
     ],
   };
 
-  // Chart options based on the type
   const chartOptions = {
     plugins: {
       legend: {
@@ -117,12 +119,14 @@ const Charts = ({ transactions }) => {
         onChange={(e) => setChartType(e.target.value)}
         className="border rounded p-2 bg-white text-black"
       >
+        <option value="doughnut">Doughnut Chart</option>
         <option value="bar">Bar Chart</option>
         <option value="pie">Pie Chart</option>
         <option value="line">Line Chart</option>
-        <option value="doughnut">Doughnut Chart</option>
       </select>
-      <div className="mt-4">{renderChart()}</div>
+      <div className="flex items-center justify-center h-[480px] mt-4">
+        {renderChart()}
+      </div>
     </div>
   );
 };
