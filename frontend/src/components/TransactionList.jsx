@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { TransactionContext } from "../TransactionContext"; // Adjust the path as needed
 
 const TransactionRow = ({ transaction }) => (
-  <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
+  <div className="grid grid-cols-6 py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
     <div>
       {transaction.start_date
         ? new Date(transaction.start_date).toLocaleDateString()
@@ -91,7 +91,7 @@ const TransactionList = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
+      <div className="grid grid-cols-6 p-2 border-b font-semibold text-left bg-blue-500 text-white">
         <div>Date</div>
         <div>Description</div>
         <div>Amount</div>
