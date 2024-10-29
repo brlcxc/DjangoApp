@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { GroupContext } from "../GroupContext"; 
 
-const GroupRow = ({ group, onCheckChange }) => (
+const GroupRow = ({ group, isChecked, onCheckChange }) => (
   <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
     <input
       type="checkbox"
       className="mr-3"
+      checked={isChecked}
       onChange={(e) => onCheckChange(group.group_id, e.target.checked)}
     />
     <div>{group.group_name}</div>
@@ -15,6 +16,13 @@ const GroupRow = ({ group, onCheckChange }) => (
 const GroupList = () => {
   const { groups, loading, error } = useContext(GroupContext);
   const [selectedGroups, setSelectedGroups] = useState([]);
+
+  useEffect(() => {
+    if (groups && groups.length > 0) {
+      // Set all groups as selected when groups are loaded
+      setSelectedGroups(groups.map((group) => group.group_id));
+    }
+  }, [groups]);
 
   const handleCheckChange = (groupId, isChecked) => {
     setSelectedGroups((prevSelectedGroups) =>
@@ -37,6 +45,7 @@ const GroupList = () => {
             <GroupRow
               key={group.group_id}
               group={group}
+              isChecked={selectedGroups.includes(group.group_id)}
               onCheckChange={handleCheckChange}
             />
           ))
