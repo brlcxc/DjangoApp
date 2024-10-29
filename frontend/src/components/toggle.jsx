@@ -1,36 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from "react";
+import { GroupContext } from "../GroupContext"; 
 
-const ToggleList = () => {
-  // Sample items to display
-  const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
-  
-  // State to manage the toggled status of items
-  const [toggledItems, setToggledItems] = useState(
-    items.reduce((acc, item) => ({ ...acc, [item]: false }), {})
-  );
+const GroupRow = ({ group, onCheckChange }) => (
+  <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+    <input
+      type="checkbox"
+      className="mr-3"
+      onChange={(e) => onCheckChange(group.group_id, e.target.checked)}
+    />
+    <div>{group.group_name}</div>
+  </div>
+);
 
-  // Toggle item function
-  const toggleItem = (item) => {
-    setToggledItems((prev) => ({
-      ...prev,
-      [item]: !prev[item],
-    }));
+const GroupList = () => {
+  const { groups, loading, error } = useContext(GroupContext);
+  const [selectedGroups, setSelectedGroups] = useState([]);
+
+  const handleCheckChange = (groupId, isChecked) => {
+    setSelectedGroups((prevSelectedGroups) =>
+      isChecked
+        ? [...prevSelectedGroups, groupId]
+        : prevSelectedGroups.filter((id) => id !== groupId)
+    );
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5 text-black">Groups</h1>
-      <ul>
-        {items.map((item) => (
-          <li key={item}>
-            <span style={{ cursor: 'pointer', color: toggledItems[item] ? 'green' : 'black' }} onClick={() => toggleItem(item)}>
-              {item} {toggledItems[item] ? '✓' : '✗'}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-2xl font-bold mb-5 text-black">Group List</h1>
+
+      <div className="overflow-y-auto max-h-[350px]">
+        {groups && groups.length > 0 ? (
+          groups.map((group) => (
+            <GroupRow
+              key={group.group_id}
+              group={group}
+              onCheckChange={handleCheckChange}
+            />
+          ))
+        ) : (
+          <div className="text-center py-10 text-gray-500">No groups found</div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default ToggleList;
+export default GroupList;
