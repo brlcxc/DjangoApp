@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import "tailwindcss/tailwind.css"; // Make sure Tailwind CSS is properly imported :)
+import 'tailwindcss/tailwind.css';
 import { TransactionContext } from '../TransactionContext'; // Adjust the import path as needed
 ChartJS.register(...registerables);
 
@@ -24,12 +24,11 @@ const generateRandomColor = () => {
   return color;
 };
 
-// Utility function to map categories to colors (uses Tailwind colors if possible)
+// Utility function to map categories to colors
 const mapCategoryColors = (categories) => {
   const categoryColors = {};
   categories.forEach((category, index) => {
     const colorKeys = Object.keys(colorMap);
-    // Use Tailwind color if available, otherwise generate a random color
     categoryColors[category] =
       index < colorKeys.length ? colorKeys[index] : generateRandomColor();
   });
@@ -67,7 +66,6 @@ const Charts = () => {
     return totalAmount;
   });
 
-  // Prepare the chart data
   const chartData = {
     labels: activeCategories,
     datasets: [
@@ -83,9 +81,7 @@ const Charts = () => {
     ],
   };
 
-  // Chart options based on the type
   const chartOptions = {
-    // maintainAspectRatio: false,
     plugins: {
       legend: {
         display: chartType === 'pie' || chartType === 'doughnut',
