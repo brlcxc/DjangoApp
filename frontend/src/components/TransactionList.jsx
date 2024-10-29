@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { TransactionContext } from "../TransactionContext"; // Adjust the path as needed
+import { TransactionContext } from "../context/TransactionContext"; 
 
 const TransactionRow = ({ transaction }) => (
   <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
