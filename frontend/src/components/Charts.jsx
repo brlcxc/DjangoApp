@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import 'tailwindcss/tailwind.css'; // Make sure Tailwind CSS is properly imported :)
+import "tailwindcss/tailwind.css"; // Make sure Tailwind CSS is properly imported :)
+import { TransactionContext } from '../TransactionContext'; // Adjust the import path as needed
 ChartJS.register(...registerables);
 
 // Tailwind color mapping
@@ -35,9 +36,14 @@ const mapCategoryColors = (categories) => {
   return categoryColors;
 };
 
-const Charts = ({ transactions }) => {
+const Charts = () => {
+  const { transactions, loading, error } = useContext(TransactionContext);
   const validTransactions = Array.isArray(transactions) ? transactions : [];
   const [chartType, setChartType] = useState('doughnut');
+
+  // Handle loading and error states
+  if (loading) return <div>Loading transactions...</div>;
+  if (error) return <div>Error fetching transactions: {error.message}</div>;
 
   const categories = useMemo(() => {
     const uniqueCategories = [
@@ -48,9 +54,7 @@ const Charts = ({ transactions }) => {
       : ['Direct Payment', 'Deposit'];
   }, [validTransactions]);
 
-  const categoryColors = useMemo(() => mapCategoryColors(categories), [
-    categories,
-  ]);
+  const categoryColors = useMemo(() => mapCategoryColors(categories), [categories]);
 
   const activeCategories = categories.filter((category) =>
     validTransactions.some((t) => t.category === category)
@@ -72,7 +76,7 @@ const Charts = ({ transactions }) => {
         data: categoryData,
         backgroundColor: activeCategories.map((category) => {
           const color = categoryColors[category];
-          return colorMap[color] || color; // Use Tailwind color if available, else fallback to random
+          return colorMap[color] || color;
         }),
         borderWidth: 1,
       },
@@ -87,7 +91,7 @@ const Charts = ({ transactions }) => {
         display: chartType === 'pie' || chartType === 'doughnut',
       },
     },
-    scales:
+    scales: 
       chartType === 'bar' || chartType === 'line'
         ? {
             y: {

@@ -25,7 +25,7 @@ function ChartList({ groupUUIDs }) {
       <div>
         {/* Chart Section */}
         <div className={`${style} h-[70%]`}>
-          {/* <Charts transactions={transactions} /> */}
+          <Charts />
         </div>
         {/* Group Section */}
         <div className={`${style} h-[25%]`}>
