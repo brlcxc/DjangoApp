@@ -60,7 +60,6 @@ function ChartList({ groupUUIDs }) {
   const [loading, setLoading] = useState(true);
   // TODO
   const [error, setError] = useState(null);
-  const style = "bg-white p-8 rounded-xl shadow-lg h-[30%] ";
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -77,28 +76,28 @@ function ChartList({ groupUUIDs }) {
 
     fetchTransactions();
   }, []);
+  
+  const style = "bg-white p-8 mb-8 rounded-xl shadow-lg mb-8 ";
 
-  //maybe split in 3
   return (
     <div className="grid grid-cols-2 gap-8 size-full p-8 bg-custom-gradient animate-gradient">
-      {/* List Section */}
-      <div className="">
-        <div className="bg-white p-8 mb-8 rounded-xl h-[70%] shadow-lg mb-8">
+      <div>
+        {/* List Section */}
+        <div className={`${style} h-[70%]`}>
           <TransactionList transactions={transactions} />
         </div>
-        <div className="bg-white p-8 rounded-xl shadow-lg h-[25%] mb-8">
+        {/* Form Section */}
+        <div className={`${style} h-[25%]`}>
           <TransactionAdd transactions={transactions} />
         </div>
       </div>
-
-      {/* Chart Section */}
-
-      <div className="">
-        {/* Form Section */}
-        <div className="bg-white p-8 mb-8 rounded-xl h-[70%] shadow-lg">
+      <div>
+        {/* Chart Section */}
+        <div className={`${style} h-[70%]`}>
           <Charts transactions={transactions} />
         </div>
-        <div className="bg-white p-8 rounded-xl shadow-lg h-[25%] mb-8">
+        {/* Group Section */}
+        <div className={`${style} h-[25%]`}>
           <ToggleList />
         </div>
       </div>

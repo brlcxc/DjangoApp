@@ -73,7 +73,7 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <form className="mt-8" onSubmit={addTransaction}>
+      <form className="" onSubmit={addTransaction}>
         <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2>
         <div className="grid grid-cols-4 gap-4 items-start">
           <input
