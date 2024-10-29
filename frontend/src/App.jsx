@@ -5,8 +5,6 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
-import ChartList from "./pages/ChartList";
-
 
 function Logout(){
   localStorage.clear();

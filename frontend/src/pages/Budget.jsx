@@ -6,7 +6,7 @@ import "tailwindcss/tailwind.css"; // Make sure Tailwind CSS is properly importe
 import ToggleList from "../components/toggle";
 import { TransactionProvider } from '../TransactionContext'; // Adjust the path as needed
 
-function ChartList({ groupUUIDs }) {
+function Budget({ groupUUIDs }) {
   const style = "bg-white p-8 mb-8 rounded-xl shadow-lg mb-8 ";
 
   return (
@@ -25,7 +25,7 @@ function ChartList({ groupUUIDs }) {
       <div>
         {/* Chart Section */}
         <div className={`${style} h-[70%]`}>
-          <Charts />
+          {/* <Charts /> */}
         </div>
         {/* Group Section */}
         <div className={`${style} h-[25%]`}>
@@ -37,4 +37,4 @@ function ChartList({ groupUUIDs }) {
   );
 }
 
-export default ChartList;
+export default Budget;

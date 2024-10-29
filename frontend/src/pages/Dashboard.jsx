@@ -1,6 +1,6 @@
 import NavBar from "../components/NavBar";
 import Welcome from "../components/Welcome";
-import ChartList from "./ChartList";
+import Budget from "./Budget";
 import Settings from "../components/Settings";
 import UserProfile from "../components/UserProfile";
 import Groups from "../components/Groups";
@@ -14,7 +14,7 @@ function Dashboard() {
         case "Welcome":
             return <Welcome />;
         case "Budget":
-            return <ChartList/>;
+            return <Budget/>;
         case "Groups":
             return <Groups/>;
         case "User":
