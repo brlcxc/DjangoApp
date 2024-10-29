@@ -19,7 +19,7 @@ function ChartList({ groupUUIDs }) {
         </div>
         {/* Form Section */}
         <div className={`${style} h-[25%]`}>
-          {/* <TransactionAdd transactions={transactions} /> */}
+          <TransactionAdd/>
         </div>
       </div>
       <div>
