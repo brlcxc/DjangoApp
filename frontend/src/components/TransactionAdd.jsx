@@ -54,9 +54,9 @@ const TransactionAdd = ({ groupUuid }) => {
     };
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl">
             <form onSubmit={handleAddTransaction}>
-                <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2>
+            <h1 className="text-2xl font-bold mb-5 text-black">Add New Transaction</h1>
                 <div className="grid grid-cols-4 gap-4 items-start">
                     <input
                         type="date"

@@ -78,7 +78,7 @@ const TransactionList = () => {
         <div>Group</div>
         <div>Current Balance</div>
       </div>
-
+      {/* TODO fix sizing on both this and the chart */}
       <div className="overflow-y-auto max-h-[350px]">
         {filteredTransactions && filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
