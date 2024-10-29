@@ -25,7 +25,7 @@ function Budget({ groupUUIDs }) {
       <div>
         {/* Chart Section */}
         <div className={`${style} h-[70%]`}>
-          {/* <Charts /> */}
+          <Charts />
         </div>
         {/* Group Section */}
         <div className={`${style} h-[25%]`}>

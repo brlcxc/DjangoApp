@@ -1,14 +1,26 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { TransactionContext } from '../TransactionContext'; // Adjust the path as needed
+import React, { useState, useEffect, useContext } from "react";
+import { TransactionContext } from "../TransactionContext"; // Adjust the path as needed
 
 const TransactionRow = ({ transaction }) => (
   <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
-    <div>{transaction.start_date ? new Date(transaction.start_date).toLocaleDateString() : 'N/A'}</div>
-    <div>{transaction.description || 'No description'}</div>
-    <div className={parseFloat(transaction.amount) > 0 ? 'text-green-500' : 'text-red-500'}>
-      {transaction.amount ? (parseFloat(transaction.amount) > 0 ? `+${parseFloat(transaction.amount).toFixed(2)}` : parseFloat(transaction.amount).toFixed(2)) : '0.00'}
+    <div>
+      {transaction.start_date
+        ? new Date(transaction.start_date).toLocaleDateString()
+        : "N/A"}
     </div>
-    <div>{transaction.category || 'Uncategorized'}</div>
+    <div>{transaction.description || "No description"}</div>
+    <div
+      className={
+        parseFloat(transaction.amount) > 0 ? "text-green-500" : "text-red-500"
+      }
+    >
+      {transaction.amount
+        ? parseFloat(transaction.amount) > 0
+          ? `+${parseFloat(transaction.amount).toFixed(2)}`
+          : parseFloat(transaction.amount).toFixed(2)
+        : "0.00"}
+    </div>
+    <div>{transaction.category || "Uncategorized"}</div>
     <div>{transaction.group_name}</div>
     <div>{0}</div>
   </div>
@@ -16,14 +28,20 @@ const TransactionRow = ({ transaction }) => (
 
 const TransactionList = () => {
   const { transactions, loading, error } = useContext(TransactionContext);
-  const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
-  const [filterType, setFilterType] = useState('All');
-  const [sortOption, setSortOption] = useState('date');
+  const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
+  const [filterType, setFilterType] = useState("All");
+  const [sortOption, setSortOption] = useState("date");
 
   useEffect(() => {
     if (transactions && transactions.length > 0) {
-      const uniqueCategories = [...new Set(transactions.map((t) => t.category || 'Uncategorized'))];
-      setCategories(uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit']);
+      const uniqueCategories = [
+        ...new Set(transactions.map((t) => t.category || "Uncategorized")),
+      ];
+      setCategories(
+        uniqueCategories.length > 0
+          ? uniqueCategories
+          : ["Direct Payment", "Deposit"]
+      );
     }
   }, [transactions]);
 
@@ -31,9 +49,12 @@ const TransactionList = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   const filteredTransactions = transactions
-    .filter((transaction) => filterType === 'All' || transaction.category === filterType)
+    .filter(
+      (transaction) =>
+        filterType === "All" || transaction.category === filterType
+    )
     .sort((a, b) =>
-      sortOption === 'date'
+      sortOption === "date"
         ? new Date(a.start_date) - new Date(b.start_date)
         : parseFloat(b.amount) - parseFloat(a.amount)
     );
@@ -85,7 +106,9 @@ const TransactionList = () => {
             <TransactionRow key={index} transaction={transaction} />
           ))
         ) : (
-          <div className="text-center py-10 text-gray-500">No transactions found</div>
+          <div className="text-center py-10 text-gray-500">
+            No transactions found
+          </div>
         )}
       </div>
     </div>

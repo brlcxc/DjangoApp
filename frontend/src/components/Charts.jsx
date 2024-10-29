@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import 'tailwindcss/tailwind.css';
-import { TransactionContext } from '../TransactionContext'; // Adjust the import path as needed
+import { TransactionContext } from '../TransactionContext';
 ChartJS.register(...registerables);
 
 // Tailwind color mapping
@@ -34,15 +34,10 @@ const mapCategoryColors = (categories) => {
   });
   return categoryColors;
 };
-
 const Charts = () => {
   const { transactions, loading, error } = useContext(TransactionContext);
   const validTransactions = Array.isArray(transactions) ? transactions : [];
   const [chartType, setChartType] = useState('doughnut');
-
-  // Handle loading and error states
-  if (loading) return <div>Loading transactions...</div>;
-  if (error) return <div>Error fetching transactions: {error.message}</div>;
 
   const categories = useMemo(() => {
     const uniqueCategories = [
@@ -66,6 +61,10 @@ const Charts = () => {
     return totalAmount;
   });
 
+  // Handle loading and error states after hooks
+  if (loading) return <div>Loading transactions...</div>;
+  if (error) return <div>Error fetching transactions: {error.message}</div>;
+
   const chartData = {
     labels: activeCategories,
     datasets: [
@@ -87,7 +86,7 @@ const Charts = () => {
         display: chartType === 'pie' || chartType === 'doughnut',
       },
     },
-    scales: 
+    scales:
       chartType === 'bar' || chartType === 'line'
         ? {
             y: {
