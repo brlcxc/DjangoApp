@@ -54,4 +54,4 @@ const TransactionProvider = ({ groupUUIDs, children }) => {
     );
 };
 
-export default TransactionProvider;
+export { TransactionProvider };
