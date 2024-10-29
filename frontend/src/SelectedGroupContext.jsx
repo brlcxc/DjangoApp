@@ -9,13 +9,13 @@ export function SelectedGroupProvider({ children }) {
 
   const toggleSelectedGroup = (group) => {
     setSelectedGroups((prevSelectedGroups) =>
-      prevSelectedGroups.includes(group)
-        ? prevSelectedGroups.filter((g) => g.id !== group.id)
+      prevSelectedGroups.some((g) => g.group_id === group.group_id)
+        ? prevSelectedGroups.filter((g) => g.group_id !== group.group_id)
         : [...prevSelectedGroups, group]
     );
   };
 
-  const selectedGroupUUIDs = selectedGroups.map((group) => group.id);
+  const selectedGroupUUIDs = selectedGroups.map((group) => group.group_id);
 
   return (
     <SelectedGroupContext.Provider value={{ selectedGroups, toggleSelectedGroup, selectedGroupUUIDs }}>
