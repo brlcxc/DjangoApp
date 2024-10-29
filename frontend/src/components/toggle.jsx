@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
+import { SelectedGroupProvider, useSelectedGroup } from '../SelectedGroupContext';
 import { GroupContext } from "../GroupContext"; 
 
 const GroupRow = ({ group, isChecked, onCheckChange }) => (
@@ -7,7 +8,7 @@ const GroupRow = ({ group, isChecked, onCheckChange }) => (
       type="checkbox"
       className="mr-3"
       checked={isChecked}
-      onChange={(e) => onCheckChange(group.group_id, e.target.checked)}
+      onChange={(e) => onCheckChange(group, e.target.checked)} // Pass the whole group object
     />
     <div>{group.group_name}</div>
   </div>
@@ -15,21 +16,16 @@ const GroupRow = ({ group, isChecked, onCheckChange }) => (
 
 const GroupList = () => {
   const { groups, loading, error } = useContext(GroupContext);
-  const [selectedGroups, setSelectedGroups] = useState([]);
+  const { selectedGroups, toggleSelectedGroup } = useSelectedGroup(); // Get selected groups and toggle function
 
   useEffect(() => {
     if (groups && groups.length > 0) {
-      // Set all groups as selected when groups are loaded
-      setSelectedGroups(groups.map((group) => group.group_id));
+      // Optionally, you could initialize selected groups here if needed
     }
   }, [groups]);
 
-  const handleCheckChange = (groupId, isChecked) => {
-    setSelectedGroups((prevSelectedGroups) =>
-      isChecked
-        ? [...prevSelectedGroups, groupId]
-        : prevSelectedGroups.filter((id) => id !== groupId)
-    );
+  const handleCheckChange = (group, isChecked) => {
+    toggleSelectedGroup(group); // Use toggle function from context
   };
 
   if (loading) return <div>Loading...</div>;
@@ -45,7 +41,7 @@ const GroupList = () => {
             <GroupRow
               key={group.group_id}
               group={group}
-              isChecked={selectedGroups.includes(group.group_id)}
+              isChecked={selectedGroups.some((g) => g.group_id === group.group_id)} // Check if group is selected
               onCheckChange={handleCheckChange}
             />
           ))
