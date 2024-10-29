@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { TransactionContext } from '../TransactionContext'; // Adjust the path as needed
 
 const TransactionRow = ({ transaction }) => (
   <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
@@ -13,7 +14,8 @@ const TransactionRow = ({ transaction }) => (
   </div>
 );
 
-const TransactionList = ({ transactions = [] }) => {
+const TransactionList = () => {
+  const { transactions, loading, error } = useContext(TransactionContext);
   const [categories, setCategories] = useState(['Direct Payment', 'Deposit']);
   const [filterType, setFilterType] = useState('All');
   const [sortOption, setSortOption] = useState('date');
@@ -24,6 +26,9 @@ const TransactionList = ({ transactions = [] }) => {
       setCategories(uniqueCategories.length > 0 ? uniqueCategories : ['Direct Payment', 'Deposit']);
     }
   }, [transactions]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   const filteredTransactions = transactions
     .filter((transaction) => filterType === 'All' || transaction.category === filterType)
@@ -36,7 +41,6 @@ const TransactionList = ({ transactions = [] }) => {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-5 text-black">Transaction List</h1>
-
       <div className="flex justify-between mb-5">
         <div>
           <label className="mr-2">Filter by Category:</label>
