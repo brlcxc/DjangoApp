@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import axios from 'axios';
+import React, { useState, useMemo, useContext } from 'react';
+import { TransactionContext } from '../TransactionContext'; // Adjust the path as needed
 import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 
 const TransactionAdd = ({ groupUuid, transactions = [] }) => {
+  const { addTransaction } = useContext(TransactionContext); // Get the context function to add a transaction
   const [newTransaction, setNewTransaction] = useState({
     date: '',
     description: '',
@@ -25,7 +26,7 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
       : ['Direct Payment', 'Deposit'];
   }, [transactions]);
 
-  const addTransaction = async (e) => {
+  const addTransactionHandler = async (e) => {
     e.preventDefault();
     const transactionAmount = parseFloat(newTransaction.amount);
     const category = isCustomSelected ? customCategory : newTransaction.type;
@@ -42,7 +43,7 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
 
     try {
       const response = await api.post(
-        `/api/groups/${groupUuid}/transactions/`,
+        `/api/groups/c72d0191-c970-4c55-b943-178d564300d7/transactions/`,
         transactionData,
         {
           headers: {
@@ -52,6 +53,10 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
         }
       );
 
+      // Use context method to update the transactions list
+      addTransaction(response.data); // Assuming response.data is the newly added transaction
+
+      // Resetting state
       setNewTransaction({
         date: '',
         description: '',
@@ -60,8 +65,9 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
         status: 'Pending',
       });
 
+      // Dynamically add custom category
       if (isCustomSelected && customCategory && !categories.includes(customCategory)) {
-        categories.push(customCategory); // Dynamically add custom category
+        categories.push(customCategory); // Update local categories
       }
 
       setCustomCategory('');
@@ -73,7 +79,7 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <form className="" onSubmit={addTransaction}>
+      <form onSubmit={addTransactionHandler}>
         <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2>
         <div className="grid grid-cols-4 gap-4 items-start">
           <input
@@ -154,3 +160,4 @@ const TransactionAdd = ({ groupUuid, transactions = [] }) => {
 };
 
 export default TransactionAdd;
+
