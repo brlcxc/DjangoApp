@@ -98,14 +98,15 @@ const TransactionAdd = () => {
                         onChange={(e) =>
                             setNewTransaction({ ...newTransaction, amount: e.target.value })
                         }
+                        required
                         className="border rounded p-2 bg-white text-black"
                     />
                      <select
                         value={newTransaction.group}
                         onChange={(e) => setNewTransaction({ ...newTransaction, group: e.target.value })}
                         className="border rounded p-2 bg-white text-black w-full"
+                        required
                     >
-                        {console.log(newTransaction.group)}
                         <option value="" disabled>
                             Select Group
                         </option>
@@ -123,6 +124,7 @@ const TransactionAdd = () => {
                                 setNewTransaction({ ...newTransaction, type: value });
                                 setIsCustomSelected(value === 'custom');
                             }}
+                            required
                             className="border rounded p-2 bg-white text-black w-full"
                         >
                             <option value="" disabled>
