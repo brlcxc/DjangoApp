@@ -8,23 +8,11 @@ const TransactionProvider = ({ groupUUIDs, children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    console.log(groupUUIDs);
-
     const fetchTransactions = async () => {
         setLoading(true);
-        //Here is where I will check the string to see if it is empty before a get request occurs
         try {
-            // if (groupUUIDs.length != 0){
-                const response = await api.get(`/api/transactions/${groupUUIDs}/`);
-                console.log("test 7");
-
-                console.log(response);
-                setTransactions(response.data);
-            // }
-            // else{
-            //     console.log("help")
-            //     setError("test");
-            // }
+            const response = await api.get(`/api/transactions/${groupUUIDs}/`);
+            setTransactions(response.data);
         } catch (error) {
             console.error('Error fetching transactions:', error);
             setError(error);
@@ -34,8 +22,7 @@ const TransactionProvider = ({ groupUUIDs, children }) => {
     };
 
 useEffect(() => {
-    console.log()
-    console.log(groupUUIDs)
+
     if (groupUUIDs && groupUUIDs.length > 0) {
         fetchTransactions();
     } else {

@@ -32,10 +32,6 @@ const TransactionList = () => {
   const [filterType, setFilterType] = useState("All");
   const [sortOption, setSortOption] = useState("date");
 
-  //this transactions variable is not being updated as intended
-  console.log('TEST5');
-  console.log(transactions);
-
   useEffect(() => {
     if (transactions && transactions.length > 0) {
       const uniqueCategories = [

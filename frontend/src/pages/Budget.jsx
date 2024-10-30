@@ -12,8 +12,6 @@ function BudgetContent() {
 
   const style = "bg-white p-8 mb-8 rounded-xl shadow-lg mb-8";
   const { selectedGroupUUIDs } = useSelectedGroup(); // Now safe to use
-  console.log("87")
-  console.log(selectedGroupUUIDs)
   return (
     <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
       <div className="grid grid-cols-2 gap-8 size-full p-8 bg-custom-gradient animate-gradient">
