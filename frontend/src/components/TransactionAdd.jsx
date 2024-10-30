@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useContext } from 'react';
-import { TransactionContext } from '../TransactionContext'; // Adjust the path as necessary
-import { GroupContext } from '../GroupContext'; // Import GroupContext
-//the issue is that I am using group context and not the group here for the selection
-
+import { TransactionContext } from '../context/TransactionContext';
+import { GroupContext } from '../context/GroupContext';
 
 const TransactionAdd = () => {
     const { addTransaction, transactions } = useContext(TransactionContext);

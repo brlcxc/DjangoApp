@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useCallback, useState } from "react";
-import { useSelectedGroup } from '../SelectedGroupContext';
-import { GroupContext } from "../GroupContext"; 
+import { useSelectedGroup } from '../context/SelectedGroupContext';
+import { GroupContext } from "../context/GroupContext"; 
 
 const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
   <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -14,7 +14,7 @@ const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
   </div>
 ));
 
-const GroupList = () => {
+const Toggle = () => {
   const { groups, loading, error } = useContext(GroupContext);
   const { selectedGroups, toggleSelectedGroup } = useSelectedGroup();
   const [hasInitialized, setHasInitialized] = useState(false); // Track if initial toggle has been done
@@ -63,4 +63,4 @@ const GroupList = () => {
   );
 };
 
-export default GroupList;
+export default Toggle;

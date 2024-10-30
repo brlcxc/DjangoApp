@@ -2,11 +2,10 @@ import React from "react";
 import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
-import "tailwindcss/tailwind.css";
-import GroupList from "../components/toggle";
-import { TransactionProvider } from "../TransactionContext";
-import { GroupProvider } from "../GroupContext";
-import { SelectedGroupProvider, useSelectedGroup } from '../SelectedGroupContext';
+import Toggle from "../components/Toggle";
+import { TransactionProvider } from "../context/TransactionContext";
+import { GroupProvider } from "../context/GroupContext";
+import { SelectedGroupProvider, useSelectedGroup } from '../context/SelectedGroupContext';
 
 function BudgetContent() {
 
@@ -28,7 +27,7 @@ function BudgetContent() {
             <Charts />
           </div>
           <div className={`${style} h-[25%]`}>
-            <GroupList />
+            <Toggle />
           </div>
         </div>
       </div>

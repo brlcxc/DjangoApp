@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import api from './api'; // Ensure the path is correct
+import api from '../api';
 
 export const TransactionContext = createContext();
 

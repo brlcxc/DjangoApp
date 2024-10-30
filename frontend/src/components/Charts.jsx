@@ -1,8 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import 'tailwindcss/tailwind.css';
-import { TransactionContext } from '../TransactionContext';
+import { TransactionContext } from '../context/TransactionContext';
 ChartJS.register(...registerables);
 
 // Tailwind color mapping
