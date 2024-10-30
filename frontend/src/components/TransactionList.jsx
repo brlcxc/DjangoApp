@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext"; 
 
 const TransactionRow = ({ transaction }) => (
-  <div className="grid grid-cols-6 py-3 border-b hover:bg-gray-100 transition text-black">
+  <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
     <div>
       {transaction.start_date
         ? new Date(transaction.start_date).toLocaleDateString()
@@ -22,7 +22,7 @@ const TransactionRow = ({ transaction }) => (
     </div>
     <div>{transaction.category || "Uncategorized"}</div>
     <div>{transaction.group_name}</div>
-    <div>{0}</div>
+    {/* <div>{0}</div> */}
   </div>
 );
 
@@ -45,6 +45,8 @@ const TransactionList = () => {
     }
   }, [transactions]);
 
+  //Move these so that the chart still appears above the error 
+  //Maybe the graph can be empty?
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -91,13 +93,13 @@ const TransactionList = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-6 py-2 border-b font-semibold text-left bg-blue-500 text-white">
+      <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-blue-500 text-white">
         <div>Date</div>
         <div>Description</div>
         <div>Amount</div>
         <div>Category</div>
         <div>Group</div>
-        <div>Current Balance</div>
+        {/* <div>Current Balance</div> */}
       </div>
       {/* TODO fix sizing on both this and the chart */}
       <div className="overflow-y-auto max-h-[350px]">

@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./routes/Login";
-import Register from "./routes/Register";
-import NotFound from "./routes/NotFound";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./routes/Dashboard";
+import Dashboard from "./pages/Dashboard";
 
 function Logout(){
   localStorage.clear();

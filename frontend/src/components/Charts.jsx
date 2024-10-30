@@ -65,15 +65,14 @@ const Charts = () => {
   if (error) return <div>Error fetching transactions: {error.message}</div>;
 
   const chartData = {
-    labels: activeCategories,
+    labels: activeCategories.length ? activeCategories : ['No Data'],
     datasets: [
       {
         label: 'Total Amount per Category',
-        data: categoryData,
-        backgroundColor: activeCategories.map((category) => {
-          const color = categoryColors[category];
-          return colorMap[color] || color;
-        }),
+        data: activeCategories.length ? categoryData : [0],
+        backgroundColor: activeCategories.length 
+          ? activeCategories.map((category) => colorMap[categoryColors[category]] || categoryColors[category])
+          : ['#D3D3D3'], // Grey color for placeholder
         borderWidth: 1,
       },
     ],

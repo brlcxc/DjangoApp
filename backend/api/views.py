@@ -31,6 +31,13 @@ class UserCreateView(generics.CreateAPIView):
         user = serializer.save(user_verified=False)  # save the user and set user_verified to False
         send_verification_email(user, self.request)  # email sent upon user creation
 
+        # Create a default group for the new user
+        Group.objects.create(
+            group_name=f"{user.display_name}'s Group",  # Optional: customize name
+            group_owner_id=user,
+            description="This is the default group for new user."
+        )
+
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]

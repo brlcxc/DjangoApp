@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import api from '../api'; // Ensure the path is correct
+import api from '../api';
 
 export const TransactionContext = createContext();
 
@@ -21,13 +21,18 @@ const TransactionProvider = ({ groupUUIDs, children }) => {
         }
     };
 
-    useEffect(() => {
+useEffect(() => {
+
+    if (groupUUIDs && groupUUIDs.length > 0) {
         fetchTransactions();
-    }, [groupUUIDs]);
+    } else {
+        setTransactions([]); // Clear transactions if no selected groups
+    }
+}, [groupUUIDs]);
 
     const addTransaction = async (newTransaction) => {
         try {
-            const response = await api.post(`/api/groups/${groupUUIDs}/transactions/`, newTransaction, {
+            const response = await api.post(`/api/groups/${newTransaction.group}/transactions/`, newTransaction, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

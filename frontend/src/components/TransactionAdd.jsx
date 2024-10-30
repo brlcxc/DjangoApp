@@ -1,14 +1,18 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { TransactionContext } from '../context/TransactionContext';
+import { GroupContext } from '../context/GroupContext';
 
-const TransactionAdd = ({ groupUuid }) => {
+const TransactionAdd = () => {
     const { addTransaction, transactions } = useContext(TransactionContext);
+    const { groups } = useContext(GroupContext); // Access groups from GroupContext
+
     const [newTransaction, setNewTransaction] = useState({
         date: '',
         description: '',
         type: '',
         amount: '',
         status: 'Pending',
+        group: '', // Add group field to transaction data
     });
 
     const [customCategory, setCustomCategory] = useState('');
@@ -37,10 +41,14 @@ const TransactionAdd = ({ groupUuid }) => {
             end_date: null,
             is_recurrent: false,
             frequency: 0,
+            group: newTransaction.group, // Include the selected group in the transaction data
         };
+
+        console.log(newTransaction.group);
 
         await addTransaction(transactionData); // Use the context's addTransaction function
 
+        console.log(newTransaction.group);
         // Reset the form
         setNewTransaction({
             date: '',
@@ -48,16 +56,17 @@ const TransactionAdd = ({ groupUuid }) => {
             type: '',
             amount: '',
             status: 'Pending',
+            group: '', // Reset group field
         });
         setCustomCategory('');
         setIsCustomSelected(false);
     };
 
     return (
-        <div className="max-w-2xl">
+        <div className="max-w-full">
             <form onSubmit={handleAddTransaction}>
-            <h1 className="text-2xl font-bold mb-5 text-black">Add New Transaction</h1>
-                <div className="grid grid-cols-4 gap-4 items-start">
+                <h1 className="text-2xl font-bold mb-5 text-black">Add New Transaction</h1>
+                <div className="grid grid-cols-5 gap-4 items-start">
                     <input
                         type="date"
                         value={newTransaction.date}
@@ -87,8 +96,24 @@ const TransactionAdd = ({ groupUuid }) => {
                         onChange={(e) =>
                             setNewTransaction({ ...newTransaction, amount: e.target.value })
                         }
+                        required
                         className="border rounded p-2 bg-white text-black"
                     />
+                     <select
+                        value={newTransaction.group}
+                        onChange={(e) => setNewTransaction({ ...newTransaction, group: e.target.value })}
+                        className="border rounded p-2 bg-white text-black w-full"
+                        required
+                    >
+                        <option value="" disabled>
+                            Select Group
+                        </option>
+                        {groups.map((group) => (
+                            <option key={group.group_id} value={group.group_id}>
+                                {group.group_name}
+                            </option>
+                        ))}
+                    </select>
                     <div className="relative">
                         <select
                             value={newTransaction.type}
@@ -97,6 +122,7 @@ const TransactionAdd = ({ groupUuid }) => {
                                 setNewTransaction({ ...newTransaction, type: value });
                                 setIsCustomSelected(value === 'custom');
                             }}
+                            required
                             className="border rounded p-2 bg-white text-black w-full"
                         >
                             <option value="" disabled>
@@ -112,10 +138,11 @@ const TransactionAdd = ({ groupUuid }) => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-4 mt-4 items-center">
+                <div className="grid grid-cols-5 gap-4 mt-4 items-center">
+                   
                     <button
                         type="submit"
-                        className="bg-green-300 hover:bg-green-400 text-black px-8 py-2 rounded col-span-3"
+                        className="bg-green-300 hover:bg-green-400 text-black px-8 py-2 rounded col-span-4"
                     >
                         Add Transaction
                     </button>
@@ -136,3 +163,4 @@ const TransactionAdd = ({ groupUuid }) => {
 };
 
 export default TransactionAdd;
+
