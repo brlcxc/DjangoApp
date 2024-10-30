@@ -32,6 +32,10 @@ const TransactionList = () => {
   const [filterType, setFilterType] = useState("All");
   const [sortOption, setSortOption] = useState("date");
 
+  //this transactions variable is not being updated as intended
+  console.log('TEST5');
+  console.log(transactions);
+
   useEffect(() => {
     if (transactions && transactions.length > 0) {
       const uniqueCategories = [
@@ -45,6 +49,8 @@ const TransactionList = () => {
     }
   }, [transactions]);
 
+  //Move these so that the chart still appears above the error 
+  //Maybe the graph can be empty?
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
