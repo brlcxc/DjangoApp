@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { TransactionContext } from '../TransactionContext'; // Adjust the path as necessary
 import { GroupContext } from '../GroupContext'; // Import GroupContext
+//the issue is that I am using group context and not the group here for the selection
 
-const TransactionAdd = ({ groupUuid }) => {
+
+const TransactionAdd = () => {
     const { addTransaction, transactions } = useContext(TransactionContext);
     const { groups } = useContext(GroupContext); // Access groups from GroupContext
 
@@ -44,8 +46,11 @@ const TransactionAdd = ({ groupUuid }) => {
             group: newTransaction.group, // Include the selected group in the transaction data
         };
 
+        console.log(newTransaction.group);
+
         await addTransaction(transactionData); // Use the context's addTransaction function
 
+        console.log(newTransaction.group);
         // Reset the form
         setNewTransaction({
             date: '',
@@ -60,7 +65,7 @@ const TransactionAdd = ({ groupUuid }) => {
     };
 
     return (
-        <div className="max-w-2xl">
+        <div className="max-w-full">
             <form onSubmit={handleAddTransaction}>
                 <h1 className="text-2xl font-bold mb-5 text-black">Add New Transaction</h1>
                 <div className="grid grid-cols-5 gap-4 items-start">
@@ -100,6 +105,7 @@ const TransactionAdd = ({ groupUuid }) => {
                         onChange={(e) => setNewTransaction({ ...newTransaction, group: e.target.value })}
                         className="border rounded p-2 bg-white text-black w-full"
                     >
+                        {console.log(newTransaction.group)}
                         <option value="" disabled>
                             Select Group
                         </option>
@@ -134,7 +140,6 @@ const TransactionAdd = ({ groupUuid }) => {
 
                 <div className="grid grid-cols-5 gap-4 mt-4 items-center">
                    
-
                     <button
                         type="submit"
                         className="bg-green-300 hover:bg-green-400 text-black px-8 py-2 rounded col-span-4"

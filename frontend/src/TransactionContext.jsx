@@ -32,7 +32,7 @@ useEffect(() => {
 
     const addTransaction = async (newTransaction) => {
         try {
-            const response = await api.post(`/api/groups/${groupUUIDs}/transactions/`, newTransaction, {
+            const response = await api.post(`/api/groups/${newTransaction.group}/transactions/`, newTransaction, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
