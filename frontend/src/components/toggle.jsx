@@ -1,8 +1,8 @@
-import React, { useEffect, useContext } from "react";
-import { SelectedGroupProvider, useSelectedGroup } from '../SelectedGroupContext';
+import React, { useEffect, useContext, useCallback, useState } from "react";
+import { useSelectedGroup } from '../SelectedGroupContext';
 import { GroupContext } from "../GroupContext"; 
 
-const GroupRow = ({ group, isChecked, onCheckChange }) => (
+const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
   <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
     <input
       type="checkbox"
@@ -12,21 +12,31 @@ const GroupRow = ({ group, isChecked, onCheckChange }) => (
     />
     <div>{group.group_name}</div>
   </div>
-);
+));
 
 const GroupList = () => {
   const { groups, loading, error } = useContext(GroupContext);
-  const { selectedGroups, toggleSelectedGroup } = useSelectedGroup(); // Get selected groups and toggle function
+  const { selectedGroups, toggleSelectedGroup } = useSelectedGroup();
+  const [hasInitialized, setHasInitialized] = useState(false); // Track if initial toggle has been done
 
+  // Automatically select all groups on first render
   useEffect(() => {
-    if (groups && groups.length > 0) {
-      // Optionally, you could initialize selected groups here if needed
+    if (!hasInitialized && groups && groups.length > 0) {
+      groups.forEach(group => {
+        if (!selectedGroups.some(g => g.group_id === group.group_id)) {
+          toggleSelectedGroup(group);
+        }
+      });
+      setHasInitialized(true); // Set to true after initial selection
     }
-  }, [groups]);
+  }, [groups, toggleSelectedGroup, selectedGroups, hasInitialized]);
 
-  const handleCheckChange = (group, isChecked) => {
-    toggleSelectedGroup(group); // Use toggle function from context
-  };
+  const handleCheckChange = useCallback(
+    (group, isChecked) => {
+      toggleSelectedGroup(group); // Use toggle function from context
+    },
+    [toggleSelectedGroup]
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
