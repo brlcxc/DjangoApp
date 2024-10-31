@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import User, Group, Transaction, Invite
+from ..models import User, Group, Transaction, Invite
 from uuid import uuid4
 
 class UserModelTests(TestCase):
