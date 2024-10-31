@@ -2,7 +2,7 @@ import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
 const api = axios.create({
-    baseURL: "https://holofund.onrender.com"
+    baseURL: "http://127.0.0.1:8000"
 })
 
 // HTTP request interceptor

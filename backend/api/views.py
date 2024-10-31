@@ -1,5 +1,7 @@
+import os
+import openai
 from rest_framework import generics
-from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.views import APIView
@@ -11,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
 from .utils import send_verification_email
+
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -212,3 +215,37 @@ class VerifyEmail(APIView):
             return Response({'status': 'Email verified successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class LLMResponseView(generics.GenericAPIView):
+    serializer_class = LLMRequestSerializer  # Serializer for input data
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Set up OpenAI with your API key
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+
+        # Deserialize and validate the user input
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Get the user input from the validated data
+        user_question = serializer.validated_data['question']
+        
+        # Define the prompt for the LLM
+        prompt = f"User question: {user_question}"
+
+        # Make the request to OpenAI (or your preferred LLM provider)
+        try:
+            response = openai.Completion.create(
+                model="gpt-3.5-turbo",
+                prompt=prompt,
+                max_tokens=100
+            )
+            answer = response.choices[0].text.strip()
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Serialize and return the LLM response
+        response_serializer = LLMResponseSerializer(data={"answer": answer})
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)

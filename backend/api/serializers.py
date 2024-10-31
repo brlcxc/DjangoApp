@@ -61,3 +61,10 @@ class InviteSerializer(serializers.ModelSerializer):
         # foreign keys are set as "read_only" since they are automatically set
         # we only want the sender set by backend which is why writing is restricted
         extra_kwargs = {"sender_id": {"read_only": True}}
+
+class LLMRequestSerializer(serializers.Serializer):
+    question = serializers.CharField(max_length=500)
+
+
+class LLMResponseSerializer(serializers.Serializer):
+    answer = serializers.CharField()
