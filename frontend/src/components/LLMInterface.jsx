@@ -1,20 +1,43 @@
 import { useState } from "react";
+import api from '../api';
 
 function LLMInterface() {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleGenerateResponse = () => {
-    // Example: Replace this with actual API call to your LLM backend
-    const response = "This is a response from the LLM based on the input.";
-    setOutputText(response);
+  const handleGenerateResponse = async () => {
+    setLoading(true);
+    try {
+      // Make the API request to your Django backend
+      const response = await api.fetch('/api/llm/ask/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Add auth token if needed
+        },
+        body: JSON.stringify({ question: inputText }),
+      });
+
+      // Parse the response
+      if (response.ok) {
+        const data = await response.json();
+        setOutputText(data.answer); // Assuming the backend returns { "answer": "response text" }
+      } else {
+        setOutputText("Failed to get a response from the server.");
+      }
+    } catch (error) {
+      setOutputText("An error occurred while fetching the response.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
       <div className="w-full p-4 border rounded-lg shadow-lg bg-gray-100">
         <p className="text-gray-800">
-          {outputText || "Response will appear here..."}
+          {loading ? "Loading..." : outputText || "Response will appear here..."}
         </p>
       </div>
       <textarea
@@ -27,8 +50,9 @@ function LLMInterface() {
       <button
         className="px-4 py-2 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         onClick={handleGenerateResponse}
+        disabled={loading}
       >
-        Generate Response
+        {loading ? "Generating..." : "Generate Response"}
       </button>
     </div>
   );
