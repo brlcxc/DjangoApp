@@ -226,9 +226,18 @@ class LLMResponseView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        # Get the user question from the validated data
+        # Get the user question and group UUIDs from the validated data
         user_question = serializer.validated_data['question']
+        # group_uuid_list = serializer.validated_data.get('group_uuid_list', '')
+
+        # # Retrieve transaction data using the TransactionList view
+        # transaction_list_view = TransactionList()
+        # transaction_list_view.request = request
+        # transaction_list_view.kwargs = {'group_uuid_list': group_uuid_list}
         
+        # transactions_queryset = transaction_list_view.get_queryset()
+        # transactions_data = TransactionSerializer(transactions_queryset, many=True).data
+
         # Load credentials from the environment variable
         credentials_json = os.getenv('GOOGLE_CREDENTIALS')
         if credentials_json is None:
@@ -250,8 +259,15 @@ class LLMResponseView(generics.GenericAPIView):
         
         # Generate response using the generative model
         try:
+            # Include transaction data in the question for context
+            # question_with_data = f"{user_question}\n\nUser transaction data: {transactions_data}"
+            # question_with_data = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into categories = []"
+            # question_with_data = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of situations in the format situations = []"
+            question_with_data = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = []"
+         
             model = GenerativeModel("gemini-1.5-flash-002")
-            response = model.generate_content([user_question])
+            # I will call mutiple prompts in this to feed back into itself
+            response = model.generate_content([question_with_data])
             answer = response.text.strip()
         except Exception as e:
             return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
