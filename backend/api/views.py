@@ -20,7 +20,7 @@ import json  # Add this line to import the json module
 from google.auth import load_credentials_from_file
 from google.oauth2 import service_account  # Importing service_account
 import vertexai
-from vertexai.generative_models import GenerativeModel
+from vertexai.generative_models import GenerativeModel, Part
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -231,10 +231,10 @@ class LLMResponseView(generics.GenericAPIView):
         # Deserialize and validate the user input
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
+        
         # Get the user question from the validated data
         user_question = serializer.validated_data['question']
-
+        
         # Load credentials from the environment variable
         credentials_json = os.getenv('GOOGLE_CREDENTIALS')
         if credentials_json is None:
@@ -246,38 +246,21 @@ class LLMResponseView(generics.GenericAPIView):
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format for GOOGLE_CREDENTIALS."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create credentials using the service account information
-        credentials = service_account.Credentials.from_service_account_info(credentials_dict)
-        credentials.refresh(Request())
-        access_token = credentials.token
-
-        # Define the Vertex AI API URL, headers, and payload
-        url = (
-            "https://us-central1-aiplatform.googleapis.com/v1/projects/gen-lang-client-0912996843"
-            "/locations/us-central1/publishers/google/models/text-bison-001:predict"
-        )
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": user_question,
-                }
-            ]
-        }
-
-        # Make the POST request to the Vertex AI API
+        # Initialize Vertex AI with credentials and project ID
         try:
-            response = requests.post(url, headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            answer = data['choices'][0]['message']['content'].strip()
-        except requests.exceptions.RequestException as e:
-            print(e)
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+            PROJECT_ID = credentials.project_id
+            vertexai.init(project=PROJECT_ID, location="us-central1", credentials=credentials)
+        except Exception as e:
+            return Response({"error": f"Failed to initialize Vertex AI: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Generate response using the generative model
+        try:
+            model = GenerativeModel("gemini-1.5-flash-002")
+            response = model.generate_content([user_question])
+            answer = response.text.strip()
+        except Exception as e:
+            return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Serialize and return the LLM response
         response_serializer = LLMResponseSerializer(data={"answer": answer})
