@@ -10,4 +10,5 @@ psycopg2-binary
 python-dotenv
 dj-database-url
 gunicorn
-openai
+requests
+google-generativeai

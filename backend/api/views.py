@@ -1,5 +1,6 @@
 import os
-from openai import OpenAI
+import requests
+import google.generativeai as genai
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
@@ -11,9 +12,10 @@ from .tokens import email_verification_token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from google.auth.transport.requests import Request
+from google.auth import default
 from .models import User, Group, Transaction
 from .utils import send_verification_email
-
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -221,32 +223,43 @@ class LLMResponseView(generics.GenericAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        # Set up OpenAI client with your API key
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
         # Deserialize and validate the user input
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Get the user input from the validated data
+        # Get the user question from the validated data
         user_question = serializer.validated_data['question']
 
-        # Define the messages for the LLM
-        messages = [
-            {
-                "role": "user",
-                "content": user_question,
-            }
-        ]
+        # Obtain Application Default Credentials and refresh for an access token
+        credentials, _ = default()  # Automatically detects credentials (service account or user)
+        credentials.refresh(Request())
+        access_token = credentials.token
 
-        # Make the request to OpenAI using the new client
+        # Define the Vertex AI API URL, headers, and payload
+        url = (
+            "https://genai.googleapis.com/v1beta3/projects/gen-lang-client-0912996843"
+            "/locations/us-central1/publishers/google/models/text-bison-001:predict"
+        )
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": user_question,
+                }
+            ]
+        }
+
+        # Make the POST request to the Vertex AI API
         try:
-            completion = client.chat.completions.create(
-                model="gpt-3.5-turbo",  # or "gpt-4" depending on your requirement
-                messages=messages
-            )
-            answer = completion['choices'][0]['message']['content'].strip()
-        except Exception as e:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            answer = data['choices'][0]['message']['content'].strip()
+        except requests.exceptions.RequestException as e:
             print(e)
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
