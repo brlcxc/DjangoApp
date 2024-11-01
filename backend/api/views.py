@@ -1,10 +1,9 @@
 import os
-import requests
-import google.generativeai as genai
+import vertexai
+import json
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,15 +11,10 @@ from .tokens import email_verification_token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-from google.auth.transport.requests import Request
-from google.auth import default
 from .models import User, Group, Transaction
 from .utils import send_verification_email
-import json  # Add this line to import the json module
-from google.auth import load_credentials_from_file
 from google.oauth2 import service_account  # Importing service_account
-import vertexai
-from vertexai.generative_models import GenerativeModel, Part
+from vertexai.generative_models import GenerativeModel
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
