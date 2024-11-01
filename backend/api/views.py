@@ -16,6 +16,11 @@ from google.auth.transport.requests import Request
 from google.auth import default
 from .models import User, Group, Transaction
 from .utils import send_verification_email
+import json  # Add this line to import the json module
+from google.auth import load_credentials_from_file
+from google.oauth2 import service_account  # Importing service_account
+import vertexai
+from vertexai.generative_models import GenerativeModel
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -217,7 +222,7 @@ class VerifyEmail(APIView):
             return Response({'status': 'Email verified successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class LLMResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [AllowAny]
@@ -230,14 +235,25 @@ class LLMResponseView(generics.GenericAPIView):
         # Get the user question from the validated data
         user_question = serializer.validated_data['question']
 
-        # Obtain Application Default Credentials and refresh for an access token
-        credentials, _ = default()  # Automatically detects credentials (service account or user)
+        # Load credentials from the environment variable
+        credentials_json = os.getenv('GOOGLE_CREDENTIALS')
+        if credentials_json is None:
+            return Response({"error": "GOOGLE_CREDENTIALS environment variable is not set."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Convert the JSON string to a dictionary
+        try:
+            credentials_dict = json.loads(credentials_json)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format for GOOGLE_CREDENTIALS."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create credentials using the service account information
+        credentials = service_account.Credentials.from_service_account_info(credentials_dict)
         credentials.refresh(Request())
         access_token = credentials.token
 
         # Define the Vertex AI API URL, headers, and payload
         url = (
-            "https://genai.googleapis.com/v1beta3/projects/gen-lang-client-0912996843"
+            "https://us-central1-aiplatform.googleapis.com/v1/projects/gen-lang-client-0912996843"
             "/locations/us-central1/publishers/google/models/text-bison-001:predict"
         )
         headers = {
