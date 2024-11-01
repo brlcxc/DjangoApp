@@ -1,5 +1,5 @@
 import os
-import openai
+from openai import OpenAI
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
@@ -218,11 +218,11 @@ class VerifyEmail(APIView):
         
 class LLMResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        # Set up OpenAI with your API key
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        # Set up OpenAI client with your API key
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
         # Deserialize and validate the user input
         serializer = self.get_serializer(data=request.data)
@@ -230,19 +230,24 @@ class LLMResponseView(generics.GenericAPIView):
 
         # Get the user input from the validated data
         user_question = serializer.validated_data['question']
-        
-        # Define the prompt for the LLM
-        prompt = f"User question: {user_question}"
 
-        # Make the request to OpenAI (or your preferred LLM provider)
+        # Define the messages for the LLM
+        messages = [
+            {
+                "role": "user",
+                "content": user_question,
+            }
+        ]
+
+        # Make the request to OpenAI using the new client
         try:
-            response = openai.Completion.create(
-                model="gpt-3.5-turbo",
-                prompt=prompt,
-                max_tokens=100
+            completion = client.chat.completions.create(
+                model="gpt-3.5-turbo",  # or "gpt-4" depending on your requirement
+                messages=messages
             )
-            answer = response.choices[0].text.strip()
+            answer = completion['choices'][0]['message']['content'].strip()
         except Exception as e:
+            print(e)
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Serialize and return the LLM response
