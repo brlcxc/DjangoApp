@@ -15,6 +15,7 @@ from .models import User, Group, Transaction
 from .utils import send_verification_email
 from google.oauth2 import service_account  # Importing service_account
 from vertexai.generative_models import GenerativeModel
+from rest_framework.test import APIRequestFactory
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -232,10 +233,21 @@ class LLMResponseView(generics.GenericAPIView):
 
 
 
-        # group_uuid_list = self.kwargs.get('group_uuid_list', '')
-        # transaction_list_view = TransactionList()
-        # transaction_list_view.kwargs = {'group_uuid_list': group_uuid_list}
+        group_uuid_list = self.kwargs.get('group_uuid_list', '')
+        # Create a mock request with the authenticated user
+        factory = APIRequestFactory()
+        mock_request = factory.get('/')
+        mock_request.user = request.user
 
+        # Instantiate TransactionList and provide it with the mock request and kwargs
+        transaction_list_view = TransactionList()
+        transaction_list_view.request = mock_request
+        transaction_list_view.kwargs = {'group_uuid_list': group_uuid_list}
+
+        # Get transactions and serialize the data
+        transactions_queryset = transaction_list_view.get_queryset()
+        transactions_data = TransactionSerializer(transactions_queryset, many=True).data
+        print(transactions_data)
 
 
         # # Retrieve transaction data using the TransactionList view
