@@ -4,9 +4,6 @@ import Register from "./routes/Register";
 import NotFound from "./routes/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./routes/Dashboard";
-import { TransactionProvider } from "./context/TransactionContext";
-import { GroupProvider, GroupContext } from "./context/GroupContext";
-import { SelectedGroupProvider, useSelectedGroup } from './context/SelectedGroupContext';
 
 function Logout() {
   localStorage.clear();
@@ -18,23 +15,15 @@ function RegisterAndLogout() {
   return <Register />;
 }
 
-// Wrapper component to access selectedGroupUUIDs and groupUUIDs
-function AppContent() {
-  const { selectedGroupUUIDs } = useSelectedGroup();
-  // const { groupUUIDs } = useContext(GroupContext); // Access groupUUIDs here
-
-  // console.log("Selected Group UUIDs:", selectedGroupUUIDs);
-  // console.log("All Group UUIDs:", groupUUIDs); // Log all group UUIDs
-
+function App() {
   return (
+    <BrowserRouter>
       <Routes>
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
-                <Dashboard />
-              </TransactionProvider>
+              <Dashboard />
             </ProtectedRoute>
           }
         />
@@ -43,17 +32,6 @@ function AppContent() {
         <Route path="/register" element={<RegisterAndLogout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-  );
-}
-
-function App() {
-  return (
-    <BrowserRouter>
-      <GroupProvider>
-        <SelectedGroupProvider>
-          <AppContent /> {/* Use the wrapper component here */}
-        </SelectedGroupProvider>
-      </GroupProvider>
     </BrowserRouter>
   );
 }
