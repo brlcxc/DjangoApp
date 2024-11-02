@@ -4,6 +4,9 @@ import Register from "./routes/Register";
 import NotFound from "./routes/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./routes/Dashboard";
+import { TransactionProvider } from "./context/TransactionContext";
+import { GroupProvider } from "./context/GroupContext";
+import { SelectedGroupProvider, useSelectedGroup } from './context/SelectedGroupContext';
 
 function Logout(){
   localStorage.clear();
@@ -16,20 +19,30 @@ function RegisterAndLogout(){
 }
 
 function App() {
+  const { selectedGroupUUIDs } = useSelectedGroup();
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={
-            <ProtectedRoute>
-              <Dashboard/>
-            </ProtectedRoute>
-          }/>
-        <Route path="/login" element={<Login/>}/>
-        <Route path="/logout" element={<Logout/>}/>
-        <Route path="/register" element={<RegisterAndLogout/>}/>
-        <Route path="*" element={<NotFound/>}/>
-      </Routes>
+      <GroupProvider>
+        <SelectedGroupProvider>
+        <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/register" element={<RegisterAndLogout />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TransactionProvider>
+        </SelectedGroupProvider>
+      </GroupProvider>
     </BrowserRouter>
   )
 }

@@ -3,16 +3,16 @@ import Charts from "../components/Charts";
 import TransactionAdd from "../components/TransactionAdd";
 import TransactionList from "../components/TransactionList";
 import Toggle from "../components/Toggle";
-import { TransactionProvider } from "../context/TransactionContext";
-import { GroupProvider } from "../context/GroupContext";
-import { SelectedGroupProvider, useSelectedGroup } from '../context/SelectedGroupContext';
+// import { TransactionProvider } from "../context/TransactionContext";
+// import { GroupProvider } from "../context/GroupContext";
+// import { SelectedGroupProvider, useSelectedGroup } from '../context/SelectedGroupContext';
 
 function BudgetContent() {
 
   const style = "bg-white p-8 mb-8 rounded-xl shadow-lg mb-8";
-  const { selectedGroupUUIDs } = useSelectedGroup(); // Now safe to use
+  // const { selectedGroupUUIDs } = useSelectedGroup(); // Now safe to use
   return (
-    <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
+    // <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
       <div className="grid grid-cols-2 gap-8 size-full p-8 bg-custom-gradient animate-gradient">
         <div>
           <div className={`${style} h-[70%]`}>
@@ -31,17 +31,17 @@ function BudgetContent() {
           </div>
         </div>
       </div>
-    </TransactionProvider>
+    // </TransactionProvider>
   );
 }
 
 function Budget() {
   return (
-    <GroupProvider>
-      <SelectedGroupProvider>
+    // <GroupProvider>
+    //   <SelectedGroupProvider>
         <BudgetContent />
-      </SelectedGroupProvider>
-    </GroupProvider>
+    //   </SelectedGroupProvider>
+    // </GroupProvider>
   );
 }
 

@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export const SelectedGroupContext = createContext();
+export const SelectedGroupContext = createContext({
+  selectedGroups: [],
+  toggleSelectedGroup: () => {},
+  selectedGroupUUIDs: "",
+});
 
 export const useSelectedGroup = () => useContext(SelectedGroupContext);
 
@@ -15,7 +19,10 @@ export function SelectedGroupProvider({ children }) {
     );
   };
 
-  const selectedGroupUUIDs = selectedGroups.map((group) => group.group_id);
+  // Default `selectedGroupUUIDs` to an empty string if no groups are selected
+  const selectedGroupUUIDs = selectedGroups.length > 0 
+    ? selectedGroups.map((group) => group.group_id) 
+    : "";
 
   return (
     <SelectedGroupContext.Provider value={{ selectedGroups, toggleSelectedGroup, selectedGroupUUIDs }}>
@@ -23,3 +30,4 @@ export function SelectedGroupProvider({ children }) {
     </SelectedGroupContext.Provider>
   );
 }
+
