@@ -20,6 +20,8 @@ const Toggle = () => {
   const [hasInitialized, setHasInitialized] = useState(false); // Track if initial toggle has been done
 
   // Automatically select all groups on first render
+  // I probably need to move this to the context tbh
+  // Maybe I can move this logic within app? maybe having global toggle is pointless but I think it might prove benefiical
   useEffect(() => {
     if (!hasInitialized && groups && groups.length > 0) {
       groups.forEach(group => {

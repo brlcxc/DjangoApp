@@ -267,6 +267,8 @@ class LLMResponseView(generics.GenericAPIView):
          
             model = GenerativeModel("gemini-1.5-flash-002")
             # I will call mutiple prompts in this to feed back into itself
+
+            # new transactions follow old, increase old ccordingly, and add new 
             response = model.generate_content([question_with_data])
             answer = response.text.strip()
         except Exception as e:

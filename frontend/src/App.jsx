@@ -5,7 +5,7 @@ import NotFound from "./routes/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./routes/Dashboard";
 import { TransactionProvider } from "./context/TransactionContext";
-import { GroupProvider } from "./context/GroupContext";
+import { GroupProvider, GroupContext } from "./context/GroupContext";
 import { SelectedGroupProvider, useSelectedGroup } from './context/SelectedGroupContext';
 
 function Logout() {
@@ -18,18 +18,23 @@ function RegisterAndLogout() {
   return <Register />;
 }
 
-// Wrapper component to access selectedGroupUUIDs
+// Wrapper component to access selectedGroupUUIDs and groupUUIDs
 function AppContent() {
   const { selectedGroupUUIDs } = useSelectedGroup();
+  // const { groupUUIDs } = useContext(GroupContext); // Access groupUUIDs here
+
+  // console.log("Selected Group UUIDs:", selectedGroupUUIDs);
+  // console.log("All Group UUIDs:", groupUUIDs); // Log all group UUIDs
 
   return (
-    <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
       <Routes>
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
+                <Dashboard />
+              </TransactionProvider>
             </ProtectedRoute>
           }
         />
@@ -38,7 +43,6 @@ function AppContent() {
         <Route path="/register" element={<RegisterAndLogout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </TransactionProvider>
   );
 }
 
