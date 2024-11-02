@@ -207,6 +207,19 @@ class VerifyEmail(APIView):
 
 # Note: maybe split the first step into a separate view to give users the ability to manually add and remove situations
 # I am unsure how to best transfer info in that situation though 
+# I am now thinking that I will need to because how else can I display the categories output
+# I will also need a separate view to give the evaluation and suggestion on the new data compared to the old
+
+# I might need to pass a topic as well
+# the new transactions need the context of what the categories are for - not sure where to store this though
+# import in todays date rather than using last date
+# new expenses need to be based off current expenses as well as new which either modify current or are entirely new
+# I might need to have some sort of generate button between the first and second step
+# I also do need that date passed
+# I might want to hard code it in for now
+
+# maybe I should even just have one prompt for similar and one for brand new?
+# make a statement to ensure they are date relevant 
 class LLMResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
@@ -245,7 +258,7 @@ class LLMResponseView(generics.GenericAPIView):
         # Generate response using the generative model
         try:
             # Include transaction data in the question for context
-            category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = []"
+            category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
          
             model = GenerativeModel("gemini-1.5-flash-002")
 
@@ -253,7 +266,7 @@ class LLMResponseView(generics.GenericAPIView):
             category_answer = category_response.text.strip()
 
             # to fine tune I could maybe specify to have new transactions follow old and then alter new ones based on old ones accordingly but also add new
-            new_transaction_question = f"From this data {transactions_data}\n\n and these situations {category_answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+            new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
 
             new_transaction_response = model.generate_content([new_transaction_question])
             new_transaction_answer = new_transaction_response.text.strip()
