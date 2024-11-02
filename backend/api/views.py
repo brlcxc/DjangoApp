@@ -230,6 +230,14 @@ class LLMResponseView(generics.GenericAPIView):
         user_question = serializer.validated_data['question']
         # group_uuid_list = serializer.validated_data.get('group_uuid_list', '')
 
+
+
+        # group_uuid_list = self.kwargs.get('group_uuid_list', '')
+        # transaction_list_view = TransactionList()
+        # transaction_list_view.kwargs = {'group_uuid_list': group_uuid_list}
+
+
+
         # # Retrieve transaction data using the TransactionList view
         # transaction_list_view = TransactionList()
         # transaction_list_view.request = request
@@ -278,3 +286,7 @@ class LLMResponseView(generics.GenericAPIView):
         response_serializer = LLMResponseSerializer(data={"answer": answer})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+    
+
+
+            # maybe split this into two seperate views so that I can close out categroeis and maybe add new ones

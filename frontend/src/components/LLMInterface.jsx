@@ -1,13 +1,19 @@
 import { useState } from "react";
-import api from '../api';
+import { useSelectedGroup } from '../context/SelectedGroupContext';
 import { ACCESS_TOKEN } from "../constants";
 
+// I feel I should send transaction context here only for merging the output
+// not for sending to the llm
+// I want to send the selected here so that I can send the uuid just like I sent to group
+
 function LLMInterface() {
+  const { selectedGroupUUIDs } = useSelectedGroup(); // Now safe to use
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
   const [loading, setLoading] = useState(false);
   const [textBoxes, setTextBoxes] = useState(['Text 1', 'Text 2', 'Text 3', 'Text 4', 'Text 5']);
 
+  console.log(selectedGroupUUIDs); // Corrected console log
   const handleClick = (text) => {
     setTextBoxes(textBoxes.filter((item) => item !== text));
   };
@@ -16,7 +22,7 @@ function LLMInterface() {
     setLoading(true);
     try {
       // Make the API request to your Django backend
-      const response = await fetch('http://127.0.0.1:8000/api/llm/ask/', {
+      const response = await fetch(`http://127.0.0.1:8000/api/llm/ask/${selectedGroupUUIDs}}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
