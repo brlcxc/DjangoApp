@@ -205,7 +205,8 @@ class VerifyEmail(APIView):
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
 
-# TODO: 
+# Note: maybe split the first step into a separate view to give users the ability to manually add and remove situations
+# I am unsure how to best transfer info in that situation though 
 class LLMResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
@@ -222,7 +223,6 @@ class LLMResponseView(generics.GenericAPIView):
 
         transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
 
-        # print(transactions_data)
         # Load credentials from the environment variable
         credentials_json = os.getenv('GOOGLE_CREDENTIALS')
         if credentials_json is None:
@@ -245,35 +245,22 @@ class LLMResponseView(generics.GenericAPIView):
         # Generate response using the generative model
         try:
             # Include transaction data in the question for context
-            # question_with_data = f"{user_question}\n\nUser transaction data: {transactions_data}"
-            # question_with_data = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into categories = []"
-            # question_with_data = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of situations in the format situations = []"
-            question_with_data = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = []"
+            category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = []"
          
             model = GenerativeModel("gemini-1.5-flash-002")
-            # I will call mutiple prompts in this to feed back into itself
 
-            # new transactions follow old, increase old accordingly, and add new 
-            response = model.generate_content([question_with_data])
-            answer = response.text.strip()
+            category_response = model.generate_content([category_question])
+            category_answer = category_response.text.strip()
 
-            # question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations"
+            # to fine tune I could maybe specify to have new transactions follow old and then alter new ones based on old ones accordingly but also add new
+            new_transaction_question = f"From this data {transactions_data}\n\n and these situations {category_answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
 
-            # gives data but specifies keys at every step - maybe needed maybe not but I worry that I cant output as much data like this
-            # question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations? Please provide them in the form new_transactions=[] with no additional information"
-            question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
-
-
-            response2 = model.generate_content([question_new])
-            answer2 = response2.text.strip()
+            new_transaction_response = model.generate_content([new_transaction_question])
+            new_transaction_answer = new_transaction_response.text.strip()
         except Exception as e:
             return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": answer2})
+        response_serializer = LLMResponseSerializer(data={"answer": new_transaction_answer})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
-    
-
-
-            # maybe split this into two seperate views so that I can close out categroeis and maybe add new ones

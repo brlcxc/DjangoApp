@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelectedGroup } from '../context/SelectedGroupContext';
 import { ACCESS_TOKEN } from "../constants";
 
-// I feel I should send transaction context here only for merging the output
+// I feel I should send transaction context here only for merging with the output
 // not for sending to the llm
 // I want to send the selected here so that I can send the uuid just like I sent to group
 
