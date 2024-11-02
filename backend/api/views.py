@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email
+from .utils import send_verification_email, get_user_transactions_for_groups
 from google.oauth2 import service_account  # Importing service_account
 from vertexai.generative_models import GenerativeModel
 from rest_framework.test import APIRequestFactory
@@ -137,18 +137,18 @@ class TransactionList(generics.ListAPIView):
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
 
         # Convert the group_uuid_list string into a list of UUIDs
-        group_uuids = group_uuid_list.split(',')
 
-        # Query for groups where the user is either the owner or a member
-        # when __in is used with group_id in this case it checks if each transaction's group_id is part of the incoming list group_uuids
-        user_groups = Group.objects.filter(
-            (Q(members=user) | Q(group_owner_id=user)) & Q(group_id__in=group_uuids)
-        )
+        # # Query for groups where the user is either the owner or a member
+        # # when __in is used with group_id in this case it checks if each transaction's group_id is part of the incoming list group_uuids
+        # user_groups = Group.objects.filter(
+        #     (Q(members=user) | Q(group_owner_id=user)) & Q(group_id__in=group_uuids)
+        # )
 
         # Return transactions that belong to the filtered groups by extracting IDs
         # when __in is used with group_id in this case it checks if each transaction's group_id is part of the user_groups filter
         # flat=true flattens the result so that instead of getting a list of tuples, you get a simple list of values when requesting a single field
-        return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True)).select_related('group_id')
+        # return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True)).select_related('group_id')
+        return get_user_transactions_for_groups(user, group_uuid_list)
 
 class TransactionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer
@@ -218,6 +218,7 @@ class VerifyEmail(APIView):
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
 
+# TODO: 
 class LLMResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [AllowAny]
@@ -234,19 +235,8 @@ class LLMResponseView(generics.GenericAPIView):
 
 
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
-        # Create a mock request with the authenticated user
-        factory = APIRequestFactory()
-        mock_request = factory.get('/')
-        mock_request.user = request.user
 
-        # Instantiate TransactionList and provide it with the mock request and kwargs
-        transaction_list_view = TransactionList()
-        transaction_list_view.request = mock_request
-        transaction_list_view.kwargs = {'group_uuid_list': group_uuid_list}
-
-        # Get transactions and serialize the data
-        transactions_queryset = transaction_list_view.get_queryset()
-        transactions_data = TransactionSerializer(transactions_queryset, many=True).data
+        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list)
         print(transactions_data)
 
 
