@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { GroupContext } from './GroupContext'; // Import GroupContext
 
 export const SelectedGroupContext = createContext();
 
@@ -6,6 +7,14 @@ export const useSelectedGroup = () => useContext(SelectedGroupContext);
 
 export function SelectedGroupProvider({ children }) {
   const [selectedGroups, setSelectedGroups] = useState([]);
+  const { groups } = useContext(GroupContext); // Access groups from GroupContext
+
+  // Effect to select all groups on load
+  useEffect(() => {
+    if (groups.length > 0) {
+      setSelectedGroups(groups); // Select all groups
+    }
+  }, [groups]);
 
   const toggleSelectedGroup = (group) => {
     setSelectedGroups((prevSelectedGroups) =>

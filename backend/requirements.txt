@@ -12,3 +12,5 @@ dj-database-url
 gunicorn
 requests
 google-generativeai
+vertexai
+json
