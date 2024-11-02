@@ -15,7 +15,6 @@ from .models import User, Group, Transaction
 from .utils import send_verification_email, get_user_transactions_for_groups
 from google.oauth2 import service_account  # Importing service_account
 from vertexai.generative_models import GenerativeModel
-from rest_framework.test import APIRequestFactory
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -209,7 +208,7 @@ class VerifyEmail(APIView):
 # TODO: 
 class LLMResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         # Deserialize and validate the user input
@@ -259,7 +258,10 @@ class LLMResponseView(generics.GenericAPIView):
             answer = response.text.strip()
 
             # question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations"
-            question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations"
+
+            # gives data but specifies keys at every step - maybe needed maybe not but I worry that I cant output as much data like this
+            # question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations? Please provide them in the form new_transactions=[] with no additional information"
+            question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
 
 
             response2 = model.generate_content([question_new])
