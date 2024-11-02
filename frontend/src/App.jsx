@@ -8,43 +8,50 @@ import { TransactionProvider } from "./context/TransactionContext";
 import { GroupProvider } from "./context/GroupContext";
 import { SelectedGroupProvider, useSelectedGroup } from './context/SelectedGroupContext';
 
-function Logout(){
+function Logout() {
   localStorage.clear();
-  return <Navigate to="/login"/>;
+  return <Navigate to="/login" />;
 }
 
-function RegisterAndLogout(){
+function RegisterAndLogout() {
   localStorage.clear();
-  return <Register/>;
+  return <Register />;
+}
+
+// Wrapper component to access selectedGroupUUIDs
+function AppContent() {
+  const { selectedGroupUUIDs } = useSelectedGroup();
+
+  return (
+    <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/register" element={<RegisterAndLogout />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </TransactionProvider>
+  );
 }
 
 function App() {
-  const { selectedGroupUUIDs } = useSelectedGroup();
-
   return (
     <BrowserRouter>
       <GroupProvider>
         <SelectedGroupProvider>
-        <TransactionProvider groupUUIDs={selectedGroupUUIDs}>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/login" element={<Login />} />
-              <Route path="/logout" element={<Logout />} />
-              <Route path="/register" element={<RegisterAndLogout />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </TransactionProvider>
+          <AppContent /> {/* Use the wrapper component here */}
         </SelectedGroupProvider>
       </GroupProvider>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
