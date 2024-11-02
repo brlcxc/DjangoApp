@@ -218,24 +218,12 @@ class LLMResponseView(generics.GenericAPIView):
         
         # Get the user question and group UUIDs from the validated data
         user_question = serializer.validated_data['question']
-        # group_uuid_list = serializer.validated_data.get('group_uuid_list', '')
-
-
 
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
 
-        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list)
-        print(transactions_data)
+        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
 
-
-        # # Retrieve transaction data using the TransactionList view
-        # transaction_list_view = TransactionList()
-        # transaction_list_view.request = request
-        # transaction_list_view.kwargs = {'group_uuid_list': group_uuid_list}
-        
-        # transactions_queryset = transaction_list_view.get_queryset()
-        # transactions_data = TransactionSerializer(transactions_queryset, many=True).data
-
+        # print(transactions_data)
         # Load credentials from the environment variable
         credentials_json = os.getenv('GOOGLE_CREDENTIALS')
         if credentials_json is None:
@@ -266,14 +254,21 @@ class LLMResponseView(generics.GenericAPIView):
             model = GenerativeModel("gemini-1.5-flash-002")
             # I will call mutiple prompts in this to feed back into itself
 
-            # new transactions follow old, increase old ccordingly, and add new 
+            # new transactions follow old, increase old accordingly, and add new 
             response = model.generate_content([question_with_data])
             answer = response.text.strip()
+
+            # question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations"
+            question_new = f"From this data {transactions_data}\n\n and these situations {answer}\n\n Can you provide new transactions following the last transaction which account for account for the situations"
+
+
+            response2 = model.generate_content([question_new])
+            answer2 = response2.text.strip()
         except Exception as e:
             return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": answer})
+        response_serializer = LLMResponseSerializer(data={"answer": answer2})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
     
