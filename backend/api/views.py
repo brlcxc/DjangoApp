@@ -217,6 +217,10 @@ class VerifyEmail(APIView):
 
 # maybe I should even just have one prompt for similar and one for brand new?
 # make a statement to ensure they are date relevant 
+
+# one issue with the three step is that it would be hard to send the data all the way back again to be evaluated
+# maybe I can just append the two responses to each other - add the strings together
+# in that case I could just do one view but then I wouldnt get feedback
 class LLMCategoryResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
@@ -236,7 +240,27 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         response_serializer = LLMResponseSerializer(data={"answer": category_answer})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
-#               group_uuid_list = self.kwargs.get('group_uuid_list', '')
-# transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
 
-    #            new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_answer}\n\n Can you provide 20 new transactions after {date}? Some should follow the trends of the existing transactions as well as account for the subject and situations. If a situation relates to an existing category then a new transaction in that category should be given a cost accordingly. Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+# it might be unwise to send the transactions back after the second response because it isn't efficient to send
+# it would be better to call the third within the second and merge the lists there
+class LLMTransactionResponseView(generics.GenericAPIView):
+    serializer_class = LLMRequestSerializer  # Serializer for input data
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Deserialize and validate the user input
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Get the user question and group UUIDs from the validated data
+        category_input = serializer.validated_data['question']
+
+        group_uuid_list = self.kwargs.get('group_uuid_list', '')
+        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
+        new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n Can you provide 20 new transactions after {date}? Some should follow the trends of the existing transactions as well as account for the subject and situations. If a situation relates to an existing category then a new transaction in that category should be given a cost accordingly. Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+        
+        transaction_answer =  process_llm_prompt(new_transaction_question)
+        
+        # Serialize and return the LLM response
+        response_serializer = LLMResponseSerializer(data={"answer": transaction_answer})
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext"; 
 
+// Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
+// for chart it will follow a different form so I will probably need a new chart for that
 const TransactionRow = ({ transaction }) => (
   <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
     <div>
