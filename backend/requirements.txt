@@ -13,4 +13,3 @@ gunicorn
 requests
 google-generativeai
 vertexai
-json
