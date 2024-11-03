@@ -1,4 +1,7 @@
 import os
+import re
+from decimal import Decimal
+import datetime
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
@@ -259,8 +262,28 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n Can you provide 20 new transactions after {date}? Some should follow the trends of the existing transactions as well as account for the subject and situations. If a situation relates to an existing category then a new transaction in that category should be given a cost accordingly. Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
         
         transaction_answer =  process_llm_prompt(new_transaction_question)
-        
+
+        print(transaction_answer)
+        test = re.sub(r'```python|```|from decimal import Decimal|import datetime|new_transactions\s*=\s*', '', transaction_answer)
+
+        parsed_transactions = eval(
+            test,
+            {"Decimal": Decimal, "datetime": datetime}
+        )
+
+        cleaned_transactions = [
+            {
+                'category': transaction[0],
+                'amount': float(transaction[1]),
+                'description': transaction[2],
+                'date': transaction[3].strftime('%Y-%m-%d')
+            }
+            for transaction in parsed_transactions
+        ]
+
+        print(cleaned_transactions)
+
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": transaction_answer})
+        response_serializer = LLMResponseSerializer(data={"answer": str(cleaned_transactions)})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
