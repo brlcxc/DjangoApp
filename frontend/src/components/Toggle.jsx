@@ -19,7 +19,6 @@ const Toggle = () => {
   const { selectedGroups, toggleSelectedGroup } = useSelectedGroup();
   const [hasInitialized, setHasInitialized] = useState(false); // Track if initial toggle has been done
 
-  // Automatically select all groups on first render
   useEffect(() => {
     if (!hasInitialized && groups && groups.length > 0) {
       groups.forEach(group => {

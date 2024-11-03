@@ -1,7 +1,9 @@
+import os
+import vertexai
+import json
 from rest_framework import generics
-from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,7 +12,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email
+from .utils import send_verification_email, get_user_transactions_for_groups
+from google.oauth2 import service_account  # Importing service_account
+from vertexai.generative_models import GenerativeModel
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -131,19 +135,7 @@ class TransactionList(generics.ListAPIView):
         # Extract group UUIDs from the URL route
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
 
-        # Convert the group_uuid_list string into a list of UUIDs
-        group_uuids = group_uuid_list.split(',')
-
-        # Query for groups where the user is either the owner or a member
-        # when __in is used with group_id in this case it checks if each transaction's group_id is part of the incoming list group_uuids
-        user_groups = Group.objects.filter(
-            (Q(members=user) | Q(group_owner_id=user)) & Q(group_id__in=group_uuids)
-        )
-
-        # Return transactions that belong to the filtered groups by extracting IDs
-        # when __in is used with group_id in this case it checks if each transaction's group_id is part of the user_groups filter
-        # flat=true flattens the result so that instead of getting a list of tuples, you get a simple list of values when requesting a single field
-        return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True)).select_related('group_id')
+        return get_user_transactions_for_groups(user, group_uuid_list)
 
 class TransactionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer
@@ -212,3 +204,76 @@ class VerifyEmail(APIView):
             return Response({'status': 'Email verified successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+
+# Note: maybe split the first step into a separate view to give users the ability to manually add and remove situations
+# I am unsure how to best transfer info in that situation though 
+# I am now thinking that I will need to because how else can I display the categories output
+# I will also need a separate view to give the evaluation and suggestion on the new data compared to the old
+
+# I might need to pass a topic as well
+# the new transactions need the context of what the categories are for - not sure where to store this though
+# import in todays date rather than using last date
+# new expenses need to be based off current expenses as well as new which either modify current or are entirely new
+# I might need to have some sort of generate button between the first and second step
+# I also do need that date passed
+# I might want to hard code it in for now
+
+# maybe I should even just have one prompt for similar and one for brand new?
+# make a statement to ensure they are date relevant 
+class LLMResponseView(generics.GenericAPIView):
+    serializer_class = LLMRequestSerializer  # Serializer for input data
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Deserialize and validate the user input
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Get the user question and group UUIDs from the validated data
+        user_question = serializer.validated_data['question']
+
+        group_uuid_list = self.kwargs.get('group_uuid_list', '')
+
+        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
+
+        # Load credentials from the environment variable
+        credentials_json = os.getenv('GOOGLE_CREDENTIALS')
+        if credentials_json is None:
+            return Response({"error": "GOOGLE_CREDENTIALS environment variable is not set."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Convert the JSON string to a dictionary
+        try:
+            credentials_dict = json.loads(credentials_json)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format for GOOGLE_CREDENTIALS."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Initialize Vertex AI with credentials and project ID
+        try:
+            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+            PROJECT_ID = credentials.project_id
+            vertexai.init(project=PROJECT_ID, location="us-central1", credentials=credentials)
+        except Exception as e:
+            return Response({"error": f"Failed to initialize Vertex AI: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Generate response using the generative model
+        try:
+            # Include transaction data in the question for context
+            category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
+         
+            model = GenerativeModel("gemini-1.5-flash-002")
+
+            category_response = model.generate_content([category_question])
+            category_answer = category_response.text.strip()
+
+            # to fine tune I could maybe specify to have new transactions follow old and then alter new ones based on old ones accordingly but also add new
+            new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+
+            new_transaction_response = model.generate_content([new_transaction_question])
+            new_transaction_answer = new_transaction_response.text.strip()
+        except Exception as e:
+            return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Serialize and return the LLM response
+        response_serializer = LLMResponseSerializer(data={"answer": new_transaction_answer})
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
