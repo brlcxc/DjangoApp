@@ -1,20 +1,17 @@
 import os
-import vertexai
-import json
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .tokens import email_verification_token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups
-from google.oauth2 import service_account  # Importing service_account
-from vertexai.generative_models import GenerativeModel
+from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt
+from datetime import date
+from rest_framework.response import Response
+from rest_framework import status
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -220,7 +217,7 @@ class VerifyEmail(APIView):
 
 # maybe I should even just have one prompt for similar and one for brand new?
 # make a statement to ensure they are date relevant 
-class LLMResponseView(generics.GenericAPIView):
+class LLMCategoryResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
 
@@ -232,48 +229,14 @@ class LLMResponseView(generics.GenericAPIView):
         # Get the user question and group UUIDs from the validated data
         user_question = serializer.validated_data['question']
 
-        group_uuid_list = self.kwargs.get('group_uuid_list', '')
+        category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
-        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
-
-        # Load credentials from the environment variable
-        credentials_json = os.getenv('GOOGLE_CREDENTIALS')
-        if credentials_json is None:
-            return Response({"error": "GOOGLE_CREDENTIALS environment variable is not set."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Convert the JSON string to a dictionary
-        try:
-            credentials_dict = json.loads(credentials_json)
-        except json.JSONDecodeError:
-            return Response({"error": "Invalid JSON format for GOOGLE_CREDENTIALS."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Initialize Vertex AI with credentials and project ID
-        try:
-            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
-            PROJECT_ID = credentials.project_id
-            vertexai.init(project=PROJECT_ID, location="us-central1", credentials=credentials)
-        except Exception as e:
-            return Response({"error": f"Failed to initialize Vertex AI: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-        # Generate response using the generative model
-        try:
-            # Include transaction data in the question for context
-            category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
-         
-            model = GenerativeModel("gemini-1.5-flash-002")
-
-            category_response = model.generate_content([category_question])
-            category_answer = category_response.text.strip()
-
-            # to fine tune I could maybe specify to have new transactions follow old and then alter new ones based on old ones accordingly but also add new
-            new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
-
-            new_transaction_response = model.generate_content([new_transaction_question])
-            new_transaction_answer = new_transaction_response.text.strip()
-        except Exception as e:
-            return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        category_answer =  process_llm_prompt(category_question)
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": new_transaction_answer})
+        response_serializer = LLMResponseSerializer(data={"answer": category_answer})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+#               group_uuid_list = self.kwargs.get('group_uuid_list', '')
+# transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
+
+    #            new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_answer}\n\n Can you provide 20 new transactions after {date}? Some should follow the trends of the existing transactions as well as account for the subject and situations. If a situation relates to an existing category then a new transaction in that category should be given a cost accordingly. Please provide them as list of lists in the form new_transactions=[[]] with no additional information"

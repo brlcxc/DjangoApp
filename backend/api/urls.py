@@ -18,5 +18,5 @@ urlpatterns = [
     path('verify-email/<uuidb64>/<token>/', views.VerifyEmail.as_view(), name='verify_email'),  #idk
 
     # LLM URLs
-    path('llm/ask/<str:group_uuid_list>/', views.LLMResponseView.as_view(), name='llm-ask'),  # Endpoint for sending a question to the LLM
+    path('llm/ask/<str:group_uuid_list>/', views.LLMCategoryResponseView.as_view(), name='llm-ask'),  # Endpoint for sending a question to the LLM
 ]
