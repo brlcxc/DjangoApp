@@ -30,16 +30,10 @@ function LLMInterface() {
     try {
       // Step 2: Send the edited response to the group-specific endpoint using axios
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
-      const response = await api.post(endpoint, 
-        { question: outputText },  // Use the edited response
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
-          }
-        }
-      );
+      const response = await api.post(endpoint, { question: outputText });
 
-      setOutputText(response.data.answer);  // Display the final response
+      // setOutputText(response.data.answer);  // Display the final response
+      console.log(response)
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {

@@ -3,7 +3,7 @@ import re
 from decimal import Decimal
 import datetime
 from rest_framework import generics
-from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCharResponseSerializer
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
 from .tokens import email_verification_token
@@ -240,7 +240,7 @@ class LLMCategoryResponseView(generics.GenericAPIView):
 
         category_answer =  process_llm_prompt(category_question)
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": category_answer})
+        response_serializer = LLMCharResponseSerializer(data={"answer": category_answer})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
@@ -283,9 +283,7 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             for transaction in parsed_transactions
         ]
 
-        print(cleaned_transactions)
-
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": str(cleaned_transactions)})
+        response_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
