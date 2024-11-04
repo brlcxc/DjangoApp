@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSelectedGroup } from '../context/SelectedGroupContext';
 import { ACCESS_TOKEN } from "../constants";
+import api from '../api';
 
 function LLMInterface() {
   const { selectedGroupUUIDs } = useSelectedGroup();
@@ -12,23 +13,11 @@ function LLMInterface() {
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
     try {
-      // Step 1: Fetch initial response from the generic endpoint
-      const response = await fetch(`http://127.0.0.1:8000/api/llm/ask/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
-        },
-        body: JSON.stringify({ question: inputText }),
-      });
+      // Step 1: Fetch initial response from the generic endpoint using axios
+      const response = await api.post(`/api/llm/ask/`, { question: inputText });
 
-      if (response.ok) {
-        const data = await response.json();
-        setOutputText(data.answer);  // Display the initial response for editing
-        setIsEditing(true);  // Allow editing before sending to group-specific endpoint
-      } else {
-        setOutputText("Failed to get a response from the server.");
-      }
+      setOutputText(response.data.answer);  // Display the initial response for editing
+      setIsEditing(true);  // Allow editing before sending to group-specific endpoint
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
@@ -39,23 +28,18 @@ function LLMInterface() {
   const handleFinalGenerateResponse = async () => {
     setLoading(true);
     try {
-      // Step 2: Send the edited response to the group-specific endpoint
-      const endpoint = `http://127.0.0.1:8000/api/llm/ask/${selectedGroupUUIDs}/`;
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
-        },
-        body: JSON.stringify({ question: outputText }),  // Use the edited response
-      });
+      // Step 2: Send the edited response to the group-specific endpoint using axios
+      const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
+      const response = await api.post(endpoint, 
+        { question: outputText },  // Use the edited response
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+          }
+        }
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        setOutputText(data.answer);  // Display the final response
-      } else {
-        setOutputText("Failed to get a response from the server.");
-      }
+      setOutputText(response.data.answer);  // Display the final response
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {

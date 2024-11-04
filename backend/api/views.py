@@ -246,6 +246,8 @@ class LLMCategoryResponseView(generics.GenericAPIView):
 
 # it might be unwise to send the transactions back after the second response because it isn't efficient to send
 # it would be better to call the third within the second and merge the lists there
+
+# look at the prompt which called a second because it seems two can be retrieved
 class LLMTransactionResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
