@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelectedGroup } from '../context/SelectedGroupContext';
-import { ACCESS_TOKEN } from "../constants";
 import api from '../api';
+import TransactionList from "../components/TransactionList";
 
 function LLMInterface() {
   const { selectedGroupUUIDs } = useSelectedGroup();
@@ -9,6 +9,7 @@ function LLMInterface() {
   const [outputText, setOutputText] = useState("");
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [mergeData, setMergeData] = useState(null);  // State for transaction data
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -32,8 +33,9 @@ function LLMInterface() {
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
       const response = await api.post(endpoint, { question: outputText });
 
-      // setOutputText(response.data.answer);  // Display the final response
-      console.log(response)
+      setMergeData(response.data);  // Set mergeData with transactions
+      
+      console.log(response.data);
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
@@ -82,6 +84,8 @@ function LLMInterface() {
           {loading ? "Generating..." : "Generate Response"}
         </button>
       )}
+      {/* Conditionally render TransactionList with mergeData */}
+      {mergeData && <TransactionList mergeData={mergeData} />}
     </div>
   );
 }

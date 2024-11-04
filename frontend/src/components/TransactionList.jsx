@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { TransactionContext } from "../context/TransactionContext"; 
+import { TransactionContext } from "../context/TransactionContext";
 
 // Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
 // for chart it will follow a different form so I will probably need a new chart for that
@@ -23,12 +23,11 @@ const TransactionRow = ({ transaction }) => (
         : "0.00"}
     </div>
     <div>{transaction.category || "Uncategorized"}</div>
-    <div>{transaction.group_name}</div>
-    {/* <div>{0}</div> */}
+    <div>{transaction.group_name || "No Group"}</div>
   </div>
 );
 
-const TransactionList = () => {
+const TransactionList = ({ mergeData = {} }) => {
   const { transactions, loading, error } = useContext(TransactionContext);
   const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
   const [filterType, setFilterType] = useState("All");
@@ -40,9 +39,7 @@ const TransactionList = () => {
         ...new Set(transactions.map((t) => t.category || "Uncategorized")),
       ];
       setCategories(
-        uniqueCategories.length > 0
-          ? uniqueCategories
-          : ["Direct Payment", "Deposit"]
+        uniqueCategories.length > 0 ? uniqueCategories : ["Direct Payment", "Deposit"]
       );
     }
   }, [transactions]);
@@ -53,6 +50,7 @@ const TransactionList = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   const filteredTransactions = transactions
+    .map((transaction) => ({ ...transaction, ...mergeData }))
     .filter(
       (transaction) =>
         filterType === "All" || transaction.category === filterType
@@ -100,7 +98,7 @@ const TransactionList = () => {
         <div>Description</div>
         <div>Amount</div>
         <div>Category</div>
-        <div>Group</div>
+        <div>Group</div>        
         {/* <div>Current Balance</div> */}
       </div>
       {/* TODO fix sizing on both this and the chart */}
