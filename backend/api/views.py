@@ -15,6 +15,7 @@ from .utils import send_verification_email, get_user_transactions_for_groups, pr
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.dateparse import parse_date
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -260,16 +261,33 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         category_input = serializer.validated_data['question']
 
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
-        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
-        new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n Can you provide 20 new transactions after {date}? Some should follow the trends of the existing transactions as well as account for the subject and situations. If a situation relates to an existing category then a new transaction in that category should be given a cost accordingly. Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
         
+        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
+        
+        transactions_data_list = [
+            {
+                'category': trans['category'],
+                'amount': float(trans['amount']),
+                'description': trans['description'],
+                'date': trans['start_date'].strftime('%Y-%m-%d') if trans['start_date'] else None
+            }
+            for trans in transactions_data
+        ]
+
+        new_transaction_question = (
+            f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
+            f"Can you provide 20 new transactions after {date}? Some should follow the trends of the existing "
+            f"transactions as well as account for the subject and situations. If a situation relates to an "
+            f"existing category then a new transaction in that category should be given a cost accordingly. "
+            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+        )    
+
         transaction_answer =  process_llm_prompt(new_transaction_question)
 
-        print(transaction_answer)
-        test = re.sub(r'```python|```|from decimal import Decimal|import datetime|new_transactions\s*=\s*', '', transaction_answer)
+        stripped_str = re.sub(r'```python|```|from decimal import Decimal|import datetime|new_transactions\s*=\s*', '', transaction_answer)
 
         parsed_transactions = eval(
-            test,
+            stripped_str,
             {"Decimal": Decimal, "datetime": datetime}
         )
 
@@ -282,6 +300,18 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             }
             for transaction in parsed_transactions
         ]
+
+
+        merge = transactions_data_list + cleaned_transactions
+
+        spending_evaluation_question = f"Analyze and compare the transactions following {date} with those before it. In one sentence explain any issues with spending and indicate if the costs exceed income. In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
+
+        evaluation_answer =  process_llm_prompt(spending_evaluation_question)
+
+        print(evaluation_answer)
+
+
+        # merge transactions_data and cleaned transactions
 
         # Serialize and return the LLM response
         response_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
