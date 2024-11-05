@@ -249,6 +249,11 @@ class LLMCategoryResponseView(generics.GenericAPIView):
 # it would be better to call the third within the second and merge the lists there
 
 # look at the prompt which called a second because it seems two can be retrieved
+
+# it might be unwise to send the transactions back after the second response because it isn't efficient to send
+# it would be better to call the third within the second and merge the lists there
+
+# look at the prompt which called a second because it seems two can be retrieved
 class LLMTransactionResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
@@ -301,19 +306,24 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             for transaction in parsed_transactions
         ]
 
-
         merge = transactions_data_list + cleaned_transactions
 
         spending_evaluation_question = f"Analyze and compare the transactions following {date} with those before it. In one sentence explain any issues with spending and indicate if the costs exceed income. In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
 
         evaluation_answer =  process_llm_prompt(spending_evaluation_question)
 
-        print(evaluation_answer)
+        # Serialize the transactions with LLMTransactionResponseSerializer
+        transaction_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
+        transaction_serializer.is_valid(raise_exception=True)
+        
+        # Serialize the evaluation answer with LLMCharResponseSerializer
+        evaluation_serializer = LLMCharResponseSerializer(data={'answer': evaluation_answer})
+        evaluation_serializer.is_valid(raise_exception=True)
 
+        # Combine both serialized responses
+        response_data = {
+            'new_transactions': transaction_serializer.data,
+            'evaluation': evaluation_serializer.data,
+        }
 
-        # merge transactions_data and cleaned transactions
-
-        # Serialize and return the LLM response
-        response_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
-        response_serializer.is_valid(raise_exception=True)
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
+        return Response(response_data, status=status.HTTP_200_OK)
