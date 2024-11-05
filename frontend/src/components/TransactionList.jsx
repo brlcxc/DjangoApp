@@ -47,15 +47,17 @@ const TransactionList = ({ mergeData = [] }) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  // Merge `transactions` with `mergeData`
-  const combinedTransactions = [
-    ...transactions,
-    ...mergeData.map(data => ({
-      ...data,
-      group_name: data.group_name || "No Group"  // Add default group name if not present
-    })),
-  ];
+  // Format dates and ensure group_name in mergeData
+  const formattedMergeData = mergeData.map(item => ({
+    ...item,
+    start_date: new Date(item.date).toISOString(),  // Convert date to ISO format
+    group_name: item.group_name || "No Group",      // Default group name
+  }));
 
+  // Combine transactions and formattedMergeData
+  const combinedTransactions = [...transactions, ...formattedMergeData];
+
+  // Filter and sort the combined transactions
   const filteredTransactions = combinedTransactions
     .filter(
       (transaction) =>
@@ -63,7 +65,7 @@ const TransactionList = ({ mergeData = [] }) => {
     )
     .sort((a, b) =>
       sortOption === "date"
-        ? new Date(a.date || a.start_date) - new Date(b.date || b.start_date)
+        ? new Date(a.start_date) - new Date(b.start_date)
         : parseFloat(b.amount) - parseFloat(a.amount)
     );
 
