@@ -13,6 +13,7 @@ function LLMInterface() {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [mergeData, setMergeData] = useState(null);  // State for transaction data
+  const [evaluation, setEvaluationData] = useState(null);  // State for transaction data
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -45,6 +46,7 @@ function LLMInterface() {
       console.log(evaluation);
       console.log(transactions);
       setMergeData(transactions);
+      setEvaluationData(evaluation);
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
@@ -96,6 +98,7 @@ function LLMInterface() {
       )}
       {/* Conditionally render TransactionList with mergeData */}
       {mergeData && <TransactionList mergeData={mergeData} />}
+      <div>{evaluation}</div>
     </div>
   );
 }
