@@ -308,7 +308,7 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
         merge = transactions_data_list + cleaned_transactions
 
-        spending_evaluation_question = f"Analyze and compare the transactions following {date} with those before it. In one sentence explain any issues with spending and indicate if the costs exceed income. In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
+        spending_evaluation_question = f"Analyze and compare the transactions following today's date {date} with those before it. In one sentence explain any issues with spending and indicate if the costs exceed income. In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
 
         evaluation_answer =  process_llm_prompt(spending_evaluation_question)
 
