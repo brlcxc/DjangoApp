@@ -1,7 +1,7 @@
 import re
 import datetime
 from rest_framework import generics
-from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCharResponseSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCategoryResponseSerializer
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
 from .tokens import email_verification_token
@@ -204,6 +204,9 @@ class VerifyEmail(APIView):
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
 
+# right now I just have a separate subject but maybe it would be better to append it to each category
+# maybe I have the subject as an unchanging block and then only the categories can be modified further
+# I need a way to send the data properly - maybe split it into two like with the other view - not sure how to serialize that though
 class LLMCategoryResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
@@ -219,8 +222,25 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
         category_answer =  process_llm_prompt(category_question)
-        # Serialize and return the LLM response
-        response_serializer = LLMCharResponseSerializer(data={"answer": category_answer})
+
+        # Parse the string response to structured data
+        situations = re.findall(r'situations = \[(.*?)\]', category_answer)
+        subject = re.search(r'subject = "(.*?)"', category_answer)
+
+        # Convert parsed strings to proper data types
+        situations_list = situations[0].split(", ") if situations else []
+        subject_str = subject.group(1) if subject else ""
+
+        print(situations_list)
+        print(subject_str)
+
+        # Return the structured data
+        response_data = {
+            "situations": [s.strip('"') for s in situations_list],
+            "subject": subject_str
+        }
+
+        response_serializer = LLMCategoryResponseSerializer(data=response_data)
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 

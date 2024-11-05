@@ -66,8 +66,9 @@ class LLMRequestSerializer(serializers.Serializer):
     question = serializers.CharField(max_length=500)
 
 
-class LLMCharResponseSerializer(serializers.Serializer):
-    answer = serializers.CharField()
+class LLMCategoryResponseSerializer(serializers.Serializer):
+    situations = serializers.ListField(child=serializers.CharField())
+    subject = serializers.CharField()
 
 # differs from transaction serializer because we don't need all the information that we do for normal transactions here
 class LLMTransactionResponseSerializer(serializers.Serializer):
