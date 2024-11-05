@@ -52,6 +52,21 @@ function LLMInterface() {
     setSituations(situations.filter((_, i) => i !== index));
   };
 
+  const handleEditClick = (index) => {
+    setSituations(
+      situations.map((situation, i) =>
+        i === index ? { ...situation, isEditing: true } : situation
+      )
+    );
+  };
+
+  const handleSaveEdit = (index, newText) => {
+    setSituations(
+      situations.map((situation, i) =>
+        i === index ? { text: newText, isEditing: false } : situation
+      )
+    );
+  };
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
       <div className="w-full p-4 border rounded-lg shadow-lg bg-gray-100">
@@ -69,17 +84,22 @@ function LLMInterface() {
         onChange={(e) => setInputText(e.target.value)}
         disabled={isEditing}
       />
-            <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
+      <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
         Subject: {situationsSubject}
       </div>
       <div className="flex space-x-2">
         {situations.map((situation, index) => (
           <div
             key={index}
-            onClick={() => handleRemoveSituation(index)}
-            className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition"
+            className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2"
           >
-            {situation}
+            <button
+              onClick={() => handleRemoveSituation(index)}
+              className="text-white bg-red-500 rounded-full p-1 hover:bg-red-600 focus:outline-none"
+            >
+              &times;
+            </button>
+            <span>{situation}</span>
           </div>
         ))}
       </div>
