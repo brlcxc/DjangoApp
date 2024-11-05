@@ -1,6 +1,4 @@
-import os
 import re
-from decimal import Decimal
 import datetime
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCharResponseSerializer
@@ -15,7 +13,7 @@ from .utils import send_verification_email, get_user_transactions_for_groups, pr
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
-from django.utils.dateparse import parse_date
+from decimal import Decimal
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
