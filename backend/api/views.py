@@ -1,7 +1,7 @@
 import re
 import datetime
 from rest_framework import generics
-from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCategoryResponseSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCategoryResponseSerializer, LLMCharResponseSerializer
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
 from .tokens import email_verification_token

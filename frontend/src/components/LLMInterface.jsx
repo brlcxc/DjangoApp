@@ -24,8 +24,11 @@ function LLMInterface() {
     try {
       // Step 1: Fetch initial response from the generic endpoint using axios
       const response = await api.post(`/api/llm/ask/`, { question: inputText });
+      const situations = response.data.situations
+      const subject = response.data.subject
+      console.log(response)
 
-      setOutputText(response.data.answer);  // Display the initial response for editing
+      setOutputText(situations.toString());  // Display the initial response for editing
       setIsEditing(true);  // Allow editing before sending to group-specific endpoint
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
