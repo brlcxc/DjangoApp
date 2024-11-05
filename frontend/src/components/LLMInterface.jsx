@@ -13,6 +13,7 @@ function LLMInterface() {
   const [evaluation, setEvaluationData] = useState(null);
   const [situations, setSituations] = useState([]);
   const [situationsSubject, setSubject] = useState("");
+  const [newSituationText, setNewSituationText] = useState(""); // State for new situation
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -79,11 +80,21 @@ function LLMInterface() {
     );
   };
 
+  // Function to handle adding a new situation
+  const handleAddSituation = () => {
+    if (newSituationText.trim()) {
+      setSituations([...situations, { text: newSituationText, isEditing: false }]);
+      setNewSituationText(""); // Clear the input after adding
+    }
+  };
+
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
       <div className="w-full p-4 border rounded-lg shadow-lg bg-gray-100">
         <p className="text-gray-800">
-          {loading ? "Loading..." : outputText || "Response will appear here..."}
+          {loading
+            ? "Loading..."
+            : outputText || "Response will appear here..."}
         </p>
       </div>
       <textarea
@@ -94,14 +105,15 @@ function LLMInterface() {
         onChange={(e) => setInputText(e.target.value)}
         disabled={isEditing}
       />
-      <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
-        Subject: {situationsSubject}
-      </div>
+
       <div className="flex space-x-4">
+        <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
+          Subject: {situationsSubject}
+        </div>
         {situations.map((situation, index) => (
           <div
             key={index}
-            className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2"
+            className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2 h-14"
           >
             <button
               onClick={() => handleRemoveSituation(index)}
@@ -115,15 +127,35 @@ function LLMInterface() {
                 value={situation.text}
                 onChange={(e) => handleEditChange(index, e.target.value)}
                 onBlur={() => handleSaveEdit(index, situation.text)}
-                className="bg-white text-black p-2 rounded"
+                className="bg-white text-black rounded w-full h-full overflow-hidden"
                 autoFocus
               />
             ) : (
-              <span onClick={() => handleEditClick(index)}>{situation.text}</span>
+              <span onClick={() => handleEditClick(index)}>
+                {situation.text}
+              </span>
             )}
           </div>
         ))}
       </div>
+
+      {/* New situation input box */}
+      <div className="flex flex-col space-y-2">
+        <textarea
+          className="w-full p-4 border rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
+          rows="2"
+          placeholder="Add a new situation..."
+          value={newSituationText}
+          onChange={(e) => setNewSituationText(e.target.value)}
+        />
+        <button
+          className="px-4 py-2 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700"
+          onClick={handleAddSituation}
+        >
+          Add Situation
+        </button>
+      </div>
+
       {isEditing ? (
         <>
           <textarea
@@ -156,3 +188,11 @@ function LLMInterface() {
 }
 
 export default LLMInterface;
+
+
+//final box after the ... has a plus
+{/* <div class="flex flex-col h-screen justify-end items-center bg-gray-800">
+  <p class="text-white text-6xl mb-4">
+    Your large white text here
+  </p>
+</div> */}
