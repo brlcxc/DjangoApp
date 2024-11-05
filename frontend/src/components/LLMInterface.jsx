@@ -14,6 +14,10 @@ function LLMInterface() {
   const [isEditing, setIsEditing] = useState(false);
   const [mergeData, setMergeData] = useState(null);  // State for transaction data
   const [evaluation, setEvaluationData] = useState(null);  // State for transaction data
+  const [textBoxes, setTextBoxes] = useState(['Text 1', 'Text 2', 'Text 3', 'Text 4', 'Text 5']);
+  const handleClick = (text) => {
+    setTextBoxes(textBoxes.filter((item) => item !== text));
+  };
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -99,6 +103,17 @@ function LLMInterface() {
       {/* Conditionally render TransactionList with mergeData */}
       {mergeData && <TransactionList mergeData={mergeData} />}
       <div>{evaluation}</div>
+      <div className="flex space-x-2">
+      {textBoxes.map((text) => (
+        <div
+          key={text}
+          onClick={() => handleClick(text)}
+          className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition"
+        >
+          {text}
+        </div>
+      ))}
+    </div>
     </div>
   );
 }
