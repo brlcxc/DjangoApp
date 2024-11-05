@@ -27,7 +27,7 @@ const TransactionRow = ({ transaction }) => (
   </div>
 );
 
-const TransactionList = ({ mergeData = {} }) => {
+const TransactionList = ({ mergeData = [] }) => {
   const { transactions, loading, error } = useContext(TransactionContext);
   const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
   const [filterType, setFilterType] = useState("All");
@@ -44,20 +44,26 @@ const TransactionList = ({ mergeData = {} }) => {
     }
   }, [transactions]);
 
-  //Move these so that the chart still appears above the error 
-  //Maybe the graph can be empty?
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const filteredTransactions = transactions
-    .map((transaction) => ({ ...transaction, ...mergeData }))
+  // Merge `transactions` with `mergeData`
+  const combinedTransactions = [
+    ...transactions,
+    ...mergeData.map(data => ({
+      ...data,
+      group_name: data.group_name || "No Group"  // Add default group name if not present
+    })),
+  ];
+
+  const filteredTransactions = combinedTransactions
     .filter(
       (transaction) =>
         filterType === "All" || transaction.category === filterType
     )
     .sort((a, b) =>
       sortOption === "date"
-        ? new Date(a.start_date) - new Date(b.start_date)
+        ? new Date(a.date || a.start_date) - new Date(b.date || b.start_date)
         : parseFloat(b.amount) - parseFloat(a.amount)
     );
 
@@ -98,10 +104,8 @@ const TransactionList = ({ mergeData = {} }) => {
         <div>Description</div>
         <div>Amount</div>
         <div>Category</div>
-        <div>Group</div>        
-        {/* <div>Current Balance</div> */}
+        <div>Group</div>
       </div>
-      {/* TODO fix sizing on both this and the chart */}
       <div className="overflow-y-auto max-h-[350px]">
         {filteredTransactions && filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (

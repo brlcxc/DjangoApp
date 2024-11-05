@@ -3,6 +3,9 @@ import { useSelectedGroup } from '../context/SelectedGroupContext';
 import api from '../api';
 import TransactionList from "../components/TransactionList";
 
+//I want a spending line and a receiving line
+//I want an annotation to mark the transition from real to estimate
+
 function LLMInterface() {
   const { selectedGroupUUIDs } = useSelectedGroup();
   const [inputText, setInputText] = useState("");
@@ -26,23 +29,30 @@ function LLMInterface() {
     }
   };
 
+  //maybe I can get away with a different llm on just the second step
+  //show both charts of data side by side
+  //this might be a little scuff though
   const handleFinalGenerateResponse = async () => {
     setLoading(true);
     try {
-      // Step 2: Send the edited response to the group-specific endpoint using axios
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
       const response = await api.post(endpoint, { question: outputText });
-
-      setMergeData(response.data);  // Set mergeData with transactions
-      
-      console.log(response.data);
+  
+      console.log(response)
+      // Ensure `transactions` is an array and correctly structured
+      const transactions = response.data.new_transactions;
+      const evaluation = response.data.evaluation.answer;
+      console.log(evaluation);
+      console.log(transactions);
+      setMergeData(transactions);
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
       setLoading(false);
-      setIsEditing(false);  // Return to normal mode after sending to the group endpoint
+      setIsEditing(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
