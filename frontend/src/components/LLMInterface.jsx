@@ -108,10 +108,8 @@ function LLMInterface() {
         )}
       </div>
       {showTransactionList && ( // Conditionally render TransactionList
-          <div className="bg-white p-8 rounded-xl shadow-lg">
-            {evaluation}
-          </div>
-        )}
+        <div className="bg-white p-8 rounded-xl shadow-lg">{evaluation}</div>
+      )}
       <div className="flex space-x-4 h-16">
         {situationsSubject && (
           <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
@@ -138,13 +136,13 @@ function LLMInterface() {
           <div className="p-4 bg-blue-500 text-black rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
             <input
               type="text"
-              placeholder="Add new situation..."
+              placeholder="Add new category..."
               value={newSituationText}
               onChange={(e) => setNewSituationText(e.target.value)}
               className="p-2 rounded border border-gray-300"
             />
             <button
-              className="p-2 bg-green-500 text-white size-8 rounded cursor-pointer hover:bg-green-600"
+              className="flex items-center justify-center size-8 p-1 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
               onClick={handleAddSituation}
             >
               +
