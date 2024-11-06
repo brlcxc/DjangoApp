@@ -100,14 +100,16 @@ function LLMInterface() {
           <TransactionList mergeData={mergeData} />
         </div>
       </div>
-      <div className="flex space-x-4">
+
+      <div className="flex space-x-4 h-16">
         <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
           Subject: {situationsSubject}
         </div>
+
         {situations.map((situation, index) => (
           <div
             key={index}
-            className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2 h-14"
+            className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2 h-full"
           >
             <button
               onClick={() => handleRemoveSituation(index)}
@@ -115,7 +117,7 @@ function LLMInterface() {
             >
               &times;
             </button>
-            {situation.isEditing ? (
+            {/* {situation.isEditing ? (
               <input
                 type="text"
                 value={situation.text}
@@ -128,16 +130,18 @@ function LLMInterface() {
               <span onClick={() => handleEditClick(index)}>
                 {situation.text}
               </span>
-            )}
+              
+            )} */
+              <span onClick={() => handleEditClick(index)}>
+              {situation.text}
+            </span>}
           </div>
         ))}
-         <div class="justify-end items-center">
-  <p class="text-white text-6xl">
-    ...
-  </p>
-</div>
+        {/* <div class="justify-end items-center">
+          <p class="text-white text-6xl">...</p>
+        </div> */}
 
-        <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
+        <div className="p-4 bg-blue-500 text-white rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
           <input
             type="text"
             placeholder="Add new situation..."
@@ -184,3 +188,4 @@ function LLMInterface() {
 }
 
 export default LLMInterface;
+//maybe get rid pf text box when the boxes below load
