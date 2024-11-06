@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useSelectedGroup } from "../context/SelectedGroupContext";
 import api from "../api";
-import TransactionList from "../components/TransactionList";
+import TransactionList from "./TransactionList";
+import TransactionLineChart from "./TransactionLineChart";
 
 function LLMInterface() {
   const { selectedGroupUUIDs } = useSelectedGroup();
@@ -14,6 +15,7 @@ function LLMInterface() {
   const [situations, setSituations] = useState([]);
   const [situationsSubject, setSubject] = useState("");
   const [newSituationText, setNewSituationText] = useState("");
+  const [finalResponseSent, setFinalResponseSent] = useState(false);
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -44,6 +46,7 @@ function LLMInterface() {
       const evaluation = response.data.evaluation.answer;
       setMergeData(transactions);
       setEvaluationData(evaluation);
+      setFinalResponseSent(true);
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
@@ -94,10 +97,12 @@ function LLMInterface() {
     <div className="flex flex-col items-center p-6 space-y-4">
       <div className="grid grid-cols-2 gap-8">
         <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
-          <TransactionList mergeData={mergeData} />
+          {/* Conditionally render TransactionList only if final response has been sent */}
+          {finalResponseSent && <TransactionList mergeData={mergeData} />}
         </div>
         <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
           {/* Optional chart component */}
+          {finalResponseSent && <TransactionLineChart mergeData={mergeData} />}
         </div>
       </div>
 
@@ -172,3 +177,4 @@ function LLMInterface() {
 }
 
 export default LLMInterface;
+//Maybe instruction thing always at top
