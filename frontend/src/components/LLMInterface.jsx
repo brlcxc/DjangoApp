@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelectedGroup } from "../context/SelectedGroupContext";
 import api from "../api";
-import TransactionList from "./TransactionList";
+import TransactionList from "../components/TransactionList";
 import TransactionLineChart from "./TransactionLineChart";
 
 function LLMInterface() {
@@ -15,7 +15,7 @@ function LLMInterface() {
   const [situations, setSituations] = useState([]);
   const [situationsSubject, setSubject] = useState("");
   const [newSituationText, setNewSituationText] = useState("");
-  const [finalResponseSent, setFinalResponseSent] = useState(false);
+  const [showTransactionList, setShowTransactionList] = useState(false); // New state
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -46,7 +46,7 @@ function LLMInterface() {
       const evaluation = response.data.evaluation.answer;
       setMergeData(transactions);
       setEvaluationData(evaluation);
-      setFinalResponseSent(true);
+      setShowTransactionList(true); // Show TransactionList after sending response
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
@@ -96,14 +96,18 @@ function LLMInterface() {
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
       <div className="grid grid-cols-2 gap-8">
+        {showTransactionList && ( // Conditionally render TransactionList
+          <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
+            <TransactionList mergeData={mergeData} />
+          </div>
+        )}
+                {showTransactionList && ( // Conditionally render TransactionList
+
         <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
-          {/* Conditionally render TransactionList only if final response has been sent */}
-          {finalResponseSent && <TransactionList mergeData={mergeData} />}
-        </div>
-        <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
-          {/* Optional chart component */}
-          {finalResponseSent && <TransactionLineChart mergeData={mergeData} />}
-        </div>
+            <TransactionLineChart mergeData={mergeData} />
+            </div>
+      )}
+
       </div>
 
       <div className="flex space-x-4 h-16">
@@ -177,4 +181,5 @@ function LLMInterface() {
 }
 
 export default LLMInterface;
+
 //Maybe instruction thing always at top
