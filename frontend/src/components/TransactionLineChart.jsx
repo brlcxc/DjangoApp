@@ -2,8 +2,9 @@ import React, { useContext, useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { TransactionContext } from "../context/TransactionContext";
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
+// import annotationPlugin from 'chartjs-plugin-annotation';
 
-// Register the Chart.js components
+// Register the Chart.js components and annotation plugin
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 const TransactionLineChart = ({ mergeData = [] }) => {
@@ -22,24 +23,40 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     // Sort by date for chronological order
     combinedTransactions.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
 
-    // Map data for Chart.js
+    // Filter for positive and negative transactions
+    const positiveTransactions = combinedTransactions.map(transaction => 
+      transaction.amount >= 0 ? transaction.amount : null
+    );
+    const negativeTransactions = combinedTransactions.map(transaction => 
+      transaction.amount < 0 ? transaction.amount : null
+    );
+
     return {
       labels: combinedTransactions.map(transaction => 
         transaction.start_date ? new Date(transaction.start_date).toLocaleDateString() : "N/A"
       ),
       datasets: [
         {
-          label: "Transaction Amount",
-          data: combinedTransactions.map(transaction => transaction.amount || 0),
-          fill: false,
-          borderColor: "rgba(75,192,192,1)",
+          label: "Positive Transactions",
+          data: positiveTransactions,
+          borderColor: "rgba(75, 192, 192, 1)",
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
           tension: 0.1,
+          spanGaps: true, // Avoid drawing lines between null points
+        },
+        {
+          label: "Negative Transactions",
+          data: negativeTransactions,
+          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          tension: 0.1,
+          spanGaps: true,
         },
       ],
     };
   }, [transactions, mergeData]);
 
-  // Chart options
+  // Chart options with annotation
   const options = {
     responsive: true,
     scales: {
@@ -48,6 +65,22 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     },
     plugins: {
       legend: { display: true, position: 'top' },
+    //   annotation: {
+    //     annotations: {
+    //       todayLine: {
+    //         type: 'line',
+    //         xMin: new Date().toLocaleDateString(),
+    //         xMax: new Date().toLocaleDateString(),
+    //         borderColor: 'rgba(0, 0, 0, 0.5)',
+    //         borderWidth: 2,
+    //         label: {
+    //           content: 'Today',
+    //           enabled: true,
+    //           position: 'top',
+    //         },
+    //       },
+    //     },
+    //   },
     },
   };
 

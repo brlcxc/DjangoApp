@@ -94,22 +94,24 @@ function LLMInterface() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-4">
+    <div className="flex flex-col items-center gap-6 space-y-4">
       <div className="grid grid-cols-2 gap-8">
         {showTransactionList && ( // Conditionally render TransactionList
-          <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
+          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionList mergeData={mergeData} />
           </div>
         )}
-                {showTransactionList && ( // Conditionally render TransactionList
-
-        <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
+        {showTransactionList && ( // Conditionally render TransactionList
+          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData} />
-            </div>
-      )}
-
+          </div>
+        )}
       </div>
-
+      {showTransactionList && ( // Conditionally render TransactionList
+          <div className="bg-white p-8 rounded-xl shadow-lg">
+            {evaluation}
+          </div>
+        )}
       <div className="flex space-x-4 h-16">
         {situationsSubject && (
           <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
@@ -124,18 +126,16 @@ function LLMInterface() {
           >
             <button
               onClick={() => handleRemoveSituation(index)}
-              className="text-white bg-red-500 rounded-full p-1 hover:bg-red-600 focus:outline-none"
+              className="text-white bg-red-500 size-8 rounded p-1 hover:bg-red-600 focus:outline-none"
             >
               &times;
             </button>
-            <span onClick={() => handleEditClick(index)}>
-              {situation.text}
-            </span>
+            <span onClick={() => handleEditClick(index)}>{situation.text}</span>
           </div>
         ))}
 
         {situations.length > 0 && (
-          <div className="p-4 bg-blue-500 text-white rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
+          <div className="p-4 bg-blue-500 text-black rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
             <input
               type="text"
               placeholder="Add new situation..."
@@ -144,7 +144,7 @@ function LLMInterface() {
               className="p-2 rounded border border-gray-300"
             />
             <button
-              className="p-2 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
+              className="p-2 bg-green-500 text-white size-8 rounded cursor-pointer hover:bg-green-600"
               onClick={handleAddSituation}
             >
               +
@@ -165,7 +165,11 @@ function LLMInterface() {
 
       <button
         className="px-4 py-2 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-        onClick={isEditing ? handleFinalGenerateResponse : handleInitialGenerateResponse}
+        onClick={
+          isEditing
+            ? handleFinalGenerateResponse
+            : handleInitialGenerateResponse
+        }
         disabled={loading}
       >
         {loading
