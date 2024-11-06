@@ -187,3 +187,4 @@ function LLMInterface() {
 export default LLMInterface;
 
 //Maybe instruction thing always at top
+//Transaction list should order with newest first
