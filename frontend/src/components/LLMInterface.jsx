@@ -9,11 +9,11 @@ function LLMInterface() {
   const [outputText, setOutputText] = useState("");
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [mergeData, setMergeData] = useState(null);
+  const [mergeData, setMergeData] = useState([]); // Initialize as an empty array
   const [evaluation, setEvaluationData] = useState(null);
   const [situations, setSituations] = useState([]);
   const [situationsSubject, setSubject] = useState("");
-  const [newSituationText, setNewSituationText] = useState(""); // State for new situation
+  const [newSituationText, setNewSituationText] = useState("");
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -42,7 +42,7 @@ function LLMInterface() {
       const response = await api.post(endpoint, { question: outputText });
       const transactions = response.data.new_transactions;
       const evaluation = response.data.evaluation.answer;
-      setMergeData(transactions);
+      setMergeData(transactions); // Update mergeData with new transactions
       setEvaluationData(evaluation);
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
@@ -80,32 +80,26 @@ function LLMInterface() {
     );
   };
 
-  // Function to handle adding a new situation
   const handleAddSituation = () => {
     if (newSituationText.trim()) {
-      setSituations([...situations, { text: newSituationText, isEditing: false }]);
+      setSituations([
+        ...situations,
+        { text: newSituationText, isEditing: false },
+      ]);
       setNewSituationText(""); // Clear the input after adding
     }
   };
 
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
-      <div className="w-full p-4 border rounded-lg shadow-lg bg-gray-100">
-        <p className="text-gray-800">
-          {loading
-            ? "Loading..."
-            : outputText || "Response will appear here..."}
-        </p>
+      <div className="grid grid-cols-2 gap-8">
+        <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
+          <TransactionList mergeData={mergeData} />
+        </div>
+        <div className="flex flex-col bg-white p-8 mb-8 rounded-xl shadow-lg">
+          <TransactionList mergeData={mergeData} />
+        </div>
       </div>
-      <textarea
-        className="w-full p-4 border rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
-        rows="4"
-        placeholder="Type your question here..."
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        disabled={isEditing}
-      />
-
       <div className="flex space-x-4">
         <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
           Subject: {situationsSubject}
@@ -137,33 +131,37 @@ function LLMInterface() {
             )}
           </div>
         ))}
-      </div>
+         <div class="justify-end items-center">
+  <p class="text-white text-6xl">
+    ...
+  </p>
+</div>
 
-      {/* New situation input box */}
-      <div className="flex flex-col space-y-2">
-        <textarea
-          className="w-full p-4 border rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
-          rows="2"
-          placeholder="Add a new situation..."
-          value={newSituationText}
-          onChange={(e) => setNewSituationText(e.target.value)}
-        />
-        <button
-          className="px-4 py-2 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700"
-          onClick={handleAddSituation}
-        >
-          Add Situation
-        </button>
+        <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
+          <input
+            type="text"
+            placeholder="Add new situation..."
+            value={newSituationText}
+            onChange={(e) => setNewSituationText(e.target.value)}
+            className="p-2 rounded border border-gray-300"
+          />
+          <button
+            className="p-2 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
+            onClick={handleAddSituation}
+          >
+            +
+          </button>
+        </div>
       </div>
-
+      <textarea
+        className="w-full p-4 border rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
+        rows="2"
+        placeholder="Type a financial situation you would like to predict for here..."
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+      />
       {isEditing ? (
         <>
-          <textarea
-            className="w-full p-4 border rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
-            rows="4"
-            value={outputText}
-            onChange={(e) => setOutputText(e.target.value)}
-          />
           <button
             className="px-4 py-2 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             onClick={handleFinalGenerateResponse}
@@ -181,18 +179,8 @@ function LLMInterface() {
           {loading ? "Generating..." : "Generate Response"}
         </button>
       )}
-      {mergeData && <TransactionList mergeData={mergeData} />}
-      <div>{evaluation}</div>
     </div>
   );
 }
 
 export default LLMInterface;
-
-
-//final box after the ... has a plus
-{/* <div class="flex flex-col h-screen justify-end items-center bg-gray-800">
-  <p class="text-white text-6xl mb-4">
-    Your large white text here
-  </p>
-</div> */}
