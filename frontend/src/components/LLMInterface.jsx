@@ -178,8 +178,10 @@ function LLMInterface() {
             ? "Sending..."
             : "Generating..."
           : isEditing
-          ? "Send Edited Response"
-          : "Generate Response"}
+          ? "Send Modified Categories"
+          : showTransactionList
+          ? "Predict A New Situation"
+          : "Generate Categories"}
       </button>
     </div>
   );
