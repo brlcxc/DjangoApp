@@ -1,18 +1,35 @@
 import React, { useContext, useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { TransactionContext } from "../context/TransactionContext";
-import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 // import annotationPlugin from 'chartjs-plugin-annotation';
 
 // Register the Chart.js components and annotation plugin
-ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const TransactionLineChart = ({ mergeData = [] }) => {
   const { transactions } = useContext(TransactionContext);
 
   // Combine transactions and mergeData, then format the data
   const chartData = useMemo(() => {
-    const formattedMergeData = mergeData.map(item => ({
+    const formattedMergeData = mergeData.map((item) => ({
       ...item,
       start_date: item.date,
       amount: parseFloat(item.amount) || 0,
@@ -21,19 +38,23 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     const combinedTransactions = [...transactions, ...formattedMergeData];
 
     // Sort by date for chronological order
-    combinedTransactions.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+    combinedTransactions.sort(
+      (a, b) => new Date(a.start_date) - new Date(b.start_date)
+    );
 
     // Filter for positive and negative transactions
-    const positiveTransactions = combinedTransactions.map(transaction => 
+    const positiveTransactions = combinedTransactions.map((transaction) =>
       transaction.amount >= 0 ? transaction.amount : null
     );
-    const negativeTransactions = combinedTransactions.map(transaction => 
+    const negativeTransactions = combinedTransactions.map((transaction) =>
       transaction.amount < 0 ? transaction.amount : null
     );
 
     return {
-      labels: combinedTransactions.map(transaction => 
-        transaction.start_date ? new Date(transaction.start_date).toLocaleDateString() : "N/A"
+      labels: combinedTransactions.map((transaction) =>
+        transaction.start_date
+          ? new Date(transaction.start_date).toLocaleDateString()
+          : "N/A"
       ),
       datasets: [
         {
@@ -60,34 +81,36 @@ const TransactionLineChart = ({ mergeData = [] }) => {
   const options = {
     responsive: true,
     scales: {
-      x: { title: { display: true, text: 'Date' } },
-      y: { title: { display: true, text: 'Amount' } },
+      x: { title: { display: true, text: "Date" } },
+      y: { title: { display: true, text: "Amount" } },
     },
     plugins: {
-      legend: { display: true, position: 'top' },
-    //   annotation: {
-    //     annotations: {
-    //       todayLine: {
-    //         type: 'line',
-    //         xMin: new Date().toLocaleDateString(),
-    //         xMax: new Date().toLocaleDateString(),
-    //         borderColor: 'rgba(0, 0, 0, 0.5)',
-    //         borderWidth: 2,
-    //         label: {
-    //           content: 'Today',
-    //           enabled: true,
-    //           position: 'top',
-    //         },
-    //       },
-    //     },
-    //   },
+      legend: { display: true, position: "top" },
+      //   annotation: {
+      //     annotations: {
+      //       todayLine: {
+      //         type: 'line',
+      //         xMin: new Date().toLocaleDateString(),
+      //         xMax: new Date().toLocaleDateString(),
+      //         borderColor: 'rgba(0, 0, 0, 0.5)',
+      //         borderWidth: 2,
+      //         label: {
+      //           content: 'Today',
+      //           enabled: true,
+      //           position: 'top',
+      //         },
+      //       },
+      //     },
+      //   },
     },
   };
 
   return (
-    <div className="mb-5">
-      <h2 className="text-xl font-bold mb-3">Transaction Trend</h2>
-      <Line data={chartData} options={options} />
+    <div>
+      <h1 className="text-2xl font-bold mb-5 text-black">Transaction Trend</h1>
+      <div className="flex items-center justify-center h-[480px]">
+        <Line data={chartData} options={options} />
+      </div>
     </div>
   );
 };
