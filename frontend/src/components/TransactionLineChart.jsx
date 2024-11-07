@@ -58,7 +58,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
       ),
       datasets: [
         {
-          label: "Positive Transactions",
+          label: "Income",
           data: positiveTransactions,
           borderColor: "rgba(75, 192, 192, 1)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -66,7 +66,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
           spanGaps: true, // Avoid drawing lines between null points
         },
         {
-          label: "Negative Transactions",
+          label: "Spending",
           data: negativeTransactions,
           borderColor: "rgba(255, 99, 132, 1)",
           backgroundColor: "rgba(255, 99, 132, 0.2)",

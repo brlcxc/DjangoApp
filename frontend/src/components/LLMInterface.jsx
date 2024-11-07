@@ -96,61 +96,63 @@ function LLMInterface() {
   return (
     <div className="flex flex-col w-full items-center gap-6">
       {showTransactionList && (
-      <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8">
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionList mergeData={mergeData} />
           </div>
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData} />
           </div>
-      </div>
+        </div>
       )}
       {showTransactionList && ( // Conditionally render TransactionList
-        <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">{evaluation}</div>
+        <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">
+          {evaluation}
+        </div>
       )}
-      {/* issue with this still loading */}
       {!showTransactionList && situationsSubject && (
-        <div className="flex space-x-4 h-16 text-xl">
+        <div className="flex flex-col space-y-4 h-16 text-xl items-center justify-center">
           {situationsSubject && (
-            <div className="p-4 font-bold bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
-              Subject: {situationsSubject}
+            <div className="py-3 px-5 font-bold bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 text-center transition w-fit">
+              {situationsSubject}
             </div>
           )}
-
-          {situations.map((situation, index) => (
-            <div
-              key={index}
-              className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2 h-full"
-            >
-              <button
-                onClick={() => handleRemoveSituation(index)}
-                className="font-bold text-white bg-red-500 size-9 rounded p-1 hover:bg-red-600 focus:outline-none"
+          <div className="flex space-x-4 h-16 text-xl">
+            {situations.map((situation, index) => (
+              <div
+                key={index}
+                className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2 h-full"
               >
-                &times;
-              </button>
-              <span onClick={() => handleEditClick(index)}>
-                {situation.text}
-              </span>
-            </div>
-          ))}
+                <button
+                  onClick={() => handleRemoveSituation(index)}
+                  className="font-bold text-white bg-red-500 size-9 rounded p-1 hover:bg-red-600 focus:outline-none"
+                >
+                  &times;
+                </button>
+                <span onClick={() => handleEditClick(index)}>
+                  {situation.text}
+                </span>
+              </div>
+            ))}
 
-          {situations.length > 0 && (
-            <div className="p-4 bg-blue-500 text-black rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
-              <input
-                type="text"
-                placeholder="Add new category..."
-                value={newSituationText}
-                onChange={(e) => setNewSituationText(e.target.value)}
-                className="p-2 rounded border border-gray-300"
-              />
-              <button
-                className="font-bold flex items-center justify-center size-9 p-1 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
-                onClick={handleAddSituation}
-              >
-                +
-              </button>
-            </div>
-          )}
+            {situations.length > 0 && (
+              <div className="p-4 bg-blue-500 text-black rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
+                <input
+                  type="text"
+                  placeholder="Add new category..."
+                  value={newSituationText}
+                  onChange={(e) => setNewSituationText(e.target.value)}
+                  className="p-2 rounded border border-gray-300"
+                />
+                <button
+                  className="font-bold flex items-center justify-center size-9 p-1 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
+                  onClick={handleAddSituation}
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
       {/* width full is only of this small size */}
@@ -163,7 +165,7 @@ function LLMInterface() {
           onChange={(e) => setInputText(e.target.value)}
         />
       )}
-
+      
       <button
         className="px-5 py-3 text-2xl font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         onClick={
@@ -191,8 +193,6 @@ export default LLMInterface;
 
 //Maybe instruction thing always at top
 //Transaction list should order with newest first
-
-
 
 //I need to fix the gap at the top for the unloaded stuff not making it center
 //I might move subject to the top line and remove the word subject
