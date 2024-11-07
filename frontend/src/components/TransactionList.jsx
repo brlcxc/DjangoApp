@@ -65,7 +65,7 @@ const TransactionList = ({ mergeData = [] }) => {
     )
     .sort((a, b) =>
       sortOption === "date"
-        ? new Date(a.start_date) - new Date(b.start_date)
+        ? new Date(b.start_date) - new Date(a.start_date)
         : parseFloat(b.amount) - parseFloat(a.amount)
     );
 
