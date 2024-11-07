@@ -95,22 +95,21 @@ function LLMInterface() {
 
   return (
     <div className="flex flex-col w-full items-center gap-6">
+      {showTransactionList && (
       <div className="grid grid-cols-2 gap-8">
-        {showTransactionList && ( // Conditionally render TransactionList
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionList mergeData={mergeData} />
           </div>
-        )}
-        {showTransactionList && ( // Conditionally render TransactionList
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData} />
           </div>
-        )}
       </div>
+      )}
       {showTransactionList && ( // Conditionally render TransactionList
         <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">{evaluation}</div>
       )}
-      {!showTransactionList && (
+      {/* issue with this still loading */}
+      {!showTransactionList && situationsSubject && (
         <div className="flex space-x-4 h-16 text-xl">
           {situationsSubject && (
             <div className="p-4 font-bold bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
@@ -192,3 +191,9 @@ export default LLMInterface;
 
 //Maybe instruction thing always at top
 //Transaction list should order with newest first
+
+
+
+//I need to fix the gap at the top for the unloaded stuff not making it center
+//I might move subject to the top line and remove the word subject
+//different color for subject too maybe?
