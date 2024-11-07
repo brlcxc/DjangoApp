@@ -231,8 +231,8 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         situations_list = situations[0].split(", ") if situations else []
         subject_str = subject.group(1) if subject else ""
 
-        print(situations_list)
-        print(subject_str)
+        # print(situations_list)
+        # print(subject_str)
 
         # Return the structured data
         response_data = {
@@ -276,7 +276,7 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             for trans in transactions_data
         ]
 
-        print(category_input)
+        # print(category_input)
 
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
@@ -287,18 +287,13 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
         )    
 
-        print(new_transaction_question)
-
         # Process the prompt with the LLM to receive a response containing new transaction data
         transaction_answer = process_llm_prompt(new_transaction_question)
 
-        # Clean up the response by removing unnecessary syntax and extracting only the list of transactions
-        stripped_str = re.sub(
-            r'```python|```|from decimal import Decimal|import datetime|new_transactions\s*=\s*', 
-            '', 
-            transaction_answer
-        )
-
+        stripped_str = re.sub('\n', '', transaction_answer)
+        stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
+        stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
+      
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(
             stripped_str,
