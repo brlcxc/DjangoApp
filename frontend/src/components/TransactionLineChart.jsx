@@ -107,7 +107,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5 text-black">Transaction Trend</h1>
+      <h1 className="text-2xl font-bold mb-5 text-black">Anticipated Trend</h1>
       <div className="flex items-center justify-center h-[480px]">
         <Line data={chartData} options={options} />
       </div>

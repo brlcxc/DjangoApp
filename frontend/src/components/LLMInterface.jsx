@@ -94,7 +94,7 @@ function LLMInterface() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 space-y-4">
+    <div className="flex flex-col w-full items-center gap-6">
       <div className="grid grid-cols-2 gap-8">
         {showTransactionList && ( // Conditionally render TransactionList
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
@@ -108,12 +108,12 @@ function LLMInterface() {
         )}
       </div>
       {showTransactionList && ( // Conditionally render TransactionList
-        <div className="bg-white p-8 rounded-xl shadow-lg">{evaluation}</div>
+        <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">{evaluation}</div>
       )}
       {!showTransactionList && (
-        <div className="flex space-x-4 h-16">
+        <div className="flex space-x-4 h-16 text-xl">
           {situationsSubject && (
-            <div className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
+            <div className="p-4 font-bold bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition">
               Subject: {situationsSubject}
             </div>
           )}
@@ -125,7 +125,7 @@ function LLMInterface() {
             >
               <button
                 onClick={() => handleRemoveSituation(index)}
-                className="text-white bg-red-500 size-8 rounded p-1 hover:bg-red-600 focus:outline-none"
+                className="font-bold text-white bg-red-500 size-9 rounded p-1 hover:bg-red-600 focus:outline-none"
               >
                 &times;
               </button>
@@ -145,7 +145,7 @@ function LLMInterface() {
                 className="p-2 rounded border border-gray-300"
               />
               <button
-                className="flex items-center justify-center size-8 p-1 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
+                className="font-bold flex items-center justify-center size-9 p-1 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
                 onClick={handleAddSituation}
               >
                 +
@@ -154,9 +154,10 @@ function LLMInterface() {
           )}
         </div>
       )}
+      {/* width full is only of this small size */}
       {situations.length === 0 && (
         <textarea
-          className="w-full p-4 border rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
+          className="w-[30%] p-4 border text-lg rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
           rows="2"
           placeholder="Type a financial situation you would like to predict for here..."
           value={inputText}
@@ -165,7 +166,7 @@ function LLMInterface() {
       )}
 
       <button
-        className="px-4 py-2 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+        className="px-5 py-3 text-2xl font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         onClick={
           isEditing
             ? handleFinalGenerateResponse

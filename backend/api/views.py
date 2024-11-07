@@ -276,6 +276,8 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             for trans in transactions_data
         ]
 
+        print(category_input)
+
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
             f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
