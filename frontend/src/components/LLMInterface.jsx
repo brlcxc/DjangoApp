@@ -113,7 +113,7 @@ function LLMInterface() {
       {!showTransactionList && situationsSubject && (
         <div className="flex flex-col space-y-4 h-16 text-xl items-center justify-center">
           {situationsSubject && (
-            <div className="py-3 px-5 font-bold bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 text-center transition w-fit">
+            <div className="py-3 px-5 font-bold bg-blue-500 text-2xl text-white rounded text-center transition w-fit">
               {situationsSubject}
             </div>
           )}
@@ -121,11 +121,11 @@ function LLMInterface() {
             {situations.map((situation, index) => (
               <div
                 key={index}
-                className="p-4 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition flex items-center space-x-2 h-full"
+                className="p-4 bg-blue-500 text-white rounded cursor-pointer transition flex items-center space-x-2 h-full"
               >
                 <button
                   onClick={() => handleRemoveSituation(index)}
-                  className="font-bold text-white bg-red-500 size-9 rounded p-1 hover:bg-red-600 focus:outline-none"
+                  className="font-bold text-white bg-coral size-9 rounded p-1 hover:bg-deep-coral focus:outline-none"
                 >
                   &times;
                 </button>
@@ -136,7 +136,7 @@ function LLMInterface() {
             ))}
 
             {situations.length > 0 && (
-              <div className="p-4 bg-blue-500 text-black rounded space-x-3 cursor-pointer hover:bg-blue-600 flex items-center">
+              <div className="p-4 bg-blue-500 text-black rounded space-x-3 cursor-pointer  flex items-center">
                 <input
                   type="text"
                   placeholder="Add new category..."
@@ -145,7 +145,7 @@ function LLMInterface() {
                   className="p-2 rounded border border-gray-300"
                 />
                 <button
-                  className="font-bold flex items-center justify-center size-9 p-1 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600"
+                  className="font-bold flex items-center justify-center size-9 p-1 bg-green-300 hover:bg-green-400 text-white rounded cursor-pointer"
                   onClick={handleAddSituation}
                 >
                   +
@@ -167,7 +167,7 @@ function LLMInterface() {
       )}
       {!showTransactionList && situationsSubject && <div></div>}
       <button
-        className="px-5 py-3 text-2xl font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+        className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
         onClick={
           isEditing
             ? handleFinalGenerateResponse

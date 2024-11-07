@@ -51,7 +51,7 @@ const TransactionList = ({ mergeData = [] }) => {
   const formattedMergeData = mergeData.map(item => ({
     ...item,
     start_date: new Date(item.date).toISOString(),  // Convert date to ISO format
-    group_name: item.group_name || "No Group",      // Default group name
+    group_name: item.group_name || "LLM Generated",      // Default group name
   }));
 
   // Combine transactions and formattedMergeData
@@ -101,7 +101,7 @@ const TransactionList = ({ mergeData = [] }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-blue-500 text-white">
+      <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-dodger-blue text-white">
         <div>Date</div>
         <div>Description</div>
         <div>Amount</div>

@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useCallback, useState } from "react";
 import { useSelectedGroup } from '../context/SelectedGroupContext';
 import { GroupContext } from "../context/GroupContext"; 
 
+//change checked color to proper blue
 const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
   <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
     <input

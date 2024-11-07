@@ -12,6 +12,8 @@ module.exports = {
         "amaranth-pink": "#F698BB",
         "deep-sky-blue": "#62BFED",
         "dodger-blue": "#3590F3",
+        "coral": "#F78379",
+        "deep-coral": "#FE7C70",
       },
       keyframes: {
         /* Defines a custom keyframe animation named gradient*/
