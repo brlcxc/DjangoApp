@@ -165,7 +165,7 @@ function LLMInterface() {
           onChange={(e) => setInputText(e.target.value)}
         />
       )}
-      
+      {!showTransactionList && situationsSubject && <div></div>}
       <button
         className="px-5 py-3 text-2xl font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         onClick={
