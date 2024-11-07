@@ -50,6 +50,31 @@ const TransactionLineChart = ({ mergeData = [] }) => {
       transaction.amount < 0 ? transaction.amount : null
     );
 
+    let cumulativePositiveSum = 0;
+    let cumulativeNegativeSum = 0;
+
+    const cumulativePositiveAmounts = [];
+    const cumulativeNegativeAmounts = [];
+
+    combinedTransactions.forEach((transaction) => {
+      // console.log(transaction.amount)
+      if (transaction.amount >= 0) {
+        console.log("pos" + transaction.amount)
+        let test = parseFloat(transaction.amount)
+        cumulativePositiveSum += test;
+        cumulativePositiveAmounts.push(cumulativePositiveSum);
+        cumulativeNegativeAmounts.push(cumulativeNegativeSum); // Keep negative sum unchanged
+      } else {
+        // console.log("neg" + transaction.amount)
+        cumulativeNegativeSum += transaction.amount * -1;
+        cumulativeNegativeAmounts.push(cumulativeNegativeSum);
+        cumulativePositiveAmounts.push(cumulativePositiveSum); // Keep positive sum unchanged
+      }
+    });
+
+    // console.log(cumulativePositiveAmounts)
+    // console.log(cumulativeNegativeAmounts)
+
     return {
       labels: combinedTransactions.map((transaction) =>
         transaction.start_date
@@ -59,7 +84,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
       datasets: [
         {
           label: "Income",
-          data: positiveTransactions,
+          data: cumulativePositiveAmounts ,
           borderColor: "rgba(75, 192, 192, 1)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           tension: 0.1,
@@ -67,7 +92,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
         },
         {
           label: "Spending",
-          data: negativeTransactions,
+          data: cumulativeNegativeAmounts,
           borderColor: "rgba(255, 99, 132, 1)",
           backgroundColor: "rgba(255, 99, 132, 0.2)",
           tension: 0.1,
@@ -116,3 +141,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
 };
 
 export default TransactionLineChart;
+
+//Maybe I should just have it start at 0 and then go above and blow
+
+//it is possible that the data isnt transfering well
