@@ -34,7 +34,7 @@ Role: "user" does not exist
 ```
 Try  
 ```
-sudo -u postgres createuser brlcx
+sudo -u postgres createuser "your desired username"
 ```  
 
 Once the migrations have been made the server can be started  
@@ -44,6 +44,7 @@ python manage.py runserver
 ```
 
 ### Making Models
+Define data structures and relations between them.  
 
 ### Making Serializers
 Serialization is typically used for outgoing data. It converts data such as model instances into a format which can be rendered into JSON or other content types. As an example if you were to retrieve data from your database such as a list of transactions you serialize it into JSON format so it can be sent as an API response to the client.  
