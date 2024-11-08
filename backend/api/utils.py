@@ -6,6 +6,13 @@ from django.utils.encoding import force_bytes
 from .tokens import email_verification_token
 from django.db.models import Q
 from .models import Transaction, Group
+from rest_framework.response import Response
+from rest_framework import status
+import os
+import vertexai
+import json
+from vertexai.generative_models import GenerativeModel
+from google.oauth2 import service_account  # Importing service_account
 
 def send_verification_email(user, request):
     # custom verification token with hashed user info
@@ -42,3 +49,30 @@ def get_user_transactions_for_groups(user, group_uuid_list):
     # when __in is used with group_id in this case it checks if each transaction's group_id is part of the user_groups filter
     # flat=true flattens the result so that instead of getting a list of tuples, you get a simple list of values when requesting a single field
     return Transaction.objects.filter(group_id__in=user_groups.values_list('group_id', flat=True)).select_related('group_id')
+
+def process_llm_prompt(prompt):
+        credentials_json = os.getenv('GOOGLE_CREDENTIALS')
+        if credentials_json is None:
+            return Response({"error": "GOOGLE_CREDENTIALS environment variable is not set."}, status=status.HTTP_400_BAD_REQUEST)
+        # Convert the JSON string to a dictionary
+        try:
+            credentials_dict = json.loads(credentials_json)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format for GOOGLE_CREDENTIALS."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Initialize Vertex AI with credentials and project ID
+        try:
+            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+            PROJECT_ID = credentials.project_id
+            vertexai.init(project=PROJECT_ID, location="us-central1", credentials=credentials)
+        except Exception as e:
+            return Response({"error": f"Failed to initialize Vertex AI: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Generate response using the generative model
+        try:
+            model = GenerativeModel("gemini-1.5-flash-002")
+            response = model.generate_content([prompt])
+            answer = response.text.strip()
+            return answer
+        except Exception as e:
+            return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

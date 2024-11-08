@@ -11,6 +11,7 @@ const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
       onChange={(e) => onCheckChange(group, e.target.checked)} // Pass the whole group object
     />
     <div>{group.group_name}</div>
+    {/* <div>{group.description}</div> */}
   </div>
 ));
 

@@ -66,5 +66,12 @@ class LLMRequestSerializer(serializers.Serializer):
     question = serializers.CharField(max_length=500)
 
 
-class LLMResponseSerializer(serializers.Serializer):
+class LLMCharResponseSerializer(serializers.Serializer):
     answer = serializers.CharField()
+
+# differs from transaction serializer because we don't need all the information that we do for normal transactions here
+class LLMTransactionResponseSerializer(serializers.Serializer):
+    category = serializers.CharField()
+    amount = serializers.FloatField()
+    description = serializers.CharField()
+    date = serializers.DateField()

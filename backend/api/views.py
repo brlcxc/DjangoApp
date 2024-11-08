@@ -1,20 +1,21 @@
 import os
-import vertexai
-import json
+import re
+from decimal import Decimal
+import datetime
 from rest_framework import generics
-from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMResponseSerializer
+from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCharResponseSerializer
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .tokens import email_verification_token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups
-from google.oauth2 import service_account  # Importing service_account
-from vertexai.generative_models import GenerativeModel
+from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt
+from datetime import date
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils.dateparse import parse_date
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -220,7 +221,11 @@ class VerifyEmail(APIView):
 
 # maybe I should even just have one prompt for similar and one for brand new?
 # make a statement to ensure they are date relevant 
-class LLMResponseView(generics.GenericAPIView):
+
+# one issue with the three step is that it would be hard to send the data all the way back again to be evaluated
+# maybe I can just append the two responses to each other - add the strings together
+# in that case I could just do one view but then I wouldnt get feedback
+class LLMCategoryResponseView(generics.GenericAPIView):
     serializer_class = LLMRequestSerializer  # Serializer for input data
     permission_classes = [IsAuthenticated]
 
@@ -232,48 +237,93 @@ class LLMResponseView(generics.GenericAPIView):
         # Get the user question and group UUIDs from the validated data
         user_question = serializer.validated_data['question']
 
-        group_uuid_list = self.kwargs.get('group_uuid_list', '')
+        category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
-        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
-
-        # Load credentials from the environment variable
-        credentials_json = os.getenv('GOOGLE_CREDENTIALS')
-        if credentials_json is None:
-            return Response({"error": "GOOGLE_CREDENTIALS environment variable is not set."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Convert the JSON string to a dictionary
-        try:
-            credentials_dict = json.loads(credentials_json)
-        except json.JSONDecodeError:
-            return Response({"error": "Invalid JSON format for GOOGLE_CREDENTIALS."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Initialize Vertex AI with credentials and project ID
-        try:
-            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
-            PROJECT_ID = credentials.project_id
-            vertexai.init(project=PROJECT_ID, location="us-central1", credentials=credentials)
-        except Exception as e:
-            return Response({"error": f"Failed to initialize Vertex AI: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-        # Generate response using the generative model
-        try:
-            # Include transaction data in the question for context
-            category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
-         
-            model = GenerativeModel("gemini-1.5-flash-002")
-
-            category_response = model.generate_content([category_question])
-            category_answer = category_response.text.strip()
-
-            # to fine tune I could maybe specify to have new transactions follow old and then alter new ones based on old ones accordingly but also add new
-            new_transaction_question = f"From this data {transactions_data}\n\n and this subject and situations {category_answer}\n\n Can you provide 20 new transactions following the last transaction which account for account for the situations? Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
-
-            new_transaction_response = model.generate_content([new_transaction_question])
-            new_transaction_answer = new_transaction_response.text.strip()
-        except Exception as e:
-            return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        category_answer =  process_llm_prompt(category_question)
         # Serialize and return the LLM response
-        response_serializer = LLMResponseSerializer(data={"answer": new_transaction_answer})
+        response_serializer = LLMCharResponseSerializer(data={"answer": category_answer})
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+# it might be unwise to send the transactions back after the second response because it isn't efficient to send
+# it would be better to call the third within the second and merge the lists there
+
+# look at the prompt which called a second because it seems two can be retrieved
+
+# it might be unwise to send the transactions back after the second response because it isn't efficient to send
+# it would be better to call the third within the second and merge the lists there
+
+# look at the prompt which called a second because it seems two can be retrieved
+class LLMTransactionResponseView(generics.GenericAPIView):
+    serializer_class = LLMRequestSerializer  # Serializer for input data
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Deserialize and validate the user input
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Get the user question and group UUIDs from the validated data
+        category_input = serializer.validated_data['question']
+
+        group_uuid_list = self.kwargs.get('group_uuid_list', '')
+        
+        transactions_data = get_user_transactions_for_groups(request.user, group_uuid_list).values('category', 'amount', 'description', 'start_date')
+        
+        transactions_data_list = [
+            {
+                'category': trans['category'],
+                'amount': float(trans['amount']),
+                'description': trans['description'],
+                'date': trans['start_date'].strftime('%Y-%m-%d') if trans['start_date'] else None
+            }
+            for trans in transactions_data
+        ]
+
+        new_transaction_question = (
+            f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
+            f"Can you provide 20 new transactions after {date}? Some should follow the trends of the existing "
+            f"transactions as well as account for the subject and situations. If a situation relates to an "
+            f"existing category then a new transaction in that category should be given a cost accordingly. "
+            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+        )    
+
+        transaction_answer =  process_llm_prompt(new_transaction_question)
+
+        stripped_str = re.sub(r'```python|```|from decimal import Decimal|import datetime|new_transactions\s*=\s*', '', transaction_answer)
+
+        parsed_transactions = eval(
+            stripped_str,
+            {"Decimal": Decimal, "datetime": datetime}
+        )
+
+        cleaned_transactions = [
+            {
+                'category': transaction[0],
+                'amount': float(transaction[1]),
+                'description': transaction[2],
+                'date': transaction[3].strftime('%Y-%m-%d')
+            }
+            for transaction in parsed_transactions
+        ]
+
+        merge = transactions_data_list + cleaned_transactions
+
+        spending_evaluation_question = f"Analyze and compare the transactions following today's date {date} with those before it. In one sentence explain any issues with spending and indicate if the costs exceed income. In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
+
+        evaluation_answer =  process_llm_prompt(spending_evaluation_question)
+
+        # Serialize the transactions with LLMTransactionResponseSerializer
+        transaction_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
+        transaction_serializer.is_valid(raise_exception=True)
+        
+        # Serialize the evaluation answer with LLMCharResponseSerializer
+        evaluation_serializer = LLMCharResponseSerializer(data={'answer': evaluation_answer})
+        evaluation_serializer.is_valid(raise_exception=True)
+
+        # Combine both serialized responses
+        response_data = {
+            'new_transactions': transaction_serializer.data,
+            'evaluation': evaluation_serializer.data,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
