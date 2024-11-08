@@ -316,7 +316,7 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
         # Prepare a prompt for the LLM to evaluate spending trends and provide suggestions
         spending_evaluation_question = (
-            f"Analyze and compare the transactions following today's date {date} with those before it. "
+            f"Analyze and compare the transactions following today's date {date.today()} with those before it. "
             f"In one sentence explain any issues with spending and indicate if the costs exceed income. "
             f"In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
         )
