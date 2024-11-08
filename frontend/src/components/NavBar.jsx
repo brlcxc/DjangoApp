@@ -1,4 +1,4 @@
-import { FaHouse, FaGear, FaUser, FaUserGroup, FaRegCalendarPlus, FaChartLine, FaDollarSign } from "react-icons/fa6";
+import { FaHouse, FaGear, FaUser, FaUserGroup, FaRegCalendarPlus, FaChartLine, FaDollarSign, FaDoorOpen } from "react-icons/fa6";
 
 function NavBar({setActivePage}){
     const iconSize = "36";
@@ -12,6 +12,7 @@ function NavBar({setActivePage}){
             <NavBarIcon icon={<FaUserGroup size={iconSize} />} text="Groups" onClick={() => setActivePage("Groups")}/>
             <NavBarIcon icon={<FaUser size={iconSize} />} text="Profile" onClick={() => setActivePage("User")}/>
             <NavBarIcon icon={<FaGear size={iconSize} />} text="Settings" onClick={() => setActivePage("Settings")}/>
+            <NavBarIcon icon={<FaDoorOpen size={iconSize} />} text="Logout" onClick={() => Logout()}/>
         </div>
     )
 }

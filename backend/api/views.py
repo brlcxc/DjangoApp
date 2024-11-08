@@ -281,7 +281,7 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
             f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
-            f"Can you provide 20 new transactions after {date.today()}? Some should follow the trends of the existing "
+            f"Can you provide 30 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
             f"transactions as well as account for the subject and situations. If a situation relates to an "
             f"existing category then a new transaction in that category should be given a cost accordingly. "
             f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
