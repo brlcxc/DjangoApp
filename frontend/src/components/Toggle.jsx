@@ -4,15 +4,15 @@ import { GroupContext } from "../context/GroupContext";
 
 //change checked color to proper blue
 const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
-  <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+  <div className="flex items-center py-3 pl-3 border-b hover:bg-gray-100 transition text-black">
     <input
       type="checkbox"
       className="mr-3"
       checked={isChecked}
-      onChange={(e) => onCheckChange(group, e.target.checked)} // Pass the whole group object
+      onChange={(e) => onCheckChange(group, e.target.checked)} 
     />
-    <div>{group.group_name}</div>
-    {/* <div>{group.description}</div> */}
+    <div className="flex-1">{group.group_name}</div>
+    <div className="flex-1">{group.description}</div>
   </div>
 ));
 
