@@ -302,8 +302,8 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
         stripped_str = re.sub(r'\],\]', r']]', stripped_str)
 
-        print("strip")
-        print(stripped_str)
+        # print("strip")
+        # print(stripped_str)
       
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(
