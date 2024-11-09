@@ -114,27 +114,23 @@ const GroupAdd = () => {
           />
         </div>
         {loadingUsers && <p className="text-blue-500">Loading users...</p>}
-        {userResults.length > 0 && (
-          <ul className="mt-4 space-y-2">
-            {userResults.map((user) => (
-              <li
-                key={user.id}
-                className="flex justify-between items-center bg-gray-100 rounded-md p-2"
-              >
-                <span>
-                  {user.display_name} ({user.email})
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleUserSelect(user)}
-                  className="text-blue-500 hover:underline"
-                >
-                  Add
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        {userResults.slice(0, 3).map((user) => (
+    <li
+        key={user.id}
+        className="flex justify-between items-center bg-gray-100 rounded-md p-2"
+    >
+        <span>
+            {user.display_name} ({user.email})
+        </span>
+        <button
+            type="button"
+            onClick={() => handleUserSelect(user)}
+            className="text-blue-500 hover:underline"
+        >
+            Add
+        </button>
+    </li>
+))}
         <div>
           <h3 className="text-lg font-medium text-gray-800">
             Selected Members
