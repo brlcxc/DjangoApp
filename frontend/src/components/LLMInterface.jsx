@@ -49,6 +49,9 @@ function LLMInterface() {
   };
   const handleFinalGenerateResponse = async () => {
     setLoading(true);
+          //this output text is what is being sent - I need to set it to the modification of the output text
+          //I need to figure out who to extract the value from the div - or maybe I should just have updates to the button modify the div
+          //then I need to turn them into string form
     try {
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
       const response = await api.post(endpoint, { question: outputText });
