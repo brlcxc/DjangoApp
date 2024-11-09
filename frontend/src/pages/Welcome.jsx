@@ -1,28 +1,5 @@
-import { useEffect, useState } from "react";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
-
 function Welcome() {
-    const [userName, setUserName] = useState("");
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-          try {
-            const token = localStorage.getItem(ACCESS_TOKEN);
-    
-            const response = await api.get('api/users/me/', {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-    
-            setUserName(response.data.display_name);
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-          }
-        };
-        fetchUserData();
-      }, []);
+    const userName = localStorage.getItem('DISPLAY_NAME')
 
     return(
         <div className="w-full h-full flex flex-col justify-center items-center bg-custom-gradient animate-gradient">

@@ -25,8 +25,9 @@ const GroupMembership = () => {
     // const filteredGroups = groups?.filter(
     //     (group) => group.group_owner_id !== currentUser.id
     //   );
-    console.log(getUserUUID())
-  
+    const uuid = localStorage.getItem('USER_ID')
+
+    console.log(uuid)
     return (
       <div>
         <h1 className="text-2xl font-bold mb-5 text-black">Shared With Me</h1>

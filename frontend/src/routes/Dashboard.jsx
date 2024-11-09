@@ -6,15 +6,40 @@ import UserProfile from "../pages/UserProfile";
 import Groups from "../pages/Groups";
 import AI from "../pages/AI";
 import Calendar from "../pages/Calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TransactionProvider } from "../context/TransactionContext";
 import { GroupProvider } from "../context/GroupContext";
 import { SelectedGroupProvider, useSelectedGroup } from '../context/SelectedGroupContext';
+import { ACCESS_TOKEN } from "../constants";
+import api from "../api";
 
 // TODO: for both chart and list deselecting all groups and then returning to the page will keep them in a loading state rather than displaying that there is no data
 
 function Dashboard() {
   const [activePage, setActivePage] = useState("Welcome");
+
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+
+        const response = await api.get('api/users/me/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        localStorage.setItem('DISPLAY_NAME', response.data.display_name); // Store user display name in local storage
+        localStorage.setItem('USER_ID', response.data.id); // Store user ID in local storage
+
+        console.log(response.data.id)
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const renderPage = () => {
     switch(activePage) {
