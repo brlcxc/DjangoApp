@@ -257,6 +257,8 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         # Extract the question (user input) after validation
         category_input = serializer.validated_data['question']
 
+        print(category_input)
+
         # Retrieve group UUIDs passed through the URL, defaulting to an empty string if not provided
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
         
@@ -296,8 +298,10 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
         stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
 
-        # print("strip")
-        # print(stripped_str)
+        stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
+
+        print("strip")
+        print(stripped_str)
       
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(
