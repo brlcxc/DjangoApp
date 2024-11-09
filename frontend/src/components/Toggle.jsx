@@ -1,18 +1,18 @@
 import React, { useEffect, useContext, useCallback, useState } from "react";
-import { useSelectedGroup } from '../context/SelectedGroupContext';
-import { GroupContext } from "../context/GroupContext"; 
+import { useSelectedGroup } from "../context/SelectedGroupContext";
+import { GroupContext } from "../context/GroupContext";
 
 //change checked color to proper blue
 const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
-  <div className="flex items-center py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+  <div className="flex items-center py-3 pl-3 border-b hover:bg-gray-100 transition text-black">
     <input
       type="checkbox"
       className="mr-3"
       checked={isChecked}
-      onChange={(e) => onCheckChange(group, e.target.checked)} // Pass the whole group object
+      onChange={(e) => onCheckChange(group, e.target.checked)} 
     />
-    <div>{group.group_name}</div>
-    {/* <div>{group.description}</div> */}
+    <div className="flex-1">{group.group_name}</div>
+    <div className="flex-1">{group.description}</div>
   </div>
 ));
 
@@ -23,8 +23,8 @@ const Toggle = () => {
 
   useEffect(() => {
     if (!hasInitialized && groups && groups.length > 0) {
-      groups.forEach(group => {
-        if (!selectedGroups.some(g => g.group_id === group.group_id)) {
+      groups.forEach((group) => {
+        if (!selectedGroups.some((g) => g.group_id === group.group_id)) {
           toggleSelectedGroup(group);
         }
       });
@@ -46,13 +46,15 @@ const Toggle = () => {
     <div>
       <h1 className="text-2xl font-bold mb-5 text-black">Group List</h1>
 
-      <div className="overflow-y-auto max-h-[350px]">
+      <div className="overflow-y-auto h-32">
         {groups && groups.length > 0 ? (
           groups.map((group) => (
             <GroupRow
               key={group.group_id}
               group={group}
-              isChecked={selectedGroups.some((g) => g.group_id === group.group_id)} // Check if group is selected
+              isChecked={selectedGroups.some(
+                (g) => g.group_id === group.group_id
+              )} // Check if group is selected
               onCheckChange={handleCheckChange}
             />
           ))

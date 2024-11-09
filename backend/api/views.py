@@ -257,6 +257,8 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         # Extract the question (user input) after validation
         category_input = serializer.validated_data['question']
 
+        print(category_input)
+
         # Retrieve group UUIDs passed through the URL, defaulting to an empty string if not provided
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
         
@@ -281,18 +283,27 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
             f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
-            f"Can you provide 20 new transactions after {date.today()}? Some should follow the trends of the existing "
+            f"Can you provide 30 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
             f"transactions as well as account for the subject and situations. If a situation relates to an "
             f"existing category then a new transaction in that category should be given a cost accordingly. "
-            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information"
+            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used."
         )    
 
         # Process the prompt with the LLM to receive a response containing new transaction data
         transaction_answer = process_llm_prompt(new_transaction_question)
+        # print("answer")
+        # print(transaction_answer)
 
         stripped_str = re.sub('\n', '', transaction_answer)
         stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
         stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
+
+        # accounts for uncommon case where the str ends with ],]
+        stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
+        stripped_str = re.sub(r'\],\]', r']]', stripped_str)
+
+        # print("strip")
+        # print(stripped_str)
       
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(

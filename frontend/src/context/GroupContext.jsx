@@ -7,6 +7,7 @@ const GroupProvider = ({ children }) => {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    // const [groupDetails, setGroupDetails] = useState(null);
 
     const fetchGroups = async () => {
         setLoading(true);
@@ -24,6 +25,19 @@ const GroupProvider = ({ children }) => {
     useEffect(() => {
         fetchGroups();
     }, []);
+
+    // const fetchGroupDetails = async (groupId) => {
+    //     setLoading(true);
+    //     try {
+    //         const response = await api.get(`/api/groups/${groupId}/`);
+    //         setGroupDetails(response.data);
+    //     } catch (error) {
+    //         console.error('Error fetching group details:', error);
+    //         setError(error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const addGroup = async (newGroup) => {
         try {
@@ -44,6 +58,8 @@ const GroupProvider = ({ children }) => {
         loading,
         error,
         addGroup,
+        // fetchGroupDetails,
+        // groupDetails, // Add groupDetails to context for access in components
     };
 
     return (

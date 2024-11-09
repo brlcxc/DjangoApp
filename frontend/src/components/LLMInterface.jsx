@@ -36,14 +36,30 @@ function LLMInterface() {
       setLoading(false);
     }
   };
-
+  const resetState = () => {
+    setInputText("");
+    setOutputText("");
+    setIsEditing(false);
+    setSituations([]);
+    setSubject("");
+    setNewSituationText("");
+    setMergeData([]);
+    setEvaluationData(null);
+    setShowTransactionList(false);
+  };
   const handleFinalGenerateResponse = async () => {
     setLoading(true);
+  
     try {
+      // Combine subject and modified situations into a new question
+      const question = `${situationsSubject}: ${situations.map((s) => s.text).join(", ")}`;
+  
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
-      const response = await api.post(endpoint, { question: outputText });
+      const response = await api.post(endpoint, { question });
+      
       const transactions = response.data.new_transactions;
       const evaluation = response.data.evaluation.answer;
+  
       setMergeData(transactions);
       setEvaluationData(evaluation);
       setShowTransactionList(true); // Show TransactionList after sending response
@@ -53,7 +69,7 @@ function LLMInterface() {
       setLoading(false);
       setIsEditing(false);
     }
-  };
+  };  
 
   const handleRemoveSituation = (index) => {
     setSituations(situations.filter((_, i) => i !== index));
@@ -169,7 +185,9 @@ function LLMInterface() {
       <button
         className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
         onClick={
-          isEditing
+          showTransactionList
+            ? resetState
+            : isEditing
             ? handleFinalGenerateResponse
             : handleInitialGenerateResponse
         }
@@ -179,10 +197,10 @@ function LLMInterface() {
           ? isEditing
             ? "Sending..."
             : "Generating..."
-          : isEditing
-          ? "Send Modified Categories"
           : showTransactionList
           ? "Predict A New Situation"
+          : isEditing
+          ? "Send Modified Categories"
           : "Generate Categories"}
       </button>
     </div>
