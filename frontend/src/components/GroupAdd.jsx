@@ -12,28 +12,29 @@ const GroupAdd = () => {
 
   const fetchUsers = async (query) => {
     if (!query) {
-        setUserResults([]);
-        return;
+      setUserResults([]);
+      return;
     }
 
     setLoadingUsers(true);
     try {
-        const response = await api.get('/api/users/');
-        
-        // Filter results based on the search query
-        const filteredResults = response.data.filter((user) =>
-            user.display_name.toLowerCase().includes(query.toLowerCase()) ||
-            user.email.toLowerCase().includes(query.toLowerCase())
-        );
+      const response = await api.get("/api/users/");
 
-        setUserResults(filteredResults);
+      // Filter results based on the search query
+      const filteredResults = response.data.filter(
+        (user) =>
+          user.display_name.toLowerCase().includes(query.toLowerCase()) ||
+          user.email.toLowerCase().includes(query.toLowerCase())
+      );
+
+      setUserResults(filteredResults);
     } catch (err) {
-        console.error('Error fetching users:', err);
-        setError('Failed to fetch users');
+      console.error("Error fetching users:", err);
+      setError("Failed to fetch users");
     } finally {
-        setLoadingUsers(false);
+      setLoadingUsers(false);
     }
-};
+  };
 
   const handleUserSearch = (e) => {
     const query = e.target.value;
@@ -71,89 +72,102 @@ const GroupAdd = () => {
   };
 
   return (
-    <div>
+    <div className="h-full overflow-hidden">
       <h1 className="text-2xl font-bold mb-5 text-black">Create New Group</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Group Name
-            </label>
-            <input
-              type="text"
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter group name"
-            />
+      <form className="h-full" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-2  gap-2 h-full">
+          <div className="grid grid-rows-2">
+            <div className="grid grid-rows-2">
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Group Name
+              </label>
+              <input
+                type="text"
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                required
+                className="mt-1 block w-full px-2 py-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                placeholder="Enter group name"
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Description
+              </label>
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className="mt-1 block w-full rounded-md px-2 py-1 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                placeholder="Enter group description"
+              />
+            </div>
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Invite Message
+              </label>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter group description"
-            ></textarea>
-          </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Search Users
-          </label>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleUserSearch}
-            placeholder="Search by name or email"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
-        {loadingUsers && <p className="text-blue-500">Loading users...</p>}
-        {userResults.slice(0, 3).map((user) => (
-    <li
-        key={user.id}
-        className="flex justify-between items-center bg-gray-100 rounded-md p-2"
-    >
-        <span>
-            {user.display_name} ({user.email})
-        </span>
-        <button
-            type="button"
-            onClick={() => handleUserSelect(user)}
-            className="text-blue-500 hover:underline"
-        >
-            Add
-        </button>
-    </li>
-))}
-        <div>
-          <h3 className="text-lg font-medium text-gray-800">
-            Selected Members
-          </h3>
-          <ul className="mt-2 space-y-2">
-            {selectedUsers.map((user) => (
+          <div className="grid grid-rows-2">
+            <div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Search Users
+                </label>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleUserSearch}
+                  placeholder="Search by name or email"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
+            {loadingUsers && <p className="text-blue-500">Loading users...</p>}
+            {userResults.slice(0, 3).map((user) => (
               <li
                 key={user.id}
-                className="flex justify-between items-center bg-blue-50 rounded-md p-2"
+                className="flex justify-between items-center bg-gray-100 rounded-md p-2"
               >
                 <span>
                   {user.display_name} ({user.email})
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleUserRemove(user.id)}
-                  className="text-red-500 hover:underline"
+                  onClick={() => handleUserSelect(user)}
+                  className="text-blue-500 hover:underline"
                 >
-                  Remove
+                  Add
                 </button>
               </li>
             ))}
-          </ul>
+            <div>
+              <h3 className="text-lg font-medium text-gray-800">
+                Selected Members
+              </h3>
+              <ul className="mt-2 space-y-2">
+                {selectedUsers.map((user) => (
+                  <li
+                    key={user.id}
+                    className="flex justify-between items-center bg-blue-50 rounded-md p-2"
+                  >
+                    <span>
+                      {user.display_name} ({user.email})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleUserRemove(user.id)}
+                      className="text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
         <button
           type="submit"
