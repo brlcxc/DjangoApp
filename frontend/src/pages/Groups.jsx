@@ -12,12 +12,12 @@ function Groups(){
             <OwnedGroups />
           </div>
           <div className={`${style}`}>
-          <GroupAdd />
+          <GroupMembership />
           </div>
         </div>
         <div className="grid grid-rows-2 gap-8">
           <div className={`${style}`}>
-          <GroupMembership />
+          <GroupAdd />
           </div>
           <div className={`${style}`}>
           <GroupModify />

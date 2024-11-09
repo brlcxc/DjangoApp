@@ -108,7 +108,7 @@ const TransactionList = ({ mergeData = [] }) => {
         <div>Category</div>
         <div>Group</div>
       </div>
-      <div className="overflow-y-auto max-h-[350px]">
+      <div className="overflow-y-auto max-h-[390px]">
         {filteredTransactions && filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
             <TransactionRow key={index} transaction={transaction} />

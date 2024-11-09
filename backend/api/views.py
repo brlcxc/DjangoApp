@@ -289,15 +289,15 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
         # Process the prompt with the LLM to receive a response containing new transaction data
         transaction_answer = process_llm_prompt(new_transaction_question)
-        print("answer")
-        print(transaction_answer)
+        # print("answer")
+        # print(transaction_answer)
 
         stripped_str = re.sub('\n', '', transaction_answer)
         stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
         stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
 
-        print("strip")
-        print(stripped_str)
+        # print("strip")
+        # print(stripped_str)
       
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(
