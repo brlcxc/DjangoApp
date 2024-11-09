@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # User URLs
+    path('users/', views.UserListView.as_view(), name='user-list'),  # List all users
+
     # Group URLs
     path('groups/', views.GroupListCreate.as_view(), name='group-list-create'),  # List all groups or create a new group
     path('groups/<uuid:pk>/', views.GroupRetrieveUpdateDestroyView.as_view(), name='group-retrieve-update-destroy'),  # Retrieve, update, or destroy a specific group

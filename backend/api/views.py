@@ -48,6 +48,14 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     # Normally you would need a pk for get_object but in this case it is just done with the token
     def get_object(self):
         return self.request.user
+    
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Normally you would need a pk for get_object but in this case it is just done with the token
+    def get_queryset(self):
+        return User.objects
 
 class GroupListCreate(generics.ListCreateAPIView):
     serializer_class = GroupSerializer
