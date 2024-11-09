@@ -298,7 +298,9 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
         stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
 
+        # accounts for uncommon case where the str ends with ],]
         stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
+        stripped_str = re.sub(r'\],\]', r']]', stripped_str)
 
         print("strip")
         print(stripped_str)

@@ -49,14 +49,17 @@ function LLMInterface() {
   };
   const handleFinalGenerateResponse = async () => {
     setLoading(true);
-          //this output text is what is being sent - I need to set it to the modification of the output text
-          //I need to figure out who to extract the value from the div - or maybe I should just have updates to the button modify the div
-          //then I need to turn them into string form
+  
     try {
+      // Combine subject and modified situations into a new question
+      const question = `${situationsSubject}: ${situations.map((s) => s.text).join(", ")}`;
+  
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
-      const response = await api.post(endpoint, { question: outputText });
+      const response = await api.post(endpoint, { question });
+      
       const transactions = response.data.new_transactions;
       const evaluation = response.data.evaluation.answer;
+  
       setMergeData(transactions);
       setEvaluationData(evaluation);
       setShowTransactionList(true); // Show TransactionList after sending response
@@ -66,7 +69,7 @@ function LLMInterface() {
       setLoading(false);
       setIsEditing(false);
     }
-  };
+  };  
 
   const handleRemoveSituation = (index) => {
     setSituations(situations.filter((_, i) => i !== index));
