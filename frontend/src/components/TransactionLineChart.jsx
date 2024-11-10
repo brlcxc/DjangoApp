@@ -110,6 +110,7 @@ const TransactionLineChart = ({ mergeData = [] }) => {
 
 
   // Chart options with annotation
+  //Note: annotation wont work unless date is already in the dataset
   const options = {
     responsive: true,
     scales: {
@@ -125,8 +126,8 @@ const TransactionLineChart = ({ mergeData = [] }) => {
             type: 'line',
             xMin: new Date(mergeData[0].date).toLocaleDateString(),
             xMax: new Date(mergeData[0].date).toLocaleDateString(),
-            borderColor: 'rgb(255, 99, 132)',
-            borderWidth: 2,
+            borderColor: 'rgb(107 114 128)',
+            borderWidth: 3,
           },
         },
       },
