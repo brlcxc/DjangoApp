@@ -10,7 +10,20 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js";
+} from "chart.js"; // Import ChartJS first
+
+import annotationPlugin from 'chartjs-plugin-annotation'; // Annotation plugin
+
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  annotationPlugin // Ensure annotation plugin is registered
+);
 // import annotationPlugin from 'chartjs-plugin-annotation';
 
 // Register the Chart.js components and annotation plugin
@@ -111,22 +124,22 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     },
     plugins: {
       legend: { display: true, position: "top" },
-      //   annotation: {
-      //     annotations: {
-      //       todayLine: {
-      //         type: 'line',
-      //         xMin: new Date().toLocaleDateString(),
-      //         xMax: new Date().toLocaleDateString(),
-      //         borderColor: 'rgba(0, 0, 0, 0.5)',
-      //         borderWidth: 2,
-      //         label: {
-      //           content: 'Today',
-      //           enabled: true,
-      //           position: 'top',
-      //         },
-      //       },
-      //     },
-      //   },
+      annotation: {
+        annotations: {
+          todayLine: {
+            type: 'line',
+            xMin: new Date().toLocaleDateString(),
+            xMax: new Date().toLocaleDateString(),
+            borderColor: 'rgba(0, 0, 0, 0.5)',
+            borderWidth: 2,
+            label: {
+              content: 'Today',
+              enabled: true,
+              position: 'top',
+            },
+          },
+        },
+      },
     },
   };
 
