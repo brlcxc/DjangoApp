@@ -12,7 +12,10 @@ function LLMInterface() {
   const [isEditing, setIsEditing] = useState(false);
   const [mergeData, setMergeData] = useState([]);
   const [mergeData2, setMergeData2] = useState([]);
+  const [mergeData3, setMergeData3] = useState([]);
   const [evaluation, setEvaluationData] = useState(null);
+  const [gptEvaluation, setGPTEvaluationData] = useState(null);
+  const [geminiEvaluation, setGeminiEvaluationData] = useState(null);
   const [situations, setSituations] = useState([]);
   const [situationsSubject, setSubject] = useState("");
   const [newSituationText, setNewSituationText] = useState("");
@@ -47,6 +50,7 @@ function LLMInterface() {
     setNewSituationText("");
     setMergeData([]);
     setMergeData2([]);
+    setMergeData3([]);
     setEvaluationData(null);
     setShowTransactionList(false);
     setShowSelectStage(false);
@@ -66,13 +70,15 @@ function LLMInterface() {
       const geminiTransactions = response.data.new_Gemini_transactions;
       const gptTransactions = response.data.new_GPT_transactions;
 
-      const geminiEvaluation = response.data.Gemini_evaluation.answer;
-      const gptEvaluation = response.data.GPT_evaluation.answer;
+      // const geminiEvaluation = response.data.Gemini_evaluation.answer;
+      // const gptEvaluation = response.data.GPT_evaluation.answer;
 
       setMergeData(geminiTransactions);
       setMergeData2(gptTransactions);
 
-      setEvaluationData(geminiEvaluation);
+      setGeminiEvaluationData(response.data.Gemini_evaluation.answer);
+      setGPTEvaluationData(response.data.GPT_evaluation.answer);
+
       setShowTransactionList(true); // Show TransactionList after sending response
       setShowSelectStage(true);
     } catch (error) {
@@ -83,8 +89,14 @@ function LLMInterface() {
     }
   };
 
-  const handleSelectingList = () => {
-    console.log("test")
+  const handleSelectingList = (dataSelected) => {
+    if (dataSelected) {
+      setMergeData3(mergeData);
+      setEvaluationData(geminiEvaluation);
+    } else {
+      setMergeData3(mergeData2);
+      setEvaluationData(geminiEvaluation);
+    }
     setShowSelectStage(false);
   };
 
@@ -148,14 +160,12 @@ function LLMInterface() {
         <div className="grid grid-cols-2 gap-8">
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionList
-              mergeData={mergeData}
-              title={"Transactions provided by gemini-1.5-flash-002"}
+              mergeData={mergeData3}
+              title={"Transaction List"}
             />
           </div>
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
-            <TransactionLineChart
-              mergeData={mergeData2}
-            />
+            <TransactionLineChart mergeData={mergeData3} />
           </div>
         </div>
       )}
@@ -163,24 +173,25 @@ function LLMInterface() {
         <div className="grid grid-cols-2 w-full gap-8">
           <button
             className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
-            onClick={() => handleSelectingList()}
+            onClick={() => handleSelectingList(true)}
           >
             Select
           </button>
           <button
             className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
-            onClick={() => handleSelectingList()}
+            onClick={() => handleSelectingList(false)}
           >
             Select
           </button>
         </div>
       )}
-      
-      {showTransactionList && !showSelectStage && ( // Conditionally render TransactionList
-        <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">
-          {evaluation}
-        </div>
-      )}
+
+      {showTransactionList &&
+        !showSelectStage && ( // Conditionally render TransactionList
+          <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">
+            {evaluation}
+          </div>
+        )}
       {!showTransactionList && situationsSubject && (
         <div className="flex flex-col space-y-4 h-16 text-xl items-center justify-center">
           {situationsSubject && (
@@ -237,32 +248,34 @@ function LLMInterface() {
         />
       )}
       {showSelectStage && (
-        <div className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg">Select the Most Representative Data</div>
-        )}
+        <div className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg">
+          Select the Most Representative Data
+        </div>
+      )}
       {!showTransactionList && situationsSubject && <div></div>}
       {!showSelectStage && (
-      <button
-        className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
-        onClick={
-          showTransactionList
-            ? resetState
-            : isEditing
-            ? handleFinalGenerateResponse
-            : handleInitialGenerateResponse
-        }
-        disabled={loading}
-      >
-        {loading
-          ? isEditing
-            ? "Sending..."
-            : "Generating..."
-          : showTransactionList
+        <button
+          className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+          onClick={
+            showTransactionList
+              ? resetState
+              : isEditing
+              ? handleFinalGenerateResponse
+              : handleInitialGenerateResponse
+          }
+          disabled={loading}
+        >
+          {loading
+            ? isEditing
+              ? "Sending..."
+              : "Generating..."
+            : showTransactionList
             ? "Predict A New Situation"
             : isEditing
-              ? "Send Modified Categories"
-              : "Generate Categories"}
-      </button>
-            )}
+            ? "Send Modified Categories"
+            : "Generate Categories"}
+        </button>
+      )}
     </div>
   );
 }
