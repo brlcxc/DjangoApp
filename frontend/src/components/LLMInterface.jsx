@@ -11,6 +11,7 @@ function LLMInterface() {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [mergeData, setMergeData] = useState([]);
+  const [mergeData2, setMergeData2] = useState([]);
   const [evaluation, setEvaluationData] = useState(null);
   const [situations, setSituations] = useState([]);
   const [situationsSubject, setSubject] = useState("");
@@ -44,6 +45,7 @@ function LLMInterface() {
     setSubject("");
     setNewSituationText("");
     setMergeData([]);
+    setMergeData2([]);
     setEvaluationData(null);
     setShowTransactionList(false);
   };
@@ -64,6 +66,8 @@ function LLMInterface() {
       const gptEvaluation = response.data.GPT_evaluation.answer;
 
       setMergeData(geminiTransactions);
+      setMergeData2(gptTransactions);
+
       setEvaluationData(geminiEvaluation);
       setShowTransactionList(true); // Show TransactionList after sending response
     } catch (error) {
@@ -120,7 +124,7 @@ function LLMInterface() {
             <TransactionList mergeData={mergeData} title={"Transactions provided by gemini-1.5-flash-002"}/>
           </div>
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
-            <TransactionLineChart mergeData={mergeData} />
+            <TransactionList mergeData={mergeData2} title={"Transactions provided by gpt-3.5-turbo"}/>
           </div>
         </div>
       )}
