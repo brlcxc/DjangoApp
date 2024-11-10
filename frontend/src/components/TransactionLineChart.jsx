@@ -10,8 +10,10 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js"; // Import ChartJS first
+} from "chart.js";
+// import annotationPlugin from 'chartjs-plugin-annotation';
 
+// Register the Chart.js components and annotation plugin
 import annotationPlugin from 'chartjs-plugin-annotation'; // Annotation plugin
 
 ChartJS.register(
@@ -24,21 +26,11 @@ ChartJS.register(
   Legend,
   annotationPlugin // Ensure annotation plugin is registered
 );
-// import annotationPlugin from 'chartjs-plugin-annotation';
-
-// Register the Chart.js components and annotation plugin
-ChartJS.register(
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend
-);
 
 const TransactionLineChart = ({ mergeData = [] }) => {
   const { transactions } = useContext(TransactionContext);
+
+  console.log(mergeData)
 
   // Combine transactions and mergeData, then format the data
   const chartData = useMemo(() => {
@@ -115,32 +107,30 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     };
   }, [transactions, mergeData]);
 
+
+
   // Chart options with annotation
   const options = {
     responsive: true,
     scales: {
-      x: { title: { display: true, text: "Date" } },
+      x: { title: { display: true, text: "Date" } 
+    },
       y: { title: { display: true, text: "Amount" } },
     },
     plugins: {
       legend: { display: true, position: "top" },
       annotation: {
         annotations: {
-          todayLine: {
+          line1: {
             type: 'line',
-            xMin: new Date().toLocaleDateString(),
-            xMax: new Date().toLocaleDateString(),
-            borderColor: 'rgba(0, 0, 0, 0.5)',
+            xMin: new Date(mergeData[0].date).toLocaleDateString(),
+            xMax: new Date(mergeData[0].date).toLocaleDateString(),
+            borderColor: 'rgb(255, 99, 132)',
             borderWidth: 2,
-            label: {
-              content: 'Today',
-              enabled: true,
-              position: 'top',
-            },
           },
         },
       },
-    },
+      },    
   };
 
   return (
