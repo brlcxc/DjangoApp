@@ -17,6 +17,7 @@ function LLMInterface() {
   const [situationsSubject, setSubject] = useState("");
   const [newSituationText, setNewSituationText] = useState("");
   const [showTransactionList, setShowTransactionList] = useState(false); // New state
+  const [showSelectStage, setShowSelectStage] = useState(false); // New state
 
   const handleInitialGenerateResponse = async () => {
     setLoading(true);
@@ -48,17 +49,20 @@ function LLMInterface() {
     setMergeData2([]);
     setEvaluationData(null);
     setShowTransactionList(false);
+    setShowSelectStage(false);
   };
   const handleFinalGenerateResponse = async () => {
     setLoading(true);
-  
+
     try {
       // Combine subject and modified situations into a new question
-      const question = `${situationsSubject}: ${situations.map((s) => s.text).join(", ")}`;
-  
+      const question = `${situationsSubject}: ${situations
+        .map((s) => s.text)
+        .join(", ")}`;
+
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
       const response = await api.post(endpoint, { question });
-      
+
       const geminiTransactions = response.data.new_Gemini_transactions;
       const gptTransactions = response.data.new_GPT_transactions;
 
@@ -70,13 +74,19 @@ function LLMInterface() {
 
       setEvaluationData(geminiEvaluation);
       setShowTransactionList(true); // Show TransactionList after sending response
+      setShowSelectStage(true);
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
     } finally {
       setLoading(false);
       setIsEditing(false);
     }
-  };  
+  };
+
+  const handleSelectingList = () => {
+    console.log("test")
+    setShowSelectStage(false);
+  };
 
   const handleRemoveSituation = (index) => {
     setSituations(situations.filter((_, i) => i !== index));
@@ -115,20 +125,58 @@ function LLMInterface() {
       setNewSituationText("");
     }
   };
-// const geminiTitle = "Transactions provided by gemini-1.5-flash-002";
+  // const geminiTitle = "Transactions provided by gemini-1.5-flash-002";
   return (
     <div className="flex flex-col w-full items-center gap-6">
-      {showTransactionList && (
+      {showTransactionList && showSelectStage && (
         <div className="grid grid-cols-2 gap-8">
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
-            <TransactionList mergeData={mergeData} title={"Transactions provided by gemini-1.5-flash-002"}/>
+            <TransactionList
+              mergeData={mergeData}
+              title={"Transactions provided by gemini-1.5-flash-002"}
+            />
           </div>
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
-            <TransactionList mergeData={mergeData2} title={"Transactions provided by gpt-3.5-turbo"}/>
+            <TransactionList
+              mergeData={mergeData2}
+              title={"Transactions provided by gpt-3.5-turbo"}
+            />
           </div>
         </div>
       )}
-      {showTransactionList && ( // Conditionally render TransactionList
+      {showTransactionList && !showSelectStage && (
+        <div className="grid grid-cols-2 gap-8">
+          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+            <TransactionList
+              mergeData={mergeData}
+              title={"Transactions provided by gemini-1.5-flash-002"}
+            />
+          </div>
+          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+            <TransactionLineChart
+              mergeData={mergeData2}
+            />
+          </div>
+        </div>
+      )}
+      {showTransactionList && showSelectStage && (
+        <div className="grid grid-cols-2 w-full gap-8">
+          <button
+            className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+            onClick={() => handleSelectingList()}
+          >
+            Select
+          </button>
+          <button
+            className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+            onClick={() => handleSelectingList()}
+          >
+            Select
+          </button>
+        </div>
+      )}
+      
+      {showTransactionList && !showSelectStage && ( // Conditionally render TransactionList
         <div className="bg-white p-8 rounded-xl text-lg shadow-lg w-[60%]">
           {evaluation}
         </div>
@@ -188,7 +236,11 @@ function LLMInterface() {
           onChange={(e) => setInputText(e.target.value)}
         />
       )}
+      {showSelectStage && (
+        <div className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg">Select the Most Representative Data</div>
+        )}
       {!showTransactionList && situationsSubject && <div></div>}
+      {!showSelectStage && (
       <button
         className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
         onClick={
@@ -205,11 +257,12 @@ function LLMInterface() {
             ? "Sending..."
             : "Generating..."
           : showTransactionList
-          ? "Predict A New Situation"
-          : isEditing
-          ? "Send Modified Categories"
-          : "Generate Categories"}
+            ? "Predict A New Situation"
+            : isEditing
+              ? "Send Modified Categories"
+              : "Generate Categories"}
       </button>
+            )}
     </div>
   );
 }
