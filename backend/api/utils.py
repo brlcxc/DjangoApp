@@ -89,8 +89,6 @@ def process_Gemini_llm_prompt(prompt):
 
 
 def process_GPT_llm_prompt(prompt):
-    # print("help")
-    # print(prompt)
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
     messages = [
@@ -103,14 +101,12 @@ def process_GPT_llm_prompt(prompt):
             messages=messages,
             temperature=0
         )
-        # print("test5")
-        # print(response)
         answer = response.choices[0].message.content.strip()
-        # print("test6")
-        # print(answer)
+
         print("gpt")
         response_time = time.time() - start_time
         print(response_time)
+
         return answer
     except Exception as e:
         print(e)

@@ -1,5 +1,4 @@
 import re
-import datetime
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCategoryResponseSerializer, LLMCharResponseSerializer
 from django.utils.http import urlsafe_base64_decode
@@ -13,7 +12,6 @@ from .utils import send_verification_email, get_user_transactions_for_groups, pr
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
-from decimal import Decimal
 import threading
 
 # Note: views => serializers => models
