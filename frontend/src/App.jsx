@@ -4,6 +4,7 @@ import Register from "./routes/Register";
 import NotFound from "./routes/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./routes/Dashboard";
+import Loading3D from "./components/Loading3D";
 
 function Logout() {
   localStorage.clear();
@@ -17,22 +18,7 @@ function RegisterAndLogout() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <Loading3D />
   );
 }
 

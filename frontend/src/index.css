@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* This is just to test React 3 Fiber */
+html,
+body,
+#root
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 input:invalid {
   border-color: inherit;
 }
