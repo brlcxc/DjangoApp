@@ -108,13 +108,13 @@ function LLMInterface() {
       setNewSituationText("");
     }
   };
-
+// const geminiTitle = "Transactions provided by gemini-1.5-flash-002";
   return (
     <div className="flex flex-col w-full items-center gap-6">
       {showTransactionList && (
         <div className="grid grid-cols-2 gap-8">
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
-            <TransactionList mergeData={mergeData} />
+            <TransactionList mergeData={mergeData} title={"Transactions provided by gemini-1.5-flash-002"}/>
           </div>
           <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData} />
