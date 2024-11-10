@@ -13,6 +13,7 @@ import vertexai
 import json
 from vertexai.generative_models import GenerativeModel
 from google.oauth2 import service_account  # Importing service_account
+from openai import OpenAI
 
 def send_verification_email(user, request):
     # custom verification token with hashed user info
@@ -76,3 +77,28 @@ def process_llm_prompt(prompt):
             return answer
         except Exception as e:
             return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def process_GPT_llm_prompt(prompt):
+    print("help")
+    print(prompt)
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
+    messages = [
+            {"role": "user", "content": prompt},
+        ]
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0
+        )
+        print("test5")
+        print(response)
+        answer = response.choices[0].message.content.strip()
+        print("test6")
+        print(answer)
+        return answer
+    except Exception as e:
+        print(e)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

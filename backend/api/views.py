@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt
+from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt, process_GPT_llm_prompt
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
@@ -227,9 +227,11 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         # Get the user question and group UUIDs from the validated data
         user_question = serializer.validated_data['question']
 
-        category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
+        category_question = f"The user financial question/situation is as follows: {user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
         category_answer =  process_llm_prompt(category_question)
+        print("test7")
+        print(category_answer)
 
         # Parse the string response to structured data
         situations = re.findall(r'situations = \[(.*?)\]', category_answer)
@@ -291,10 +293,10 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
             f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
-            f"Can you provide 30 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
+            f"Can you provide 15 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
             f"transactions as well as account for the subject and situations. If a situation relates to an "
             f"existing category then a new transaction in that category should be given a cost accordingly. "
-            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used."
+            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used. Do NOT use a dictionary key value pair for data values such as 'category': 'Party'."
         )    
 
         # Process the prompt with the LLM to receive a response containing new transaction data
@@ -310,8 +312,8 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
         stripped_str = re.sub(r'\],\]', r']]', stripped_str)
 
-        # print("strip")
-        # print(stripped_str)
+        print("strip")
+        print(stripped_str)
       
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(
