@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react'
 
 export default {
+  base: '/',
   root: 'src/',
   publicDir: '../public/',
   plugins: [react()],
@@ -10,7 +11,7 @@ export default {
   },
   build:
 	{
-		outDir: '../dist',	
+		outDir: '../dist/',	
 		emptyOutDir: true,
 		sourcemap: true
 	
