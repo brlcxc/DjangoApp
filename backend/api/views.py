@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt, process_GPT_llm_prompt, process_str, perform_evaluation
+from .utils import send_verification_email, get_user_transactions_for_groups, process_Gemini_llm_prompt, process_GPT_llm_prompt, process_str, perform_evaluation
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
@@ -230,9 +230,7 @@ class LLMCategoryResponseView(generics.GenericAPIView):
 
         category_question = f"The user financial question/situation is as follows: {user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
-        category_answer =  process_llm_prompt(category_question)
-        # print("test7")
-        # print(category_answer)
+        category_answer =  process_Gemini_llm_prompt(category_question)
 
         # Parse the string response to structured data
         situations = re.findall(r'situations = \[(.*?)\]', category_answer)
@@ -241,9 +239,6 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         # Convert parsed strings to proper data types
         situations_list = situations[0].split(", ") if situations else []
         subject_str = subject.group(1) if subject else ""
-
-        # print(situations_list)
-        # print(subject_str)
 
         # Return the structured data
         response_data = {
@@ -267,8 +262,6 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
         # Extract the question (user input) after validation
         category_input = serializer.validated_data['question']
-
-        print(category_input)
 
         # Retrieve group UUIDs passed through the URL, defaulting to an empty string if not provided
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
@@ -309,12 +302,9 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             def get_transaction_answer():
                 nonlocal Gemini_transaction_serializer
                 nonlocal Gemini_evaluation_serializer
-                # nonlocal clean_Gemini_transaction_answer
-                # nonlocal Gemini_transaction_evaluation
 
-                transactions = process_llm_prompt(new_transaction_question)
+                transactions = process_Gemini_llm_prompt(new_transaction_question)
                 clean_Gemini_transaction_answer = process_str(transactions)
-                print(clean_Gemini_transaction_answer)
 
                 Gemini_transaction_evaluation = perform_evaluation(transactions_data_list, clean_Gemini_transaction_answer)
                 
@@ -330,7 +320,6 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
                 transactions = process_GPT_llm_prompt(new_transaction_question)
                 clean_GPT_transaction_answer = process_str(transactions)
-                print(clean_GPT_transaction_answer)
                 GPT_transaction_evaluation = perform_evaluation(transactions_data_list, clean_GPT_transaction_answer)
 
                 GPT_transaction_serializer = LLMTransactionResponseSerializer(data=clean_GPT_transaction_answer, many=True)
