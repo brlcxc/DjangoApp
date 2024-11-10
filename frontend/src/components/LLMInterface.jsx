@@ -57,11 +57,14 @@ function LLMInterface() {
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
       const response = await api.post(endpoint, { question });
       
-      const transactions = response.data.new_GPT_transactions;
-      const evaluation = response.data.evaluation.answer;
-  
-      setMergeData(transactions);
-      setEvaluationData(evaluation);
+      const geminiTransactions = response.data.new_Gemini_transactions;
+      const gptTransactions = response.data.new_GPT_transactions;
+
+      const geminiEvaluation = response.data.Gemini_evaluation.answer;
+      const gptEvaluation = response.data.GPT_evaluation.answer;
+
+      setMergeData(geminiTransactions);
+      setEvaluationData(geminiEvaluation);
       setShowTransactionList(true); // Show TransactionList after sending response
     } catch (error) {
       setOutputText("An error occurred while fetching the response: " + error);
