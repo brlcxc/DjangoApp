@@ -1,5 +1,4 @@
 import re
-import datetime
 from rest_framework import generics
 from .serializers import UserSerializer, GroupSerializer, TransactionSerializer, InviteSerializer, LLMRequestSerializer, LLMTransactionResponseSerializer, LLMCategoryResponseSerializer, LLMCharResponseSerializer
 from django.utils.http import urlsafe_base64_decode
@@ -9,11 +8,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt
+from .utils import send_verification_email, get_user_transactions_for_groups, process_Gemini_llm_prompt, process_GPT_llm_prompt, process_str, perform_evaluation
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
-from decimal import Decimal
+import threading
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -48,6 +47,14 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     # Normally you would need a pk for get_object but in this case it is just done with the token
     def get_object(self):
         return self.request.user
+    
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Normally you would need a pk for get_object but in this case it is just done with the token
+    def get_queryset(self):
+        return User.objects
 
 class GroupListCreate(generics.ListCreateAPIView):
     serializer_class = GroupSerializer
@@ -219,9 +226,9 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         # Get the user question and group UUIDs from the validated data
         user_question = serializer.validated_data['question']
 
-        category_question = f"{user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
+        category_question = f"The user financial question/situation is as follows: {user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
-        category_answer =  process_llm_prompt(category_question)
+        category_answer =  process_Gemini_llm_prompt(category_question)
 
         # Parse the string response to structured data
         situations = re.findall(r'situations = \[(.*?)\]', category_answer)
@@ -230,9 +237,6 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         # Convert parsed strings to proper data types
         situations_list = situations[0].split(", ") if situations else []
         subject_str = subject.group(1) if subject else ""
-
-        # print(situations_list)
-        # print(subject_str)
 
         # Return the structured data
         response_data = {
@@ -257,8 +261,6 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         # Extract the question (user input) after validation
         category_input = serializer.validated_data['question']
 
-        print(category_input)
-
         # Retrieve group UUIDs passed through the URL, defaulting to an empty string if not provided
         group_uuid_list = self.kwargs.get('group_uuid_list', '')
         
@@ -278,75 +280,72 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             for trans in transactions_data
         ]
 
-        # print(category_input)
-
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
             f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
-            f"Can you provide 30 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
+            f"Can you provide 15 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
             f"transactions as well as account for the subject and situations. If a situation relates to an "
             f"existing category then a new transaction in that category should be given a cost accordingly. "
-            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used."
+            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used. Do NOT use a dictionary key value pair for data values such as 'category': 'Party'."
         )    
 
-        # Process the prompt with the LLM to receive a response containing new transaction data
-        transaction_answer = process_llm_prompt(new_transaction_question)
-        # print("answer")
-        # print(transaction_answer)
+        Gemini_transaction_serializer = ""
+        Gemini_evaluation_serializer = ""
 
-        stripped_str = re.sub('\n', '', transaction_answer)
-        stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
-        stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
+        GPT_transaction_serializer = ""
+        GPT_evaluation_serializer = ""
 
-        # accounts for uncommon case where the str ends with ],]
-        stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
-        stripped_str = re.sub(r'\],\]', r']]', stripped_str)
+        #TODO put the serializers in a util function too
+        def run_concurrent():
+            def get_transaction_answer():
+                nonlocal Gemini_transaction_serializer
+                nonlocal Gemini_evaluation_serializer
 
-        # print("strip")
-        # print(stripped_str)
-      
-        # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
-        parsed_transactions = eval(
-            stripped_str,
-            {"Decimal": Decimal, "datetime": datetime}
-        )
+                transactions = process_Gemini_llm_prompt(new_transaction_question)
+                clean_Gemini_transaction_answer = process_str(transactions)
 
-        # Reformat the parsed transactions to match the desired structure for further use
-        cleaned_transactions = [
-            {
-                'category': transaction[0],
-                'amount': float(transaction[1]),
-                'description': transaction[2],
-                'date': transaction[3].strftime('%Y-%m-%d')
-            }
-            for transaction in parsed_transactions
-        ]
+                Gemini_transaction_evaluation = perform_evaluation(transactions_data_list, clean_Gemini_transaction_answer)
+                
+                Gemini_transaction_serializer = LLMTransactionResponseSerializer(data=clean_Gemini_transaction_answer, many=True)
+                Gemini_transaction_serializer.is_valid(raise_exception=True)
 
-        # Merge existing transactions with new LLM-generated transactions for analysis
-        merge = transactions_data_list + cleaned_transactions
+                Gemini_evaluation_serializer = LLMCharResponseSerializer(data={'answer': Gemini_transaction_evaluation})
+                Gemini_evaluation_serializer.is_valid(raise_exception=True)
 
-        # Prepare a prompt for the LLM to evaluate spending trends and provide suggestions
-        spending_evaluation_question = (
-            f"Analyze and compare the transactions following today's date {date.today()} with those before it. "
-            f"In one sentence explain any issues with spending and indicate if the costs exceed income. "
-            f"In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
-        )
+            def get_transaction_answer2():
+                nonlocal GPT_transaction_serializer
+                nonlocal GPT_evaluation_serializer
 
-        # Process the evaluation prompt with the LLM and get the evaluation response
-        evaluation_answer = process_llm_prompt(spending_evaluation_question)
+                transactions = process_GPT_llm_prompt(new_transaction_question)
+                clean_GPT_transaction_answer = process_str(transactions)
+                GPT_transaction_evaluation = perform_evaluation(transactions_data_list, clean_GPT_transaction_answer)
 
-        # Serialize the new transactions using LLMTransactionResponseSerializer
-        transaction_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
-        transaction_serializer.is_valid(raise_exception=True)
-        
-        # Serialize the evaluation answer with LLMCharResponseSerializer
-        evaluation_serializer = LLMCharResponseSerializer(data={'answer': evaluation_answer})
-        evaluation_serializer.is_valid(raise_exception=True)
+                GPT_transaction_serializer = LLMTransactionResponseSerializer(data=clean_GPT_transaction_answer, many=True)
+                GPT_transaction_serializer.is_valid(raise_exception=True)
+
+                GPT_evaluation_serializer = LLMCharResponseSerializer(data={'answer': GPT_transaction_evaluation})
+                GPT_evaluation_serializer.is_valid(raise_exception=True)
+
+            # Create threads for each function
+            thread1 = threading.Thread(target=get_transaction_answer)
+            thread2 = threading.Thread(target=get_transaction_answer2)
+
+            # Start threads
+            thread1.start()
+            thread2.start()
+
+            # Wait for both threads to finish
+            thread1.join()
+            thread2.join()
+
+        run_concurrent()
 
         # Combine both serialized responses into the final response payload
         response_data = {
-            'new_transactions': transaction_serializer.data,
-            'evaluation': evaluation_serializer.data,
+            'new_Gemini_transactions': Gemini_transaction_serializer.data,
+            'Gemini_evaluation': Gemini_evaluation_serializer.data,
+            'new_GPT_transactions': GPT_transaction_serializer.data,
+            'GPT_evaluation': GPT_evaluation_serializer.data,
         }
 
         # Return the combined response with HTTP 200 OK status

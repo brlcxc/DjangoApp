@@ -14,6 +14,8 @@ import {
 // import annotationPlugin from 'chartjs-plugin-annotation';
 
 // Register the Chart.js components and annotation plugin
+import annotationPlugin from 'chartjs-plugin-annotation'; // Annotation plugin
+
 ChartJS.register(
   LineElement,
   PointElement,
@@ -21,11 +23,14 @@ ChartJS.register(
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  annotationPlugin // Ensure annotation plugin is registered
 );
 
 const TransactionLineChart = ({ mergeData = [] }) => {
   const { transactions } = useContext(TransactionContext);
+
+  console.log(mergeData)
 
   // Combine transactions and mergeData, then format the data
   const chartData = useMemo(() => {
@@ -102,32 +107,31 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     };
   }, [transactions, mergeData]);
 
+
+
   // Chart options with annotation
+  //Note: annotation wont work unless date is already in the dataset
   const options = {
     responsive: true,
     scales: {
-      x: { title: { display: true, text: "Date" } },
+      x: { title: { display: true, text: "Date" } 
+    },
       y: { title: { display: true, text: "Amount" } },
     },
     plugins: {
       legend: { display: true, position: "top" },
-      //   annotation: {
-      //     annotations: {
-      //       todayLine: {
-      //         type: 'line',
-      //         xMin: new Date().toLocaleDateString(),
-      //         xMax: new Date().toLocaleDateString(),
-      //         borderColor: 'rgba(0, 0, 0, 0.5)',
-      //         borderWidth: 2,
-      //         label: {
-      //           content: 'Today',
-      //           enabled: true,
-      //           position: 'top',
-      //         },
-      //       },
-      //     },
-      //   },
-    },
+      annotation: {
+        annotations: {
+          line1: {
+            type: 'line',
+            xMin: new Date(mergeData[0].date).toLocaleDateString(),
+            xMax: new Date(mergeData[0].date).toLocaleDateString(),
+            borderColor: 'rgb(107 114 128)',
+            borderWidth: 3,
+          },
+        },
+      },
+      },    
   };
 
   return (

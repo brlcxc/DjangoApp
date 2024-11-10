@@ -27,7 +27,7 @@ const TransactionRow = ({ transaction }) => (
   </div>
 );
 
-const TransactionList = ({ mergeData = [] }) => {
+const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
   const { transactions, loading, error } = useContext(TransactionContext);
   const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
   const [filterType, setFilterType] = useState("All");
@@ -71,7 +71,7 @@ const TransactionList = ({ mergeData = [] }) => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-5 text-black">Transaction List</h1>
+      <h1 className="text-2xl font-bold mb-5 text-black">{title}</h1>
       <div className="flex justify-between mb-5">
         <div>
           <label className="mr-2">Filter by Category:</label>
