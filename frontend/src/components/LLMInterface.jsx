@@ -57,7 +57,7 @@ function LLMInterface() {
       const endpoint = `/api/llm/ask/${selectedGroupUUIDs}/`;
       const response = await api.post(endpoint, { question });
       
-      const transactions = response.data.new_transactions;
+      const transactions = response.data.new_GPT_transactions;
       const evaluation = response.data.evaluation.answer;
   
       setMergeData(transactions);

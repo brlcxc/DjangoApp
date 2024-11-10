@@ -357,6 +357,8 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         response_data = {
             'new_transactions': Gemini_transaction_serializer.data,
             'evaluation': Gemini_evaluation_serializer.data,
+            'new_GPT_transactions': GPT_transaction_serializer.data,
+            'GPT_evaluation': GPT_evaluation_serializer.data,
         }
 
         # Return the combined response with HTTP 200 OK status

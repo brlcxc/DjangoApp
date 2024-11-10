@@ -126,10 +126,16 @@ def process_str(llm_response):
         stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
         stripped_str = re.sub(r'\],\]', r']]', stripped_str)
 
-        parsed_transactions = eval(
-            stripped_str,
-            {"Decimal": Decimal, "datetime": datetime}
-        )
+        try:
+            parsed_transactions = eval(
+                stripped_str,
+                {"Decimal": Decimal, "datetime": datetime}
+            )
+        except (SyntaxError, NameError, TypeError, ValueError) as e:
+            # Log the error or handle it if necessary
+            print(f"Error during evaluation: {e}")
+            print(llm_response)
+            parsed_transactions = []  # Default value, can be adjusted as needed
 
         # Reformat the parsed transactions to match the desired structure for further use
         cleaned_transactions = [
