@@ -298,29 +298,46 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used. Do NOT use a dictionary key value pair for data values such as 'category': 'Party'."
         )    
 
-        # Process the prompt with the LLM to receive a response containing new transaction data
-        clean_Gemini_transaction_answer = ""
-        clean_GPT_transaction_answer = ""
+        Gemini_transaction_serializer = ""
+        Gemini_evaluation_serializer = ""
 
-        Gemini_transaction_evaluation = ""
-        GPT_transaction_evaluation = ""
+        GPT_transaction_serializer = ""
+        GPT_evaluation_serializer = ""
 
+        #TODO put the serializers in a util function too
         def run_concurrent():
             def get_transaction_answer():
-                nonlocal clean_Gemini_transaction_answer
-                nonlocal Gemini_transaction_evaluation
+                nonlocal Gemini_transaction_serializer
+                nonlocal Gemini_evaluation_serializer
+                # nonlocal clean_Gemini_transaction_answer
+                # nonlocal Gemini_transaction_evaluation
+
                 transactions = process_llm_prompt(new_transaction_question)
                 clean_Gemini_transaction_answer = process_str(transactions)
                 print(clean_Gemini_transaction_answer)
+
                 Gemini_transaction_evaluation = perform_evaluation(transactions_data_list, clean_Gemini_transaction_answer)
+                
+                Gemini_transaction_serializer = LLMTransactionResponseSerializer(data=clean_Gemini_transaction_answer, many=True)
+                Gemini_transaction_serializer.is_valid(raise_exception=True)
+
+                Gemini_evaluation_serializer = LLMCharResponseSerializer(data={'answer': Gemini_transaction_evaluation})
+                Gemini_evaluation_serializer.is_valid(raise_exception=True)
 
             def get_transaction_answer2():
-                nonlocal clean_GPT_transaction_answer
-                nonlocal GPT_transaction_evaluation
+                nonlocal GPT_transaction_serializer
+                nonlocal GPT_evaluation_serializer
+
                 transactions = process_GPT_llm_prompt(new_transaction_question)
                 clean_GPT_transaction_answer = process_str(transactions)
                 print(clean_GPT_transaction_answer)
                 GPT_transaction_evaluation = perform_evaluation(transactions_data_list, clean_GPT_transaction_answer)
+
+                GPT_transaction_serializer = LLMTransactionResponseSerializer(data=clean_GPT_transaction_answer, many=True)
+                GPT_transaction_serializer.is_valid(raise_exception=True)
+
+                GPT_evaluation_serializer = LLMCharResponseSerializer(data={'answer': GPT_transaction_evaluation})
+                GPT_evaluation_serializer.is_valid(raise_exception=True)
 
             # Create threads for each function
             thread1 = threading.Thread(target=get_transaction_answer)
@@ -336,18 +353,10 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
         run_concurrent()
 
-        # Serialize the new transactions using LLMTransactionResponseSerializer
-        transaction_serializer = LLMTransactionResponseSerializer(data=clean_Gemini_transaction_answer, many=True)
-        transaction_serializer.is_valid(raise_exception=True)
-        
-        # Serialize the evaluation answer with LLMCharResponseSerializer
-        evaluation_serializer = LLMCharResponseSerializer(data={'answer': Gemini_transaction_evaluation})
-        evaluation_serializer.is_valid(raise_exception=True)
-
         # Combine both serialized responses into the final response payload
         response_data = {
-            'new_transactions': transaction_serializer.data,
-            'evaluation': evaluation_serializer.data,
+            'new_transactions': Gemini_transaction_serializer.data,
+            'evaluation': Gemini_evaluation_serializer.data,
         }
 
         # Return the combined response with HTTP 200 OK status
