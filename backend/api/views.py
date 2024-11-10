@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt, process_GPT_llm_prompt, process_str
+from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt, process_GPT_llm_prompt, process_str, perform_evaluation
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
@@ -231,8 +231,8 @@ class LLMCategoryResponseView(generics.GenericAPIView):
         category_question = f"The user financial question/situation is as follows: {user_question}\n\nFrom this user question derive 1 to 5 categories that represent financial situations which could cause a change in costs or spending. Form them into a list of short 1 to 4 word situations in the format situations = [] Also provide 2 or 3 words for the subject of the message in the form subject = subject"
 
         category_answer =  process_llm_prompt(category_question)
-        print("test7")
-        print(category_answer)
+        # print("test7")
+        # print(category_answer)
 
         # Parse the string response to structured data
         situations = re.findall(r'situations = \[(.*?)\]', category_answer)
@@ -289,8 +289,6 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             for trans in transactions_data
         ]
 
-        # print(category_input)
-
         # Prepare a prompt for the LLM to generate new transactions, based on existing data and user question
         new_transaction_question = (
             f"From this data {transactions_data}\n\n and this subject and situations {category_input}\n\n"
@@ -304,16 +302,25 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         clean_Gemini_transaction_answer = ""
         clean_GPT_transaction_answer = ""
 
+        Gemini_transaction_evaluation = ""
+        GPT_transaction_evaluation = ""
+
         def run_concurrent():
             def get_transaction_answer():
                 nonlocal clean_Gemini_transaction_answer
+                nonlocal Gemini_transaction_evaluation
                 transactions = process_llm_prompt(new_transaction_question)
                 clean_Gemini_transaction_answer = process_str(transactions)
+                print(clean_Gemini_transaction_answer)
+                Gemini_transaction_evaluation = perform_evaluation(transactions_data_list, clean_Gemini_transaction_answer)
 
             def get_transaction_answer2():
                 nonlocal clean_GPT_transaction_answer
+                nonlocal GPT_transaction_evaluation
                 transactions = process_GPT_llm_prompt(new_transaction_question)
                 clean_GPT_transaction_answer = process_str(transactions)
+                print(clean_GPT_transaction_answer)
+                GPT_transaction_evaluation = perform_evaluation(transactions_data_list, clean_GPT_transaction_answer)
 
             # Create threads for each function
             thread1 = threading.Thread(target=get_transaction_answer)
@@ -329,56 +336,12 @@ class LLMTransactionResponseView(generics.GenericAPIView):
 
         run_concurrent()
 
-        # print("answer")
-        # print(transaction_answer)
-
-        # stripped_str = re.sub('\n', '', transaction_answer)
-        # stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
-        # stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
-
-        # # accounts for uncommon case where the str ends with ],]
-        # stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
-        # stripped_str = re.sub(r'\],\]', r']]', stripped_str)
-
-        # print("strip")
-        # print(stripped_str)
-      
-        # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
-        parsed_transactions = eval(
-            clean_Gemini_transaction_answer,
-            {"Decimal": Decimal, "datetime": datetime}
-        )
-
-        # Reformat the parsed transactions to match the desired structure for further use
-        cleaned_transactions = [
-            {
-                'category': transaction[0],
-                'amount': float(transaction[1]),
-                'description': transaction[2],
-                'date': transaction[3].strftime('%Y-%m-%d')
-            }
-            for transaction in parsed_transactions
-        ]
-
-        # Merge existing transactions with new LLM-generated transactions for analysis
-        merge = transactions_data_list + cleaned_transactions
-
-        # Prepare a prompt for the LLM to evaluate spending trends and provide suggestions
-        spending_evaluation_question = (
-            f"Analyze and compare the transactions following today's date {date.today()} with those before it. "
-            f"In one sentence explain any issues with spending and indicate if the costs exceed income. "
-            f"In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
-        )
-
-        # Process the evaluation prompt with the LLM and get the evaluation response
-        evaluation_answer = process_llm_prompt(spending_evaluation_question)
-
         # Serialize the new transactions using LLMTransactionResponseSerializer
-        transaction_serializer = LLMTransactionResponseSerializer(data=cleaned_transactions, many=True)
+        transaction_serializer = LLMTransactionResponseSerializer(data=clean_Gemini_transaction_answer, many=True)
         transaction_serializer.is_valid(raise_exception=True)
         
         # Serialize the evaluation answer with LLMCharResponseSerializer
-        evaluation_serializer = LLMCharResponseSerializer(data={'answer': evaluation_answer})
+        evaluation_serializer = LLMCharResponseSerializer(data={'answer': Gemini_transaction_evaluation})
         evaluation_serializer.is_valid(raise_exception=True)
 
         # Combine both serialized responses into the final response payload

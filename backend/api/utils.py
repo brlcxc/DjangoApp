@@ -16,6 +16,9 @@ from google.oauth2 import service_account  # Importing service_account
 from openai import OpenAI
 import time
 import re
+from decimal import Decimal
+import datetime
+from datetime import date
 
 def send_verification_email(user, request):
     # custom verification token with hashed user info
@@ -122,4 +125,37 @@ def process_str(llm_response):
         # accounts for uncommon case where the str ends with ],]
         stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
         stripped_str = re.sub(r'\],\]', r']]', stripped_str)
-        return stripped_str
+
+        parsed_transactions = eval(
+            stripped_str,
+            {"Decimal": Decimal, "datetime": datetime}
+        )
+
+        # Reformat the parsed transactions to match the desired structure for further use
+        cleaned_transactions = [
+            {
+                'category': transaction[0],
+                'amount': float(transaction[1]),
+                'description': transaction[2],
+                'date': transaction[3].strftime('%Y-%m-%d')
+            }
+            for transaction in parsed_transactions
+        ]
+
+        return cleaned_transactions
+
+def perform_evaluation(existing_transactions, llm_transactions):
+     # Merge existing transactions with new LLM-generated transactions for analysis
+    merge = existing_transactions + llm_transactions
+
+    # Prepare a prompt for the LLM to evaluate spending trends and provide suggestions
+    spending_evaluation_question = (
+        f"Analyze and compare the transactions following today's date {date.today()} with those before it. "
+        f"In one sentence explain any issues with spending and indicate if the costs exceed income. "
+        f"In another sentence give a suggestion for resolving an issue if there is one. Here are the transactions {merge}"
+    )
+
+    # Process the evaluation prompt with the LLM and get the evaluation response
+    evaluation_answer = process_llm_prompt(spending_evaluation_question)
+
+    return evaluation_answer
