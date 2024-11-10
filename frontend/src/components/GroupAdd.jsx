@@ -74,8 +74,8 @@ const GroupAdd = () => {
   return (
     <div className="h-full overflow-hidden">
       <h1 className="text-2xl font-bold mb-5 text-black">Create New Group</h1>
-      <form className="h-full" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2  gap-2 h-full">
+        <div className="h-[70%]">
+        <div className="grid grid-cols-2 gap-2 h-full">
           <div className="grid grid-rows-2">
             <div className="grid grid-rows-2">
             <div>
@@ -113,7 +113,7 @@ const GroupAdd = () => {
           <div className="grid grid-rows-2">
             <div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-lg font-medium text-gray-700">
                   Search Users
                 </label>
                 <input
@@ -121,7 +121,7 @@ const GroupAdd = () => {
                   value={searchQuery}
                   onChange={handleUserSearch}
                   placeholder="Search by name or email"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
                 />
               </div>
             </div>
@@ -169,14 +169,13 @@ const GroupAdd = () => {
             </div>
           </div>
         </div>
+        </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="w-full h-12 text-lg object-bottom	bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Create Group
         </button>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-      </form>
     </div>
   );
 };
@@ -188,3 +187,6 @@ export default GroupAdd;
 //title search bar for groups as add memebrs
 
 //select the data which you find most closely alligns with your spending
+
+
+//maybe selected group and add group can be given special space
