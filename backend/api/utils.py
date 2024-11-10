@@ -14,6 +14,8 @@ import json
 from vertexai.generative_models import GenerativeModel
 from google.oauth2 import service_account  # Importing service_account
 from openai import OpenAI
+import time
+import re
 
 def send_verification_email(user, request):
     # custom verification token with hashed user info
@@ -72,33 +74,52 @@ def process_llm_prompt(prompt):
         # Generate response using the generative model
         try:
             model = GenerativeModel("gemini-1.5-flash-002")
+            start_time = time.time()
             response = model.generate_content([prompt])
             answer = response.text.strip()
+            response_time = time.time() - start_time
+            print("gemini")
+            print(response_time)
             return answer
         except Exception as e:
             return Response({"error": f"Failed to generate response: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def process_GPT_llm_prompt(prompt):
-    print("help")
-    print(prompt)
+    # print("help")
+    # print(prompt)
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
     messages = [
             {"role": "user", "content": prompt},
         ]
     try:
+        start_time = time.time()
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages,
             temperature=0
         )
-        print("test5")
-        print(response)
+        # print("test5")
+        # print(response)
         answer = response.choices[0].message.content.strip()
-        print("test6")
-        print(answer)
+        # print("test6")
+        # print(answer)
+        print("gpt")
+        response_time = time.time() - start_time
+        print(response_time)
         return answer
     except Exception as e:
         print(e)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+def process_str(llm_response):
+        stripped_str = re.sub('\n', '', llm_response)
+        stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
+        stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
+
+        # accounts for uncommon case where the str ends with ],]
+        stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
+        stripped_str = re.sub(r'\],\]', r']]', stripped_str)
+        return stripped_str

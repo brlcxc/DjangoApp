@@ -13,3 +13,4 @@ gunicorn
 requests
 google-generativeai
 vertexai
+OpenAI

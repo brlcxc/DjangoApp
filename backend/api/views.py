@@ -9,11 +9,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import User, Group, Transaction
-from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt, process_GPT_llm_prompt
+from .utils import send_verification_email, get_user_transactions_for_groups, process_llm_prompt, process_GPT_llm_prompt, process_str
 from datetime import date
 from rest_framework.response import Response
 from rest_framework import status
 from decimal import Decimal
+import threading
 
 # Note: views => serializers => models
 # TODO check if Update and Destroy for Transaction need their methods overwritten
@@ -300,24 +301,51 @@ class LLMTransactionResponseView(generics.GenericAPIView):
         )    
 
         # Process the prompt with the LLM to receive a response containing new transaction data
-        transaction_answer = process_llm_prompt(new_transaction_question)
+        clean_Gemini_transaction_answer = ""
+        clean_GPT_transaction_answer = ""
+
+        def run_concurrent():
+            def get_transaction_answer():
+                nonlocal clean_Gemini_transaction_answer
+                transactions = process_llm_prompt(new_transaction_question)
+                clean_Gemini_transaction_answer = process_str(transactions)
+
+            def get_transaction_answer2():
+                nonlocal clean_GPT_transaction_answer
+                transactions = process_GPT_llm_prompt(new_transaction_question)
+                clean_GPT_transaction_answer = process_str(transactions)
+
+            # Create threads for each function
+            thread1 = threading.Thread(target=get_transaction_answer)
+            thread2 = threading.Thread(target=get_transaction_answer2)
+
+            # Start threads
+            thread1.start()
+            thread2.start()
+
+            # Wait for both threads to finish
+            thread1.join()
+            thread2.join()
+
+        run_concurrent()
+
         # print("answer")
         # print(transaction_answer)
 
-        stripped_str = re.sub('\n', '', transaction_answer)
-        stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
-        stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
+        # stripped_str = re.sub('\n', '', transaction_answer)
+        # stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
+        # stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
 
-        # accounts for uncommon case where the str ends with ],]
-        stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
-        stripped_str = re.sub(r'\],\]', r']]', stripped_str)
+        # # accounts for uncommon case where the str ends with ],]
+        # stripped_str = re.sub(r'\]\](\s*.*?)$', '],]', stripped_str)
+        # stripped_str = re.sub(r'\],\]', r']]', stripped_str)
 
-        print("strip")
-        print(stripped_str)
+        # print("strip")
+        # print(stripped_str)
       
         # Parse the response into a list of transactions, enabling Decimal and datetime usage in the evaluation
         parsed_transactions = eval(
-            stripped_str,
+            clean_Gemini_transaction_answer,
             {"Decimal": Decimal, "datetime": datetime}
         )
 
