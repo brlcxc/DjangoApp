@@ -29,8 +29,8 @@ ChartJS.register(
 const TransactionLineChart = ({ mergeData = [] }) => {
   const { transactions } = useContext(TransactionContext);
 
-  const dateLabel = transactions[1]?.start_date 
-  ? new Date(transactions[2].start_date).toLocaleDateString()
+  const dateLabel = transactions[transactions.length - 1]?.start_date 
+  ? new Date(transactions[transactions.length - 1].start_date).toLocaleDateString()
   : null;
 
   // Combine transactions and mergeData, then format the data
