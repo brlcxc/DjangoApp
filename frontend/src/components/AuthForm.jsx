@@ -123,14 +123,14 @@ export default function AuthForm({ route, isRegistration }) {
             {isRegistration ? (
             <>
                 Already have an account?{" "}
-                <a className="font-bold hover:underline" href="/login">
+                <a className="font-bold hover:underline" href="/#/login">
                 Login
                 </a>
             </>
             ) : (
             <>
                 Don't have an account?{" "}
-                <a className="font-bold hover:underline" href="/register">
+                <a className="font-bold hover:underline" href="/#/register">
                 Register
                 </a>
             </>
