@@ -11,7 +11,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-// import annotationPlugin from 'chartjs-plugin-annotation';
 
 // Register the Chart.js components and annotation plugin
 import annotationPlugin from 'chartjs-plugin-annotation'; // Annotation plugin
@@ -30,7 +29,9 @@ ChartJS.register(
 const TransactionLineChart = ({ mergeData = [] }) => {
   const { transactions } = useContext(TransactionContext);
 
-  console.log(mergeData)
+  const dateLabel = transactions[1]?.start_date 
+  ? new Date(transactions[2].start_date).toLocaleDateString()
+  : null;
 
   // Combine transactions and mergeData, then format the data
   const chartData = useMemo(() => {
@@ -62,7 +63,6 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     const cumulativeNegativeAmounts = [];
 
     combinedTransactions.forEach((transaction) => {
-      // console.log(transaction.amount)
       if (transaction.amount >= 0) {
         console.log("pos" + transaction.amount)
         let test = parseFloat(transaction.amount)
@@ -76,9 +76,6 @@ const TransactionLineChart = ({ mergeData = [] }) => {
         cumulativePositiveAmounts.push(cumulativePositiveSum); // Keep positive sum unchanged
       }
     });
-
-    // console.log(cumulativePositiveAmounts)
-    // console.log(cumulativeNegativeAmounts)
 
     return {
       labels: combinedTransactions.map((transaction) =>
@@ -107,8 +104,6 @@ const TransactionLineChart = ({ mergeData = [] }) => {
     };
   }, [transactions, mergeData]);
 
-
-
   // Chart options with annotation
   //Note: annotation wont work unless date is already in the dataset
   const options = {
@@ -124,8 +119,8 @@ const TransactionLineChart = ({ mergeData = [] }) => {
         annotations: {
           line1: {
             type: 'line',
-            xMin: new Date(mergeData[1].date).toLocaleDateString(),
-            xMax: new Date(mergeData[1].date).toLocaleDateString(),
+            xMin: dateLabel,
+            xMax: dateLabel,
             borderColor: 'rgb(107 114 128)',
             borderWidth: 3,
           },
@@ -146,6 +141,4 @@ const TransactionLineChart = ({ mergeData = [] }) => {
 
 export default TransactionLineChart;
 
-//Maybe I should just have it start at 0 and then go above and blow
-
-//it is possible that the data isnt transfering well
+//Maybe I should just have it start at 0 and then go above and below
