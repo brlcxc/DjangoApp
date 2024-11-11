@@ -124,8 +124,8 @@ const TransactionLineChart = ({ mergeData = [] }) => {
         annotations: {
           line1: {
             type: 'line',
-            xMin: new Date(mergeData[0].date).toLocaleDateString(),
-            xMax: new Date(mergeData[0].date).toLocaleDateString(),
+            xMin: new Date(mergeData[1].date).toLocaleDateString(),
+            xMax: new Date(mergeData[1].date).toLocaleDateString(),
             borderColor: 'rgb(107 114 128)',
             borderWidth: 3,
           },
