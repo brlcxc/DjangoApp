@@ -114,6 +114,8 @@ def process_GPT_llm_prompt(prompt):
     
 
 def process_str(llm_response):
+    print(llm_response)
+    
     stripped_str = re.sub('\n', '', llm_response)
     stripped_str = re.sub(r'^.*?\[', '[', stripped_str)
     stripped_str = re.sub(r'\]\](\s*.*?)$', ']]', stripped_str)
@@ -124,6 +126,8 @@ def process_str(llm_response):
 
     # removes instance of inner single quote such as with 'New Year's Eve Party'
     stripped_str = re.sub(r"(?<=\w)'(?=\w)", "", stripped_str)
+
+    stripped_str = re.sub(r'```', '', stripped_str)
 
     try:
         parsed_transactions = eval(

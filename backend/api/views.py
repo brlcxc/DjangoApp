@@ -286,7 +286,7 @@ class LLMTransactionResponseView(generics.GenericAPIView):
             f"Can you provide 15 new transactions after {date.today()}? These should be representative of someone living in Kansas City, Missouri. Some should follow the trends of the existing "
             f"transactions as well as account for the subject and situations. If a situation relates to an "
             f"existing category then a new transaction in that category should be given a cost accordingly. "
-            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used. Do NOT use a dictionary key value pair for data values such as 'category': 'Party'."
+            f"Please provide them as list of lists in the form new_transactions=[[]] with no additional information. Ensure the datetime.datetime format is used. Do NOT use a dictionary key value pair for data values such as 'category': 'Party'. Here is an example of how I want an individual transaction to look ['Food', -50.00, 'Holiday groceries', datetime.datetime(2024, 11, 15, 0, 0, tzinfo=datetime.timezone.utc)]"
         )    
 
         Gemini_transaction_serializer = ""

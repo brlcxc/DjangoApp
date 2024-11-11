@@ -63,7 +63,7 @@ class InviteSerializer(serializers.ModelSerializer):
         extra_kwargs = {"sender_id": {"read_only": True}}
 
 class LLMRequestSerializer(serializers.Serializer):
-    question = serializers.CharField(max_length=500)
+    question = serializers.CharField(max_length=3000)
 
 class LLMCharResponseSerializer(serializers.Serializer):
     answer = serializers.CharField()
