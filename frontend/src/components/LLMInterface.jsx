@@ -3,6 +3,7 @@ import { useSelectedGroup } from "../context/SelectedGroupContext";
 import api from "../api";
 import TransactionList from "../components/TransactionList";
 import TransactionLineChart from "./TransactionLineChart";
+import Loading3D from "./Loading3D";
 
 function LLMInterface() {
   const { selectedGroupUUIDs } = useSelectedGroup();
@@ -137,6 +138,13 @@ function LLMInterface() {
       setNewSituationText("");
     }
   };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Loading3D />
+      </div>
+    );
+  }
   // const geminiTitle = "Transactions provided by gemini-1.5-flash-002";
   return (
     <div className="flex flex-col w-full items-center gap-6">
