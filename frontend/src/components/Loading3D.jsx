@@ -49,8 +49,8 @@ const Pointer = () => {
         <Text3D
           ref={textRef}
           font="./fonts/Archivo SemiExpanded Black_Regular.json"
-          size={2}
-          height={0.7}
+          size={1}
+          height={0.5}
         >
           H
           <Edges color="black" lineWidth={2} />
