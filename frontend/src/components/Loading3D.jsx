@@ -36,13 +36,12 @@ const Pointer = () => {
     materialRef.current.layers[3].origin.set(cos, sin, cos)
   })
 
-  const gradient = 0.5
+  const gradient = 0.65
 
   return (
     <>
 
-        <Perf />
-        
+
       <ambientLight intensity={1} />
       <Environment preset="city" />
 
