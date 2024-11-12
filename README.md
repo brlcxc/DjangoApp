@@ -11,7 +11,7 @@ Poster Submission
 [Poster](https://docs.google.com/presentation/d/1Uhh49Aus2RboqQn_1GljzrEZjeT5s16z/edit?usp=sharing&ouid=114703498151315702852&rtpof=true&sd=true)  
 
 Video Submission
-[Poster](https://www.youtube.com/watch?v=92dZz27qXnc)  
+[Video](https://www.youtube.com/watch?v=92dZz27qXnc)  
 
 <img src="https://github.com/user-attachments/assets/3dc22a9f-15a8-4513-9d36-2d3e95ba848d" width="450">  
 
