@@ -2,6 +2,9 @@
 
 This project aims to bridge that gap by developing a web-based application that combines group budgeting with personalized financial insights through Large Language Model (LLM) technology. With this integration, users gain enhanced capabilities to track, analyze, and manage both individual and collective finances in a streamlined, accessible format  
 
+Access the website here
+[Holofund](https://www.holofund.tech/)  
+
 Please note, that hosted website server will take time to spin up after a period of activation due to us using a free service  
 
 <img src="https://github.com/user-attachments/assets/3dc22a9f-15a8-4513-9d36-2d3e95ba848d" width="450">  
