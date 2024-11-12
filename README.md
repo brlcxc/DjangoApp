@@ -21,7 +21,7 @@ Please note, that hosted website server will take time to spin up after a period
 
 The purpose of the analysis is to take in existing user transaction data along with a financial situation. With this information the LLM will output transactions that are likely to happen along with a budgeting suggestion on those generated transactions. This gives the user an idea of how to possibly proactively change their budgeting habits.
 
-<img src="https://github.com/user-attachments/assets/917ce87b-de90-428f-a830-03d108b0146f" width="450">
+<img src="https://github.com/user-attachments/assets/a2aea410-46bc-4fd6-ac81-88229b9b6b9c" width="450">
 
 Scenario Processing: Users can input financial scenarios, such as holiday-related spending. The LLM generates a relevant spending situation and categories for these scenarios, allowing users to edit them as needed. This includes a user feedback section allowing users to improve and fine-tune LLM suggestions, enhancing customization  
 
