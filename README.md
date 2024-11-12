@@ -5,7 +5,13 @@ This project aims to bridge that gap by developing a web-based application that 
 Access the website here
 [Holofund](https://www.holofund.tech/)  
 
-Please note, that hosted website server will take time to spin up after a period of activation due to us using a free service  
+Please note, that the password must be at least 9 characters long for registration  
+
+Poster Submission  
+[Poster](https://docs.google.com/presentation/d/1Uhh49Aus2RboqQn_1GljzrEZjeT5s16z/edit?usp=sharing&ouid=114703498151315702852&rtpof=true&sd=true)  
+
+Video Submission  
+[Poster](https://www.youtube.com/watch?v=92dZz27qXnc)  
 
 <img src="https://github.com/user-attachments/assets/3dc22a9f-15a8-4513-9d36-2d3e95ba848d" width="450">  
 
