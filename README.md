@@ -4,18 +4,18 @@ This project aims to bridge that gap by developing a web-based application that 
 
 Please note, that hosted website server will take time to spin up after a period of activation due to us using a free service  
 
-<img src="https://github.com/brlcxc/SOS_Project/assets/90850429/38f67075-93d6-4f26-8af0-700ec5ca65d1" width="450">
+<img src="https://github.com/user-attachments/assets/3dc22a9f-15a8-4513-9d36-2d3e95ba848d" width="450">  
 
 ## Usage
 ### Login/Registration
 
-<img src="https://github.com/brlcxc/SOS_Project/assets/90850429/38f67075-93d6-4f26-8af0-700ec5ca65d1" width="450">
+<img src="https://github.com/user-attachments/assets/a3f30128-ec19-465f-b41f-1f2875d52d33" width="450">  
 
-<img src="https://github.com/brlcxc/SOS_Project/assets/90850429/6915f89b-f93f-42e8-a890-7a04cfb0bc06" width="450">
+<img src="https://github.com/user-attachments/assets/1051a3d0-c956-45b8-a588-2bb5d9586d2e" width="450">
 
 ### Budget
 
-<img src="https://github.com/brlcxc/SOS_Project/assets/90850429/6915f89b-f93f-42e8-a890-7a04cfb0bc06" width="450">
+<img src="https://github.com/user-attachments/assets/e2f1e0ca-2d4d-4390-83b4-75f8aab7375a" width="450">
 
 ### AI Analytics
 
@@ -40,11 +40,11 @@ Budget Suggestions: Finally, the LLM provides budgeting recommendations based on
 
 Transactions can be viewed in a calendar format as well. This is especially beneficial for being able to see transactions which might occur on specific days of the month such as a credit card payment every 19th of the month  
 
-<img src="https://github.com/brlcxc/SOS_Project/assets/90850429/6915f89b-f93f-42e8-a890-7a04cfb0bc06" width="450">
+<img src="https://github.com/user-attachments/assets/cffd50dd-5dad-4603-8029-acfaf0a31f03" width="450">
 
 ### Groups
 
 This page is still under construction however the user will have the ability to create new groups and modify existing groups
 
-<img src="https://github.com/brlcxc/SOS_Project/assets/90850429/6915f89b-f93f-42e8-a890-7a04cfb0bc06" width="450">
+<img src="https://github.com/user-attachments/assets/3ff7dd89-6d4f-4cd4-87f7-e3f1d2555c15" width="450">
   
