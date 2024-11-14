@@ -88,7 +88,7 @@ const GroupAdd = () => {
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   required
-                  className="mt-1 block w-full px-2 py-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                  className="mt-1 block w-full px-3 py-2 border rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
                   placeholder="Enter group name"
                 />
               </div>
@@ -100,7 +100,7 @@ const GroupAdd = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
-                  className="mt-1 block w-full rounded-md px-2 py-1 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                  className="mt-1 block w-full border rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
                   placeholder="Enter group description"
                 />
               </div>
@@ -112,7 +112,7 @@ const GroupAdd = () => {
               <textarea
                 value={inviteMessage}
                 onChange={(e) => setInviteMessage(e.target.value)}
-                className="mt-1 block w-full h-[75%] rounded-md px-2 py-1 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+                className="mt-1 border block w-full h-[75%] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
                 placeholder="Enter invite message"
               />
             </div>
@@ -127,50 +127,51 @@ const GroupAdd = () => {
                 value={searchQuery}
                 onChange={handleUserSearch}
                 placeholder="Search by name or email"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                className="mt-1 border block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
               />
               {loadingUsers && (
                 <p className="text-blue-500">Loading users...</p>
               )}
               {userResults.slice(0, 3).map((user) => (
-                <li
-                  key={user.id}
-                  className="flex justify-between items-center bg-gray-100 rounded-md p-2"
-                >
-                  <span>
-                    {user.display_name} ({user.email})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleUserSelect(user)}
-                    className="text-blue-500 hover:underline"
-                  >
-                    Add
-                  </button>
-                </li>
+                <div className="py-2 pl-2 border-b hover:bg-gray-100 transition text-black">
+                  <li key={user.id} className="text-gray-700 flex items-center">
+                    <span>
+                      {user.display_name} ({user.email})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleUserSelect(user)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      Add
+                    </button>
+                  </li>
+                </div>
               ))}
             </div>
             <div>
               <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
                 Selected Members
               </div>
-              <ul className="mt-2 space-y-2">
+              <ul>
                 {selectedUsers.map((user) => (
-                  <li
-                    key={user.id}
-                    className="flex justify-between items-center bg-blue-50 rounded-md p-2"
-                  >
-                    <span>
-                      {user.display_name} ({user.email})
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleUserRemove(user.id)}
-                      className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none"
+                  <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+                    <li
+                      key={user.id}
+                      className="text-gray-700 flex items-center"
                     >
-                      -
-                    </button>
-                  </li>
+                      <button
+                        type="button"
+                        onClick={() => handleUserRemove(user.id)}
+                        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+                      >
+                        -
+                      </button>
+                      <span>
+                        {user.display_name} ({user.email})
+                      </span>
+                    </li>{" "}
+                  </div>
                 ))}
               </ul>
             </div>

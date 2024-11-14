@@ -42,7 +42,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
               {selectedGroup.members.map((member) => (
                 <li key={member.id} className="text-gray-700 flex items-center">
                   {isOwner && (
-                    <button className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none">
+                    <button className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none">
                       -
                     </button>
                   )}

@@ -215,7 +215,7 @@ function LLMInterface() {
               >
                 <button
                   onClick={() => handleRemoveSituation(index)}
-                  className="font-bold text-white bg-coral size-9 rounded p-1 hover:bg-deep-coral focus:outline-none"
+                  className="flex justify-center items-center font-bold text-white bg-coral size-9 rounded p-1 hover:bg-deep-coral focus:outline-none"
                 >
                   &times;
                 </button>
