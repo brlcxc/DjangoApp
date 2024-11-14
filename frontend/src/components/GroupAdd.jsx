@@ -4,6 +4,7 @@ import api from "../api"; // Adjust the path to your API utility
 const GroupAdd = () => {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
+  const [inviteMessage, setInviteMessage] = useState(""); // New state for invite message
   const [searchQuery, setSearchQuery] = useState("");
   const [userResults, setUserResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -19,8 +20,6 @@ const GroupAdd = () => {
     setLoadingUsers(true);
     try {
       const response = await api.get("/api/users/");
-
-      // Filter results based on the search query
       const filteredResults = response.data.filter(
         (user) =>
           user.display_name.toLowerCase().includes(query.toLowerCase()) ||
@@ -60,10 +59,12 @@ const GroupAdd = () => {
         group_name: groupName,
         description,
         members: selectedUsers.map((user) => user.id),
+        invite_message: inviteMessage // Include invite message in the payload
       });
       console.log("Group created:", response.data);
       setGroupName("");
       setDescription("");
+      setInviteMessage("");
       setSelectedUsers([]);
     } catch (err) {
       console.error("Error creating group:", err);
@@ -74,7 +75,7 @@ const GroupAdd = () => {
   return (
     <div className="h-full overflow-hidden">
       <h1 className="text-2xl font-bold mb-5 text-black">Create New Group</h1>
-      <div className="h-[70%]">
+      <div className="h-[80%]">
         <div className="grid grid-cols-2 gap-2 h-full">
           <div className="grid grid-rows-2">
             <div className="grid grid-rows-2">
@@ -108,22 +109,26 @@ const GroupAdd = () => {
               <label className="block text-lg font-medium text-gray-700">
                 Invite Message
               </label>
+              <textarea
+                value={inviteMessage}
+                onChange={(e) => setInviteMessage(e.target.value)}
+                className="mt-1 block w-full h-[75%] rounded-md px-2 py-1 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+                placeholder="Enter invite message"
+              />
             </div>
           </div>
           <div className="grid grid-rows-2">
             <div>
-              <div>
-                <label className="block text-lg font-medium text-gray-700">
-                  Search Users
-                </label>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleUserSearch}
-                  placeholder="Search by name or email"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-                />
-              </div>
+              <label className="block text-lg font-medium text-gray-700">
+                Add Users
+              </label>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleUserSearch}
+                placeholder="Search by name or email"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+              />
             </div>
             {loadingUsers && <p className="text-blue-500">Loading users...</p>}
             {userResults.slice(0, 3).map((user) => (
@@ -144,9 +149,9 @@ const GroupAdd = () => {
               </li>
             ))}
             <div>
-            <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
-        Selected Members
-      </div>
+              <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
+                Selected Members
+              </div>
               <ul className="mt-2 space-y-2">
                 {selectedUsers.map((user) => (
                   <li
@@ -159,7 +164,8 @@ const GroupAdd = () => {
                     <button
                       type="button"
                       onClick={() => handleUserRemove(user.id)}
-                      className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none"                    >
+                      className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none"
+                    >
                       -
                     </button>
                   </li>
@@ -171,7 +177,8 @@ const GroupAdd = () => {
       </div>
       <button
         type="submit"
-        className="w-full h-12 text-lg object-bottom	bg-dodger-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        onClick={handleSubmit}
+        className="w-full h-12 text-lg object-bottom bg-dodger-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
         Create Group
       </button>
@@ -180,6 +187,7 @@ const GroupAdd = () => {
 };
 
 export default GroupAdd;
+
 
 //I need name, desc, ad list of users with search?
 

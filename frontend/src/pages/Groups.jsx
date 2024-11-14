@@ -8,22 +8,22 @@ function Groups() {
   const style = "bg-white p-8 rounded-xl shadow-lg";
   return (
     <GroupModifyProvider>
-      <div className="grid grid-cols-2 gap-8 size-full p-8 bg-custom-gradient animate-gradient">
-        <div className="grid grid-rows-2 gap-8">
-          <div className={`${style}`}>
-            <OwnedGroups />
-          </div>
-          <div className={`${style}`}>
-            <GroupMembership />
-          </div>
-        </div>
-        <div className="grid grid-rows-2 gap-8">
-          <div className={`${style}`}>
+    <div className="grid grid-cols-2 gap-8 size-full p-8 bg-custom-gradient animate-gradient">
+    <div className="flex flex-col gap-8">          <div className={`${style} h-[70%]`}>
             <GroupModify />
           </div>
-          <div className={`${style}`}>
+          <div className={`${style} h-[30%]`}>
+            <OwnedGroups />
+          </div>
+
+        </div>
+        <div className="flex flex-col gap-8">          <div className={`${style} h-[70%]`}>
             <GroupAdd />
           </div>
+        <div className={`${style} h-[30%]`}>
+            <GroupMembership />
+          </div>
+
         </div>
       </div>
     </GroupModifyProvider>
