@@ -7,7 +7,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
     return null; // No group selected, display nothing
   }
 
-  console.log(selectedGroup)
+  console.log(selectedGroup);
 
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to delete the group: ${selectedGroup.group_name}?`)) {
@@ -15,13 +15,20 @@ const GroupModify = ({ groups = [], onDelete }) => {
     }
   };
 
-//Maybe it would be good to have an inner white panel?
+  const uuid = localStorage.getItem("USER_ID");
+  const isOwner = selectedGroup.group_owner_id === uuid;
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-black">{selectedGroup.group_name}</h1>
       <p className="text-gray-600 text-xl mb-4">{selectedGroup.description}</p>
-      <p className="text-gray-700 font-semibold text-xl mb-4">Owner: <span className='font-normal'>{selectedGroup.owner_name}</span> <span className="text-gray-500">({selectedGroup.owner_email})</span></p>
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">Members:</h3>
+      <p className="text-gray-700 font-semibold text-xl mb-4">
+        Owner: <span className='font-normal'>{selectedGroup.owner_name}</span> 
+        <span className="text-gray-500">({selectedGroup.owner_email})</span>
+      </p>
+      <div className="w-[40%] py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
+        Members
+      </div>
       <ul className="list-disc list-inside mb-4">
         {selectedGroup.members.map((member) => (
           <li key={member.id} className="text-gray-700">
@@ -29,11 +36,12 @@ const GroupModify = ({ groups = [], onDelete }) => {
           </li>
         ))}
       </ul>
+      
       <button
-        className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded shadow"
+        className="bg-coral hover:bg-deep-coral text-white font-semibold py-2 px-4 rounded shadow"
         onClick={handleDelete}
       >
-        Delete Group
+        {isOwner ? 'Delete Group' : 'Leave Group'}
       </button>
     </div>
   );
