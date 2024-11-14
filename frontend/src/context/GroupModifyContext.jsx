@@ -28,3 +28,8 @@ export const useSelectedGroup = () => useContext(GroupModifyContext);
 //that is how I will display my info 
 
 //Later for changing groups I might need to add modify features to the group context
+
+//I think set selected group can be sent out?
+
+
+//maybe I need to bring in another group context or add the group modify stuff to it?
