@@ -10,25 +10,25 @@ const GroupModify = ({ groups = [], onDelete }) => {
     return null; // No group selected, display nothing
   }
 
-  const group = groups.find((g) => g.group_id === selectedGroup);
+  // const group = groups.find((g) => g.group_id === selectedGroup);
 
-  console.log("group");
-  console.log(group);
+  // console.log("group");
+  // console.log(group);
 
-  if (!group) {
-    return null; // Group not found, display nothing
-  }
+  // if (!group) {
+  //   return null; // Group not found, display nothing
+  // }
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete the group: ${group.group_name}?`)) {
-      onDelete(group.group_id);
+    if (window.confirm(`Are you sure you want to delete the group: ${selectedGroup.group_name}?`)) {
+      onDelete(selectedGroup.group_id);
     }
   };
 
   return (
     <div className="border rounded-lg shadow-md p-6 bg-white mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">{group.group_name}</h2>
-      <p className="text-gray-600 mb-4">{group.description}</p>
+      <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedGroup.group_name}</h2>
+      <p className="text-gray-600 mb-4">{selectedGroup.description}</p>
       <h3 className="text-lg font-semibold text-gray-700 mb-2">Members:</h3>
       {/* <ul className="list-disc list-inside mb-4">
         {group.members.map((member) => (

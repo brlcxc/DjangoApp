@@ -5,9 +5,8 @@ const GroupModifyContext = createContext();
 export const GroupModifyProvider = ({ children }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
 
-  const toggleSelectedGroup = (groupId) => {
-    console.log(groupId)
-    setSelectedGroup((prev) => (prev === groupId ? null : groupId));
+  const toggleSelectedGroup = (group) => {
+    setSelectedGroup((prev) => (prev?.group_id === group.group_id ? null : group));
   };
 
   return (
@@ -18,8 +17,6 @@ export const GroupModifyProvider = ({ children }) => {
 };
 
 export const useSelectedGroup = () => useContext(GroupModifyContext);
-
-
 
 //group context for getting all groups
 //group modify modify for the one selected one 
