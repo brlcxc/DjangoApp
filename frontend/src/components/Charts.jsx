@@ -2,37 +2,18 @@ import React, { useContext, useMemo, useState } from 'react';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { TransactionContext } from '../context/TransactionContext';
+import { stringToSkewedPaletteColor } from './colorUtils';
 ChartJS.register(...registerables);
-
-// Tailwind color mapping
-const colorMap = {
-  'pale-purple': '#F1E3F3',
-  'periwinkle': '#C2BBF0',
-  'amaranth-pink': '#F698BB',
-  'deep-sky-blue': '#62BFED',
-  'dodger-blue': '#3590F3',
-};
-
-// Generate a random color for extra categories
-const generateRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
 
 // Utility function to map categories to colors
 const mapCategoryColors = (categories) => {
   const categoryColors = {};
   categories.forEach((category, index) => {
-    const colorKeys = Object.keys(colorMap);
-    categoryColors[category] =
-      index < colorKeys.length ? colorKeys[index] : generateRandomColor();
+    categoryColors[category] = stringToSkewedPaletteColor(category);
   });
   return categoryColors;
 };
+
 const Charts = () => {
   const { transactions, loading, error } = useContext(TransactionContext);
   const validTransactions = Array.isArray(transactions) ? transactions : [];
@@ -71,7 +52,7 @@ const Charts = () => {
         label: 'Total Amount per Category',
         data: activeCategories.length ? categoryData : [0],
         backgroundColor: activeCategories.length 
-          ? activeCategories.map((category) => colorMap[categoryColors[category]] || categoryColors[category])
+          ? activeCategories.map((category) => categoryColors[category])
           : ['#D3D3D3'], // Grey color for placeholder
         borderWidth: 1,
       },
