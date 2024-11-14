@@ -35,10 +35,12 @@ class GroupSerializer(serializers.ModelSerializer):
     # I need to double check that this is actually read_only
     # members = UserSerializer(read_only=True, many=True)
     members = UserSerializer(many=True)
+    owner_name = serializers.CharField(source='group_owner_id.display_name', read_only=True)
+    owner_email = serializers.CharField(source='group_owner_id.email', read_only=True)
 
     class Meta:
         model = Group
-        fields = ["group_id", "group_name", "description", "group_owner_id", "members"]
+        fields = ["group_id", "group_name", "description", "group_owner_id", "members", "owner_name", "owner_email"]
         extra_kwargs = {"group_owner_id": {"read_only": True}}
 
 class TransactionSerializer(serializers.ModelSerializer):
