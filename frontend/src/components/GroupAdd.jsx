@@ -59,7 +59,7 @@ const GroupAdd = () => {
         group_name: groupName,
         description,
         members: selectedUsers.map((user) => user.id),
-        invite_message: inviteMessage // Include invite message in the payload
+        invite_message: inviteMessage, // Include invite message in the payload
       });
       console.log("Group created:", response.data);
       setGroupName("");
@@ -117,7 +117,7 @@ const GroupAdd = () => {
               />
             </div>
           </div>
-          <div className="grid grid-rows-2">
+          <div className="grid grid-rows-2 overflow-hidden">
             <div>
               <label className="block text-lg font-medium text-gray-700">
                 Add Users
@@ -129,25 +129,27 @@ const GroupAdd = () => {
                 placeholder="Search by name or email"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
               />
-            </div>
-            {loadingUsers && <p className="text-blue-500">Loading users...</p>}
-            {userResults.slice(0, 3).map((user) => (
-              <li
-                key={user.id}
-                className="flex justify-between items-center bg-gray-100 rounded-md p-2"
-              >
-                <span>
-                  {user.display_name} ({user.email})
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleUserSelect(user)}
-                  className="text-blue-500 hover:underline"
+              {loadingUsers && (
+                <p className="text-blue-500">Loading users...</p>
+              )}
+              {userResults.slice(0, 3).map((user) => (
+                <li
+                  key={user.id}
+                  className="flex justify-between items-center bg-gray-100 rounded-md p-2"
                 >
-                  Add
-                </button>
-              </li>
-            ))}
+                  <span>
+                    {user.display_name} ({user.email})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleUserSelect(user)}
+                    className="text-blue-500 hover:underline"
+                  >
+                    Add
+                  </button>
+                </li>
+              ))}
+            </div>
             <div>
               <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
                 Selected Members
@@ -187,7 +189,6 @@ const GroupAdd = () => {
 };
 
 export default GroupAdd;
-
 
 //I need name, desc, ad list of users with search?
 
