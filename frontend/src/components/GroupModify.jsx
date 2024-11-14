@@ -7,16 +7,20 @@ const GroupModify = ({ groups = [], onDelete }) => {
     return null; // No group selected, display nothing
   }
 
+  console.log(selectedGroup)
+
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to delete the group: ${selectedGroup.group_name}?`)) {
       onDelete(selectedGroup.group_id);
     }
   };
 
+//Maybe it would be good to have an inner white panel?
   return (
     <div>
       <h1 className="text-2xl font-bold mb-5 text-black">{selectedGroup.group_name}</h1>
-      <p className="text-gray-600 mb-4">{selectedGroup.description}</p>
+      <p className="text-gray-600 text-xl mb-4">{selectedGroup.description}</p>
+      <p className="text-gray-600 text-xl mb-4">Owner: {selectedGroup.group_owner_id}</p>
       <h3 className="text-lg font-semibold text-gray-700 mb-2">Members:</h3>
       <ul className="list-disc list-inside mb-4">
         {selectedGroup.members.map((member) => (
