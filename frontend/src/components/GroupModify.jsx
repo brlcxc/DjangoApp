@@ -32,23 +32,27 @@ const GroupModify = ({ groups = [], onDelete }) => {
         Owner: <span className="font-normal">{selectedGroup.owner_name}</span>
         <span className="text-gray-500">({selectedGroup.owner_email})</span>
       </p>
-      <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
-        Current Members
-      </div>
-      <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
-        <ul>
-          {selectedGroup.members.map((member) => (
-            <li key={member.id} className="text-gray-700 flex items-center">
-              {isOwner && (
-                <button className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none">
-                  -
-                </button>
-              )}
-              {member.display_name}{" "}
-              <span className="text-gray-500">({member.email})</span>
-            </li>
-          ))}
-        </ul>
+      <div className="grid grid-cols-2">
+        <div>
+          <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
+            Current Members
+          </div>
+          <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+            <ul>
+              {selectedGroup.members.map((member) => (
+                <li key={member.id} className="text-gray-700 flex items-center">
+                  {isOwner && (
+                    <button className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none">
+                      -
+                    </button>
+                  )}
+                  {member.display_name}{" "}
+                  <span className="text-gray-500">({member.email})</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
 
       <button

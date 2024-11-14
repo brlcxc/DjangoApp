@@ -226,7 +226,7 @@ function LLMInterface() {
             ))}
 
             {situations.length > 0 && (
-              <div className="p-4 bg-dodger-blue text-black rounded space-x-3 cursor-pointer  flex items-center">
+              <div className="p-4 bg-dodger-blue text-black rounded space-x-3 cursor-pointer flex items-center">
                 <input
                   type="text"
                   placeholder="Add new category..."

@@ -74,35 +74,35 @@ const GroupAdd = () => {
   return (
     <div className="h-full overflow-hidden">
       <h1 className="text-2xl font-bold mb-5 text-black">Create New Group</h1>
-        <div className="h-[70%]">
+      <div className="h-[70%]">
         <div className="grid grid-cols-2 gap-2 h-full">
           <div className="grid grid-rows-2">
             <div className="grid grid-rows-2">
-            <div>
-              <label className="block text-lg font-medium text-gray-700">
-                Group Name
-              </label>
-              <input
-                type="text"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                required
-                className="mt-1 block w-full px-2 py-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-                placeholder="Enter group name"
-              />
-            </div>
-            <div>
-              <label className="block text-lg font-medium text-gray-700">
-                Description
-              </label>
-              <input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md px-2 py-1 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-                placeholder="Enter group description"
-              />
-            </div>
+              <div>
+                <label className="block text-lg font-medium text-gray-700">
+                  Group Name
+                </label>
+                <input
+                  type="text"
+                  value={groupName}
+                  onChange={(e) => setGroupName(e.target.value)}
+                  required
+                  className="mt-1 block w-full px-2 py-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                  placeholder="Enter group name"
+                />
+              </div>
+              <div>
+                <label className="block text-lg font-medium text-gray-700">
+                  Description
+                </label>
+                <input
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                  className="mt-1 block w-full rounded-md px-2 py-1 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+                  placeholder="Enter group description"
+                />
+              </div>
             </div>
             <div>
               <label className="block text-lg font-medium text-gray-700">
@@ -113,7 +113,7 @@ const GroupAdd = () => {
           <div className="grid grid-rows-2">
             <div>
               <div>
-              <label className="block text-lg font-medium text-gray-700">
+                <label className="block text-lg font-medium text-gray-700">
                   Search Users
                 </label>
                 <input
@@ -144,9 +144,9 @@ const GroupAdd = () => {
               </li>
             ))}
             <div>
-              <h3 className="text-lg font-medium text-gray-800">
-                Selected Members
-              </h3>
+            <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
+        Selected Members
+      </div>
               <ul className="mt-2 space-y-2">
                 {selectedUsers.map((user) => (
                   <li
@@ -159,9 +159,8 @@ const GroupAdd = () => {
                     <button
                       type="button"
                       onClick={() => handleUserRemove(user.id)}
-                      className="text-red-500 hover:underline"
-                    >
-                      Remove
+                      className="font-bold text-white text-l bg-coral mr-3 size-5 rounded p-1 hover:bg-deep-coral focus:outline-none"                    >
+                      -
                     </button>
                   </li>
                 ))}
@@ -169,13 +168,13 @@ const GroupAdd = () => {
             </div>
           </div>
         </div>
-        </div>
-        <button
-          type="submit"
-          className="w-full h-12 text-lg object-bottom	bg-dodger-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Create Group
-        </button>
+      </div>
+      <button
+        type="submit"
+        className="w-full h-12 text-lg object-bottom	bg-dodger-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        Create Group
+      </button>
     </div>
   );
 };
@@ -187,6 +186,5 @@ export default GroupAdd;
 //title search bar for groups as add memebrs
 
 //select the data which you find most closely alligns with your spending
-
 
 //maybe selected group and add group can be given special space
