@@ -9,7 +9,7 @@ ChartJS.register(...registerables);
 const mapCategoryColors = (categories) => {
   const categoryColors = {};
   categories.forEach((category, index) => {
-    categoryColors[category] = stringToSkewedPaletteColor(category);
+    categoryColors[category] = stringToSkewedPaletteColor(category, 0.7);
   });
   return categoryColors;
 };
