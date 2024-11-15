@@ -127,32 +127,39 @@ const GroupAdd = () => {
                 value={searchQuery}
                 onChange={handleUserSearch}
                 placeholder="Search by name or email"
-                className="mt-1 border block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-              />
-              {loadingUsers && (
-                <p className="text-blue-500">Loading users...</p>
-              )}
-              {userResults.slice(0, 3).map((user) => (
-                <div className="py-2 pl-2 border-b hover:bg-gray-100 transition text-black">
-                  <li key={user.id} className="text-gray-700 flex items-center">
-                    <span>
-                      {user.display_name} ({user.email})
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleUserSelect(user)}
-                      className="text-blue-500 hover:underline"
+                className="mt-1 border px-3 py-2  block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+              />{" "}
+              <div className="overflow-y-auto h-32">
+                {loadingUsers && (
+                  <p className="text-blue-500">Loading users...</p>
+                )}
+                {userResults.slice(0, 4).map((user) => (
+                  <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+                    <li
+                      key={user.id}
+                      className="text-gray-700 flex items-center"
                     >
-                      Add
-                    </button>
-                  </li>
-                </div>
-              ))}
+                      <button
+                        type="button"
+                        onClick={() => handleUserSelect(user)}
+                        className="flex font-bold text-white text-l bg-green-300 hover:bg-green-400 mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+                      >
+                        +
+                      </button>
+                      <span>
+                        {user.display_name} ({user.email})
+                      </span>
+                    </li>
+                  </div>
+                ))}{" "}
+              </div>
             </div>
             <div>
               <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
                 Selected Members
               </div>
+              <div className="overflow-y-auto h-36">
+
               <ul>
                 {selectedUsers.map((user) => (
                   <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -174,6 +181,7 @@ const GroupAdd = () => {
                   </div>
                 ))}
               </ul>
+              </div>
             </div>
           </div>
         </div>
