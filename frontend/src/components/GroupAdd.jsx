@@ -76,7 +76,7 @@ const GroupAdd = () => {
     <div className="h-full overflow-hidden">
       <h1 className="text-2xl font-bold mb-5 text-black">Create New Group</h1>
       <div className="h-[80%]">
-        <div className="grid grid-cols-2 gap-2 h-full">
+        <div className="grid grid-cols-2 gap-8 h-full">
           <div className="grid grid-rows-2">
             <div className="grid grid-rows-2">
               <div>
@@ -198,11 +198,11 @@ const GroupAdd = () => {
 };
 
 export default GroupAdd;
-
 //I need name, desc, ad list of users with search?
 
 //title search bar for groups as add memebrs
 
 //select the data which you find most closely alligns with your spending
+
 
 //maybe selected group and add group can be given special space
