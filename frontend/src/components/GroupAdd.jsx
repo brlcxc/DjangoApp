@@ -181,7 +181,7 @@ const GroupAdd = () => {
       <button
         type="submit"
         onClick={handleSubmit}
-        className="w-full h-12 text-lg object-bottom bg-dodger-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="bg-green-300 hover:bg-green-400 w-full h-12 text-lg object-bottom bg-dodger-blue text-white py-2 px-4 rounded-md"
       >
         Create Group
       </button>
