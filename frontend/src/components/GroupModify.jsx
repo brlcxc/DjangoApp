@@ -1,5 +1,6 @@
 import { useSelectedGroup } from "../context/GroupModifyContext"; // Adjust the path as necessary
 import React, { useState, useEffect } from "react";
+import api from "../api"; // Adjust the path to your API utility
 
 const GroupModify = ({ groups = [], onDelete }) => {
   const { selectedGroup } = useSelectedGroup();
