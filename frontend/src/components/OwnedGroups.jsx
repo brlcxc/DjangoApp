@@ -1,13 +1,6 @@
-import React, { useEffect, useContext, useCallback, useState } from "react";
+import React, { useContext } from "react";
 import { GroupContext } from "../context/GroupContext";
-
-const GroupRow = React.memo(({ group, isChecked, onCheckChange }) => (
-  <div className="flex items-center py-3 pl-3 border-b hover:bg-gray-100 transition text-black">
-    <input type="checkbox" className="mr-3" />
-    <div className="flex-1">{group.group_name}</div>
-    <div className="flex-1">{group.description}</div>
-  </div>
-));
+import GroupRow from "./GroupRow.jsx"
 
 const OwnedGroups = () => {
   const { groups, loading, error } = useContext(GroupContext);
@@ -29,7 +22,7 @@ const OwnedGroups = () => {
         <div>Group</div>
         <div>Description</div>
       </div>
-      <div className="overflow-y-auto max-h-[350px]">
+      <div className="overflow-y-auto h-20">
         {filteredGroups && filteredGroups.length > 0 ? (
           filteredGroups.map((group) => (
             <GroupRow key={group.group_id} group={group} />

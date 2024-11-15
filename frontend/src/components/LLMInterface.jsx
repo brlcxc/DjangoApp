@@ -215,7 +215,7 @@ function LLMInterface() {
               >
                 <button
                   onClick={() => handleRemoveSituation(index)}
-                  className="font-bold text-white bg-coral size-9 rounded p-1 hover:bg-deep-coral focus:outline-none"
+                  className="flex justify-center items-center font-bold text-white bg-coral size-9 rounded p-1 hover:bg-deep-coral focus:outline-none"
                 >
                   &times;
                 </button>
@@ -226,7 +226,7 @@ function LLMInterface() {
             ))}
 
             {situations.length > 0 && (
-              <div className="p-4 bg-dodger-blue text-black rounded space-x-3 cursor-pointer  flex items-center">
+              <div className="p-4 bg-dodger-blue text-black rounded space-x-3 cursor-pointer flex items-center">
                 <input
                   type="text"
                   placeholder="Add new category..."
