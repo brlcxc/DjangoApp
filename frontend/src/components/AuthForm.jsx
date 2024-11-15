@@ -14,10 +14,10 @@ export default function AuthForm({ route, isRegistration }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       const requestData = { email, password };
-
+  
       if (isRegistration) {
         if (password !== passwordConfirm) {
           alert("Passwords do not match");
@@ -28,9 +28,9 @@ export default function AuthForm({ route, isRegistration }) {
         requestData.password1 = password;
         requestData.password2 = passwordConfirm;
       }
-
+  
       const res = await api.post(route, requestData);
-
+  
       if (!isRegistration) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
@@ -39,12 +39,25 @@ export default function AuthForm({ route, isRegistration }) {
         navigate("/login");
       }
     } catch (error) {
-      alert(error);
+      if (error.response) {
+        // Check if the error is field-specific
+        const errors = error.response.data;
+    
+        // Collect all field-specific error messages
+        const errorMessages = Object.keys(errors)
+          .map((field) => `${field}: ${errors[field].join(", ")}`)
+          .join("\n");
+    
+        alert(`Error:\n${errorMessages}`);
+      } else if (error.request) {
+        alert("No response received from the server. Please try again.");
+      } else {
+        alert(`Error: ${error.message}`);
+      }
     } finally {
-      setLoading(false);
-    }
-  };
-
+      setLoading(false);}
+    };
+  
   return (
     <form
         onSubmit={handleSubmit}
