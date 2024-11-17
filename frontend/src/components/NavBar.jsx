@@ -1,18 +1,25 @@
-import { FaHouse, FaGear, FaUser, FaUserGroup, FaRegCalendarPlus, FaChartLine, FaDollarSign, FaDoorOpen } from "react-icons/fa6";
+import { FaHouse, FaGear, FaUser, FaUserGroup, FaRegCalendarPlus, FaChartLine, FaDollarSign, FaDoorOpen, FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-
-function NavBar({setActivePage}){
+import { useState } from "react";
+  
+  function NavBar({ setActivePage }) {
+    const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
     const iconSize = "36";
     const navigate = useNavigate();
-
-    //Note: I am unsure if there is maybe a better way to link back to the logout route
+  
     const handleLogout = () => {
-      localStorage.clear(); // Clear any stored data
-      navigate("/logout");  // Redirect to the logout route
+      localStorage.clear();
+      navigate("/logout");
     };
-
-    return(
-        <div className="top-0 left-0 h-screen w-24 flex flex-col bg-dodger-blue">
+  
+    return (
+      <div>
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 left-0 h-screen w-24 bg-dodger-blue flex flex-col transition-transform duration-300 ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0`}
+        >
             <NavBarIcon icon={<FaHouse size={iconSize} />} text="Home" onClick={() => setActivePage("Welcome")}/>
             <NavBarIcon icon={<FaDollarSign size={iconSize} />} text="Budget" onClick={() => setActivePage("Budget")}/>
             <NavBarIcon icon={<FaRegCalendarPlus size={iconSize}/>} text="Calendar" onClick={()=>setActivePage("Calendar")}/>
@@ -22,10 +29,17 @@ function NavBar({setActivePage}){
             <NavBarIcon icon={<FaGear size={iconSize} />} text="Settings" onClick={() => setActivePage("Settings")}/>
             <NavBarIcon icon={<FaDoorOpen size={iconSize} />} text="Logout" onClick={handleLogout}/>
         </div>
-    )
-}
-
-const NavBarIcon = ({icon, text, onClick}) => {
+        {/* Toggle Button - Visible only on mobile */}
+        <button
+          className="text-white p-2 fixed bottom-4 left-6 z-50 md:hidden"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <FaBars size={iconSize} />
+        </button>
+      </div>
+    );
+  }
+  const NavBarIcon = ({icon, text, onClick}) => {
     return(
         <div className="nav-button group" onClick={onClick}>
             {icon}
@@ -33,7 +47,7 @@ const NavBarIcon = ({icon, text, onClick}) => {
                 {text}
             </span>
         </div>
-    )
-}
-
+    );
+};
+  
 export default NavBar;
