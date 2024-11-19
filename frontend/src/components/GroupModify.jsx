@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api"; // Adjust the path to your API utility
 
 const GroupModify = ({ groups = [], onDelete }) => {
-  const { selectedGroup } = useSelectedGroup();
+  const { selectedGroup, toggleSelectedGroup } = useSelectedGroup();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [inviteMessage, setInviteMessage] = useState(""); // New state for invite message
