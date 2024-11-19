@@ -165,14 +165,14 @@ function LLMInterface() {
         </div>
       )}
       {showTransactionList && !showSelectStage && (
-        <div className="grid grid-cols-2 gap-8">
-          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8">
+          <div className="flex flex-col bg-white p-6 sm:p-8 rounded-xl shadow-lg">
             <TransactionList
               mergeData={mergeData3}
               title={"Transaction List"}
             />
           </div>
-          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+          <div className="flex flex-col bg-white p-6 sm:p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData3} />
           </div>
         </div>
@@ -201,17 +201,17 @@ function LLMInterface() {
           </div>
         )}
       {!showTransactionList && situationsSubject && (
-        <div className="flex flex-col space-y-4 h-16 text-xl items-center justify-center">
+        <div className="flex flex-col space-y-4 text-xl items-center justify-center w-full">
           {situationsSubject && (
-            <div className="py-3 px-5 font-bold bg-dodger-blue text-2xl text-white rounded text-center transition w-fit">
+            <div className="py-3 px-5 font-bold bg-dodger-blue text-lg md:text-2xl text-white rounded text-center transition w-fit">
               {situationsSubject}
             </div>
           )}
-          <div className="flex space-x-4 h-16 text-xl">
+          <div className="flex flex-wrap gap-4 justify-center items-center w-full">
             {situations.map((situation, index) => (
               <div
                 key={index}
-                className="p-4 bg-dodger-blue text-white rounded cursor-pointer transition flex items-center space-x-2 h-full"
+                className="p-3 bg-dodger-blue text-white rounded cursor-pointer transition flex items-center space-x-2 w-full sm:w-auto"
               >
                 <button
                   onClick={() => handleRemoveSituation(index)}
@@ -219,20 +219,23 @@ function LLMInterface() {
                 >
                   &times;
                 </button>
-                <span onClick={() => handleEditClick(index)}>
+                <span
+                  onClick={() => handleEditClick(index)}
+                  className="break-words"
+                >
                   {situation.text}
                 </span>
               </div>
             ))}
 
             {situations.length > 0 && (
-              <div className="p-4 bg-dodger-blue text-black rounded space-x-3 cursor-pointer flex items-center">
+              <div className="p-3 bg-dodger-blue text-black rounded flex items-center space-x-3 w-full sm:w-auto">
                 <input
                   type="text"
                   placeholder="Add new category..."
                   value={newSituationText}
                   onChange={(e) => setNewSituationText(e.target.value)}
-                  className="p-2 rounded border border-gray-300"
+                  className="w-full sm:w-auto p-2 rounded border border-gray-300"
                 />
                 <button
                   className="font-bold flex items-center justify-center size-9 p-1 bg-green-300 hover:bg-green-400 text-white rounded cursor-pointer"
