@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import api from "../api"; // Adjust the path to your API utility
-import { GroupContext } from "../context/GroupContext"; // Adjust the path to your GroupContext
+import api from "../api";
+import { GroupContext } from "../context/GroupContext";
 
 const GroupAdd = () => {
   const [groupName, setGroupName] = useState("");

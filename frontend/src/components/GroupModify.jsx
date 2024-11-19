@@ -1,6 +1,6 @@
-import { useSelectedGroup } from "../context/GroupModifyContext"; // Adjust the path as necessary
+import { useSelectedGroup } from "../context/GroupModifyContext";
 import React, { useState, useEffect } from "react";
-import api from "../api"; // Adjust the path to your API utility
+import api from "../api";
 
 const GroupModify = ({ groups = [], onDelete }) => {
   const { selectedGroup, toggleSelectedGroup } = useSelectedGroup();
@@ -78,7 +78,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
       </h1>
       <p className="text-gray-600 text-xl mb-2">{selectedGroup.description}</p>
       <div className="grid grid-cols-2 gap-8">
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
           <p className="text-gray-700 font-semibold text-xl mb-4">
             Owner:{" "}
             <span className="font-normal">{selectedGroup.owner_name}</span>
@@ -87,8 +87,8 @@ const GroupModify = ({ groups = [], onDelete }) => {
           <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
             Current Members
           </div>
-          <div className="overflow-y-auto flex-grow">
-            <ul>
+          <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
+          <ul>
               {selectedGroup.members.map((member) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
                   <li
@@ -113,99 +113,60 @@ const GroupModify = ({ groups = [], onDelete }) => {
           >
             {isOwner ? "Delete Group" : "Leave Group"}
           </button>
+          <div>
           <label className="block text-lg font-medium text-gray-700">
-              Add Users
-            </label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleUserSearch}
-              placeholder="Search by name or email"
-              className="mt-1 border px-3 py-2  block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-            />{" "}
-            <div className="overflow-y-auto h-16">
-              {loadingUsers && (
-                <p className="text-blue-500">Loading users...</p>
-              )}
-              {userResults.slice(0, 4).map((user) => (
-                <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
-                  <li key={user.id} className="text-gray-700 flex items-center">
-                    <button
-                      type="button"
-                      onClick={() => handleUserSelect(user)}
-                      className="flex font-bold text-white text-l bg-green-300 hover:bg-green-400 mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
-                    >
-                      +
-                    </button>
-                    <span>
-                      {user.display_name} ({user.email})
-                    </span>
-                  </li>
-                </div>
-              ))}{" "}
-            </div>
+            Add Users
+          </label>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleUserSearch}
+            placeholder="Search by name or email"
+            className="mt-1 border px-3 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+          />{" "}</div>
+          <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
+            {loadingUsers && <p className="text-blue-500">Loading users...</p>}
+            {userResults.slice(0, 4).map((user) => (
+              <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+                <li key={user.id} className="text-gray-700 flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => handleUserSelect(user)}
+                    className="flex font-bold text-white text-l bg-green-300 hover:bg-green-400 mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+                  >
+                    +
+                  </button>
+                  <span>
+                    {user.display_name} ({user.email})
+                  </span>
+                </li>
+              </div>
+            ))}{" "}
+          </div>
         </div>
         <div className="flex flex-col gap-4">
-          {/* <div> */}
-            {/* <label className="block text-lg font-medium text-gray-700">
-              Add Users
-            </label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleUserSearch}
-              placeholder="Search by name or email"
-              className="mt-1 border px-3 py-2  block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-            />{" "}
-            <div className="overflow-y-auto h-16">
-              {loadingUsers && (
-                <p className="text-blue-500">Loading users...</p>
-              )}
-              {userResults.slice(0, 4).map((user) => (
+          <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
+            New Selected Members
+          </div>
+          <div className="overflow-y-auto h-36 border border-gray-300 rounded-md">
+            <ul>
+              {selectedUsers.map((user) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
                   <li key={user.id} className="text-gray-700 flex items-center">
                     <button
                       type="button"
-                      onClick={() => handleUserSelect(user)}
-                      className="flex font-bold text-white text-l bg-green-300 hover:bg-green-400 mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+                      onClick={() => handleUserRemove(user.id)}
+                      className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
                     >
-                      +
+                      -
                     </button>
                     <span>
                       {user.display_name} ({user.email})
                     </span>
-                  </li>
+                  </li>{" "}
                 </div>
-              ))}{" "}
-            </div> */}
-          {/* </div> */}
-          <div>
-            <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
-              Selected Members
-            </div>
-            <div className="overflow-y-auto h-16">
-              <ul>
-                {selectedUsers.map((user) => (
-                  <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
-                    <li
-                      key={user.id}
-                      className="text-gray-700 flex items-center"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleUserRemove(user.id)}
-                        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
-                      >
-                        -
-                      </button>
-                      <span>
-                        {user.display_name} ({user.email})
-                      </span>
-                    </li>{" "}
-                  </div>
-                ))}
-              </ul>
-            </div>
+              ))}
+            </ul>
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-700">
@@ -214,7 +175,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
             <textarea
               value={inviteMessage}
               onChange={(e) => setInviteMessage(e.target.value)}
-              className="mt-1 border block w-full h-20 rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+              className="mt-1 border block w-full h-48 rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
               placeholder="Enter invite message"
             />
           </div>
