@@ -77,17 +77,17 @@ const GroupModify = ({ groups = [], onDelete }) => {
         {selectedGroup.group_name}
       </h1>
       <p className="text-gray-600 text-xl mb-2">{selectedGroup.description}</p>
-      <div className="grid grid-cols-2 gap-8">
-        <div className="flex flex-col gap-4">
-          <p className="text-gray-700 font-semibold text-xl mb-4">
+      <p className="text-gray-700 font-semibold text-xl mb-4">
             Owner:{" "}
             <span className="font-normal">{selectedGroup.owner_name}</span>
             <span className="text-gray-500">({selectedGroup.owner_email})</span>
           </p>
+      <div className="grid grid-cols-2 gap-8">
+        <div className="flex flex-col gap-4">
           <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
             Current Members
           </div>
-          <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
+          <div className="overflow-y-auto h-[116px] border border-gray-300 rounded-md">
           <ul>
               {selectedGroup.members.map((member) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -148,7 +148,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
           <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
             New Selected Members
           </div>
-          <div className="overflow-y-auto h-36 border border-gray-300 rounded-md">
+          <div className="overflow-y-auto h-32 border border-gray-300 rounded-md">
             <ul>
               {selectedUsers.map((user) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -175,7 +175,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
             <textarea
               value={inviteMessage}
               onChange={(e) => setInviteMessage(e.target.value)}
-              className="mt-1 border block w-full h-48 rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+              className="mt-1 border block w-full h-[140px] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
               placeholder="Enter invite message"
             />
           </div>
