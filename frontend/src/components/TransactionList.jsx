@@ -4,17 +4,19 @@ import { TransactionContext } from "../context/TransactionContext";
 // Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
 // for chart it will follow a different form so I will probably need a new chart for that
 const TransactionRow = ({ transaction }) => (
-  <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
-    <div>
+  <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
+    <div className="truncate">
       {transaction.start_date
         ? new Date(transaction.start_date).toLocaleDateString()
         : "N/A"}
     </div>
-    <div>{transaction.description || "No description"}</div>
+    <div className="truncate">
+      {transaction.description || "No description"}
+    </div>
     <div
-      className={
+      className={`truncate ${
         parseFloat(transaction.amount) > 0 ? "text-green-500" : "text-red-500"
-      }
+      }`}
     >
       {transaction.amount
         ? parseFloat(transaction.amount) > 0
@@ -22,8 +24,8 @@ const TransactionRow = ({ transaction }) => (
           : parseFloat(transaction.amount).toFixed(2)
         : "0.00"}
     </div>
-    <div>{transaction.category || "Uncategorized"}</div>
-    <div>{transaction.group_name || "No Group"}</div>
+    <div className="truncate">{transaction.category || "Uncategorized"}</div>
+    <div className="truncate">{transaction.group_name || "No Group"}</div>
   </div>
 );
 
@@ -39,7 +41,9 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
         ...new Set(transactions.map((t) => t.category || "Uncategorized")),
       ];
       setCategories(
-        uniqueCategories.length > 0 ? uniqueCategories : ["Direct Payment", "Deposit"]
+        uniqueCategories.length > 0
+          ? uniqueCategories
+          : ["Direct Payment", "Deposit"]
       );
     }
   }, [transactions]);
@@ -48,10 +52,10 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
   if (error) return <div>Error: {error.message}</div>;
 
   // Format dates and ensure group_name in mergeData
-  const formattedMergeData = mergeData.map(item => ({
+  const formattedMergeData = mergeData.map((item) => ({
     ...item,
-    start_date: new Date(item.date).toISOString(),  // Convert date to ISO format
-    group_name: item.group_name || "LLM Generated",      // Default group name
+    start_date: new Date(item.date).toISOString(), // Convert date to ISO format
+    group_name: item.group_name || "LLM Generated", // Default group name
   }));
 
   // Combine transactions and formattedMergeData
@@ -101,14 +105,14 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-dodger-blue text-white">
-        <div>Date</div>
-        <div>Description</div>
-        <div>Amount</div>
-        <div>Category</div>
-        <div>Group</div>
-      </div>
       <div className="overflow-y-auto max-h-[390px]">
+        <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
+          <div>Date</div>
+          <div>Description</div>
+          <div>Amount</div>
+          <div>Category</div>
+          <div>Group</div>
+        </div>
         {filteredTransactions && filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
             <TransactionRow key={index} transaction={transaction} />
