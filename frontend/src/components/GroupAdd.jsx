@@ -114,7 +114,7 @@ const GroupAdd = () => {
               <textarea
                 value={inviteMessage}
                 onChange={(e) => setInviteMessage(e.target.value)}
-                className="mt-1 border block w-full h-[184px] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+                className="mt-1 border block w-full h-[136px] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
                 placeholder="Enter invite message"
               />
             </div>
@@ -131,7 +131,7 @@ const GroupAdd = () => {
                 placeholder="Search by name or email"
                 className="mt-1 border px-3 py-2  block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
               />{" "}
-              <div className="overflow-y-auto h-32 border border-gray-300 rounded-md">
+              <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
                 {loadingUsers && (
                   <p className="text-blue-500">Loading users...</p>
                 )}
@@ -160,8 +160,7 @@ const GroupAdd = () => {
               <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
                 Selected Members
               </div>
-              {/* <div className="border"> */}
-              <div className="overflow-y-auto h-36 border border-gray-300 rounded-md">
+              <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
                 <ul>
                   {selectedUsers.map((user) => (
                     <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">

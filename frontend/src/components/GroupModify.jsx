@@ -72,7 +72,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
   const isOwner = selectedGroup.group_owner_id === uuid;
 
   return (
-    <div>
+    <div className="h-full overflow-hidden">
       <h1 className="text-2xl font-bold text-black mb-5">
         {selectedGroup.group_name}
       </h1>
@@ -87,7 +87,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
           <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
             Current Members
           </div>
-          <div className="overflow-y-auto h-[116px] border border-gray-300 rounded-md">
+          <div className="overflow-y-auto h-[74px] border border-gray-300 rounded-md">
           <ul>
               {selectedGroup.members.map((member) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -124,7 +124,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
             placeholder="Search by name or email"
             className="mt-1 border px-3 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
           />{" "}</div>
-          <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
+          <div className="overflow-y-auto h-[76px] border border-gray-300 rounded-md">
             {loadingUsers && <p className="text-blue-500">Loading users...</p>}
             {userResults.slice(0, 4).map((user) => (
               <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -148,7 +148,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
           <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
             New Selected Members
           </div>
-          <div className="overflow-y-auto h-32 border border-gray-300 rounded-md">
+          <div className="overflow-y-auto h-[110px] border border-gray-300 rounded-md">
             <ul>
               {selectedUsers.map((user) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
@@ -175,7 +175,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
             <textarea
               value={inviteMessage}
               onChange={(e) => setInviteMessage(e.target.value)}
-              className="mt-1 border block w-full h-[140px] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+              className="mt-1 border block w-full h-24 rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
               placeholder="Enter invite message"
             />
           </div>
