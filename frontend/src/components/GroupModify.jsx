@@ -168,14 +168,14 @@ const GroupModify = ({ groups = [], onDelete }) => {
               ))}
             </ul>
           </div>
-          <div>
+          <div className="flex flex-col flex-grow">
             <label className="block text-lg font-medium text-gray-700">
               Invite Message
             </label>
             <textarea
               value={inviteMessage}
               onChange={(e) => setInviteMessage(e.target.value)}
-              className="mt-1 border block w-full h-24 rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+              className="flex flex-grow mt-1 border block w-full rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
               placeholder="Enter invite message"
             />
           </div>
