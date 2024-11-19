@@ -43,6 +43,12 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ["group_id", "group_name", "description", "group_owner_id", "members", "owner_name", "owner_email"]
         extra_kwargs = {"group_owner_id": {"read_only": True}}
 
+    def create(self, validated_data):
+        members_data = validated_data.pop('members', [])
+        group = Group.objects.create(**validated_data)
+        group.members.set(members_data)
+        return group
+
 class TransactionSerializer(serializers.ModelSerializer):
     # allows for the group name of a transaction to be included
     group_name = serializers.CharField(source='group_id.group_name', read_only=True)

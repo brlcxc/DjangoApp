@@ -59,12 +59,10 @@ const GroupAdd = () => {
         group_name: groupName,
         description,
         members: selectedUsers.map((user) => user.id),
-        invite_message: inviteMessage, // Include invite message in the payload
       });
       console.log("Group created:", response.data);
       setGroupName("");
       setDescription("");
-      setInviteMessage("");
       setSelectedUsers([]);
     } catch (err) {
       console.error("Error creating group:", err);
@@ -159,28 +157,27 @@ const GroupAdd = () => {
                 Selected Members
               </div>
               <div className="overflow-y-auto h-36">
-
-              <ul>
-                {selectedUsers.map((user) => (
-                  <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
-                    <li
-                      key={user.id}
-                      className="text-gray-700 flex items-center"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleUserRemove(user.id)}
-                        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+                <ul>
+                  {selectedUsers.map((user) => (
+                    <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+                      <li
+                        key={user.id}
+                        className="text-gray-700 flex items-center"
                       >
-                        -
-                      </button>
-                      <span>
-                        {user.display_name} ({user.email})
-                      </span>
-                    </li>{" "}
-                  </div>
-                ))}
-              </ul>
+                        <button
+                          type="button"
+                          onClick={() => handleUserRemove(user.id)}
+                          className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+                        >
+                          -
+                        </button>
+                        <span>
+                          {user.display_name} ({user.email})
+                        </span>
+                      </li>{" "}
+                    </div>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -203,6 +200,5 @@ export default GroupAdd;
 //title search bar for groups as add memebrs
 
 //select the data which you find most closely alligns with your spending
-
 
 //maybe selected group and add group can be given special space
