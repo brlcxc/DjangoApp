@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import api from "../api"; // Adjust the path to your API utility
+import React, { useState, useContext } from "react";
+import { GroupContext } from "../context/GroupContext"; // Adjust the path to your GroupContext
 
 const GroupAdd = () => {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
-  const [inviteMessage, setInviteMessage] = useState(""); // New state for invite message
+  const [inviteMessage, setInviteMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [userResults, setUserResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [error, setError] = useState(null);
+
+  const { addGroup } = useContext(GroupContext);
 
   const fetchUsers = async (query) => {
     if (!query) {
@@ -54,13 +56,14 @@ const GroupAdd = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const newGroup = {
+      group_name: groupName,
+      description,
+      members: selectedUsers.map((user) => user.id),
+    };
+
     try {
-      const response = await api.post("/api/groups/", {
-        group_name: groupName,
-        description,
-        members: selectedUsers.map((user) => user.id),
-      });
-      console.log("Group created:", response.data);
+      await addGroup(newGroup); // Use context method instead of direct API call
       setGroupName("");
       setDescription("");
       setSelectedUsers([]);
