@@ -14,6 +14,7 @@ module.exports = {
         "dodger-blue": "#3590F3",
         "coral": "#F78379",
         "deep-coral": "#FE7C70",
+        "lavender": "#D5B4E1",
       },
       keyframes: {
         /* Defines a custom keyframe animation named gradient*/

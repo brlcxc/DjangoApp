@@ -37,7 +37,7 @@ function NavBar({ setActivePage }) {
       
       {/* Toggle Button - Visible only on mobile */}
       <button
-        className="text-white p-2 fixed bottom-4 left-6 z-50 md:hidden"
+        className="text-white p-3 fixed bottom-3 left-5 z-50 md:hidden bg-lavender rounded-full"
         onClick={() => setIsOpen(!isOpen)}
       >
         <FaBars size={iconSize} />
