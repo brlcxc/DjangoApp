@@ -140,8 +140,11 @@ function LLMInterface() {
   };
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
-        <Loading3D />
+      //H band-aid fix
+      <div className="h-[700px]">
+        <div className="flex items-center justify-center w-full h-full">
+          <Loading3D />
+        </div>
       </div>
     );
   }
