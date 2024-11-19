@@ -5,6 +5,7 @@ import GroupMembership from "../components/GroupMembership";
 import GroupModify from "../components/GroupModify";
 import { GroupModifyProvider } from "../context/GroupModifyContext";
 import { GroupContext } from "../context/GroupContext";
+// error on first load "Each child in a list should have a unique "key" prop."
 
 function Groups() {
   const { groups, loading, error } = useContext(GroupContext);
