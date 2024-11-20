@@ -59,24 +59,26 @@ const GroupModify = ({ groups = [], onDelete }) => {
     setSelectedUsers(selectedUsers.filter((user) => user.id !== userId));
   };
 
-  console.log(selectedGroup);
+
+  const uuid = localStorage.getItem("USER_ID");
+  const isOwner = selectedGroup.group_owner_id === uuid;
+
+  const operationType = isOwner ? "deleted" : "left";
 
   const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete the group: ${selectedGroup.group_name}?`)) {
+
+    if (window.confirm(`Are you sure you want group ${selectedGroup.group_name} to be ${operationType}?`)) {
       try {
         await deleteGroup(selectedGroup.group_id)
-        alert("Group deleted successfully.");
+        alert(`Group ${operationType} successfully.`);
         toggleSelectedGroup(null); // Reset the selected group
         onDelete(selectedGroup.group_id); // Call parent callback to update the UI
       } catch (error) {
-        console.error("Failed to delete the group:", error);
+        console.error("Failed to delete/leave the group:", error);
         // alert("An error occurred while deleting the group.");
       }
     }
   };
-
-  const uuid = localStorage.getItem("USER_ID");
-  const isOwner = selectedGroup.group_owner_id === uuid;
 
   return (
     <div className="h-full overflow-hidden">
