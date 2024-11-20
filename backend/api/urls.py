@@ -8,6 +8,8 @@ urlpatterns = [
     # Group URLs
     path('groups/', views.GroupListCreate.as_view(), name='group-list-create'),  # List all groups or create a new group
     path('groups/<uuid:pk>/', views.GroupRetrieveUpdateDestroyView.as_view(), name='group-retrieve-update-destroy'),  # Retrieve, update, or destroy a specific group
+    path('groups/<group_id>/add_member/', views.AddGroupMemberView.as_view(), name='group-add-member'),
+    path('groups/<group_id>/remove_member/', views.RemoveGroupMemberView.as_view(), name='group-remove-member'),
 
     # Transaction URLs
     path('groups/<uuid:group_uuid>/transactions/', views.TransactionCreate.as_view(), name='transaction-create'),  # Create a transaction in a specific group
