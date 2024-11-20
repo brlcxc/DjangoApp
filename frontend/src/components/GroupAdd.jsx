@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from "react";
-import api from "../api"; // Adjust the path to your API utility
+import React, { useState, useContext } from "react";
+import api from "../api";
+import { GroupContext } from "../context/GroupContext";
 
 const GroupAdd = () => {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
-  const [inviteMessage, setInviteMessage] = useState(""); // New state for invite message
+  const [inviteMessage, setInviteMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [userResults, setUserResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [error, setError] = useState(null);
+
+  const { addGroup } = useContext(GroupContext);
 
   const fetchUsers = async (query) => {
     if (!query) {
@@ -54,17 +57,16 @@ const GroupAdd = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const newGroup = {
+      group_name: groupName,
+      description,
+      members: selectedUsers.map((user) => user.id),
+    };
+
     try {
-      const response = await api.post("/api/groups/", {
-        group_name: groupName,
-        description,
-        members: selectedUsers.map((user) => user.id),
-        invite_message: inviteMessage, // Include invite message in the payload
-      });
-      console.log("Group created:", response.data);
+      await addGroup(newGroup); // Use context method instead of direct API call
       setGroupName("");
       setDescription("");
-      setInviteMessage("");
       setSelectedUsers([]);
     } catch (err) {
       console.error("Error creating group:", err);
@@ -112,13 +114,13 @@ const GroupAdd = () => {
               <textarea
                 value={inviteMessage}
                 onChange={(e) => setInviteMessage(e.target.value)}
-                className="mt-1 border block w-full h-[75%] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
+                className="mt-1 border block w-full h-[136px] rounded-md px-3 py-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m resize-none"
                 placeholder="Enter invite message"
               />
             </div>
           </div>
-          <div className="grid grid-rows-2 overflow-hidden">
-            <div>
+          <div className="grid grid-rows-2 overflow-hidden gap-4">
+            <div className="flex flex-col gap-4">
               <label className="block text-lg font-medium text-gray-700">
                 Add Users
               </label>
@@ -129,7 +131,7 @@ const GroupAdd = () => {
                 placeholder="Search by name or email"
                 className="mt-1 border px-3 py-2  block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
               />{" "}
-              <div className="overflow-y-auto h-32">
+              <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
                 {loadingUsers && (
                   <p className="text-blue-500">Loading users...</p>
                 )}
@@ -154,33 +156,32 @@ const GroupAdd = () => {
                 ))}{" "}
               </div>
             </div>
-            <div>
+            <div className="flex flex-col gap-4">
               <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
                 Selected Members
               </div>
-              <div className="overflow-y-auto h-36">
-
-              <ul>
-                {selectedUsers.map((user) => (
-                  <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
-                    <li
-                      key={user.id}
-                      className="text-gray-700 flex items-center"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleUserRemove(user.id)}
-                        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+              <div className="overflow-y-auto h-24 border border-gray-300 rounded-md">
+                <ul>
+                  {selectedUsers.map((user) => (
+                    <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
+                      <li
+                        key={user.id}
+                        className="text-gray-700 flex items-center"
                       >
-                        -
-                      </button>
-                      <span>
-                        {user.display_name} ({user.email})
-                      </span>
-                    </li>{" "}
-                  </div>
-                ))}
-              </ul>
+                        <button
+                          type="button"
+                          onClick={() => handleUserRemove(user.id)}
+                          className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+                        >
+                          -
+                        </button>
+                        <span>
+                          {user.display_name} ({user.email})
+                        </span>
+                      </li>{" "}
+                    </div>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -203,6 +204,5 @@ export default GroupAdd;
 //title search bar for groups as add memebrs
 
 //select the data which you find most closely alligns with your spending
-
 
 //maybe selected group and add group can be given special space

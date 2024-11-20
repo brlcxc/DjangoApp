@@ -68,7 +68,7 @@ class GroupListCreate(generics.ListCreateAPIView):
         # An owner is not listed as a member which is why this needs to be done
         return Group.objects.filter(
             Q(members=user) | Q(group_owner_id=user)
-        )
+        ).distinct()
     
     def perform_create(self, serializer):
         if serializer.is_valid():
@@ -87,7 +87,7 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         # Query for groups where the user is either the owner or a member
         return Group.objects.filter(
             Q(members=user) | Q(group_owner_id=user)
-        )
+        ).distinct()
         
     def get_object(self):
         # Override to ensure object-level permission checks if necessary
@@ -111,6 +111,50 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         else:
             # If the user is just a member, remove them from the group
             instance.members.remove(user)
+
+class AddGroupMemberView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, group_id):
+        group = get_object_or_404(Group, group_id=group_id)
+        user_to_add_id = request.data.get("member_id")
+
+        if not user_to_add_id:
+            return Response({"error": "Member ID is required."}, status=400)
+
+        try:
+            user_to_add = User.objects.get(id=user_to_add_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)
+
+        if user_to_add not in group.members.all():
+            group.members.add(user_to_add)
+            group.save()
+
+        serializer = GroupSerializer(group)
+        return Response(serializer.data, status=200)
+
+class RemoveGroupMemberView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, group_id):
+        group = get_object_or_404(Group, group_id=group_id)
+        user_to_remove_id = request.data.get("member_id")
+
+        if not user_to_remove_id:
+            return Response({"error": "Member ID is required."}, status=400)
+
+        try:
+            user_to_remove = User.objects.get(id=user_to_remove_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)
+
+        if user_to_remove in group.members.all():
+            group.members.remove(user_to_remove)
+            group.save()
+
+        serializer = GroupSerializer(group)
+        return Response(serializer.data, status=200)
 
 # Create and List are not combined because List takes in multiple uuid while create needs one
 class TransactionCreate(generics.CreateAPIView):
