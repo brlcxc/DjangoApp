@@ -13,7 +13,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
-  const { deleteGroup } = useContext(GroupContext);
+  const { deleteGroup, addMember, removeMember } = useContext(GroupContext);
 
   const [error, setError] = useState(null);
   if (!selectedGroup) {
@@ -59,6 +59,11 @@ const GroupModify = ({ groups = [], onDelete }) => {
     setSelectedUsers(selectedUsers.filter((user) => user.id !== userId));
   };
 
+  const inviteNew = () => {
+    selectedUsers.forEach((user) => {
+      addMember(selectedGroup.group_id, user.id);
+    });
+  };
 
   const uuid = localStorage.getItem("USER_ID");
   const isOwner = selectedGroup.group_owner_id === uuid;
@@ -66,10 +71,13 @@ const GroupModify = ({ groups = [], onDelete }) => {
   const operationType = isOwner ? "deleted" : "left";
 
   const handleDelete = async () => {
-
-    if (window.confirm(`Are you sure you want group ${selectedGroup.group_name} to be ${operationType}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want group ${selectedGroup.group_name} to be ${operationType}?`
+      )
+    ) {
       try {
-        await deleteGroup(selectedGroup.group_id)
+        await deleteGroup(selectedGroup.group_id);
         alert(`Group ${operationType} successfully.`);
         toggleSelectedGroup(null); // Reset the selected group
         onDelete(selectedGroup.group_id); // Call parent callback to update the UI
@@ -87,17 +95,16 @@ const GroupModify = ({ groups = [], onDelete }) => {
       </h1>
       <p className="text-gray-600 text-xl mb-2">{selectedGroup.description}</p>
       <p className="text-gray-700 font-semibold text-xl mb-4">
-            Owner:{" "}
-            <span className="font-normal">{selectedGroup.owner_name}</span>
-            <span className="text-gray-500">({selectedGroup.owner_email})</span>
-          </p>
+        Owner: <span className="font-normal">{selectedGroup.owner_name}</span>
+        <span className="text-gray-500">({selectedGroup.owner_email})</span>
+      </p>
       <div className="grid grid-cols-2 gap-8">
         <div className="flex flex-col gap-4">
           <div className="py-3 pl-3 border-b font-semibold text-left bg-dodger-blue text-white">
             Current Members
           </div>
           <div className="overflow-y-auto h-[74px] border border-gray-300 rounded-md">
-          <ul>
+            <ul>
               {selectedGroup.members.map((member) => (
                 <div className="py-3 pl-2 border-b hover:bg-gray-100 transition text-black">
                   <li
@@ -105,6 +112,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
                     className="text-gray-700 flex items-center"
                   >
                     {isOwner && (
+                      // Here
                       <button className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none">
                         -
                       </button>
@@ -123,16 +131,17 @@ const GroupModify = ({ groups = [], onDelete }) => {
             {isOwner ? "Delete Group" : "Leave Group"}
           </button>
           <div>
-          <label className="block text-lg font-medium text-gray-700">
-            Add Users
-          </label>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleUserSearch}
-            placeholder="Search by name or email"
-            className="mt-1 border px-3 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
-          />{" "}</div>
+            <label className="block text-lg font-medium text-gray-700">
+              Add Users
+            </label>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleUserSearch}
+              placeholder="Search by name or email"
+              className="mt-1 border px-3 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-m"
+            />{" "}
+          </div>
           <div className="overflow-y-auto h-[76px] border border-gray-300 rounded-md">
             {loadingUsers && <p className="text-blue-500">Loading users...</p>}
             {userResults.slice(0, 4).map((user) => (
@@ -188,7 +197,12 @@ const GroupModify = ({ groups = [], onDelete }) => {
               placeholder="Enter invite message"
             />
           </div>
-          <button className="bg-green-300 hover:bg-green-400 text-white font-semibold py-2 px-4 rounded shadow w-full">
+          {/* Here */}
+          <button
+            type="button"
+            onClick={() => inviteNew()}
+            className="bg-green-300 hover:bg-green-400 text-white font-semibold py-2 px-4 rounded shadow w-full"
+          >
             Invite
           </button>
         </div>
