@@ -32,9 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
 class GroupSerializer(serializers.ModelSerializer):
-    # I need to double check that this is actually read_only
-    # members = UserSerializer(read_only=True, many=True)
-    members = UserSerializer(many=True)
+    members = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all()
+    )    
     owner_name = serializers.CharField(source='group_owner_id.display_name', read_only=True)
     owner_email = serializers.CharField(source='group_owner_id.email', read_only=True)
 
@@ -48,6 +49,11 @@ class GroupSerializer(serializers.ModelSerializer):
         group = Group.objects.create(**validated_data)
         group.members.set(members_data)
         return group
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['members'] = UserSerializer(instance.members, many=True).data
+        return ret
 
 class TransactionSerializer(serializers.ModelSerializer):
     # allows for the group name of a transaction to be included
