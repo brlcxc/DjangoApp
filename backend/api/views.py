@@ -87,7 +87,7 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         # Query for groups where the user is either the owner or a member
         return Group.objects.filter(
             Q(members=user) | Q(group_owner_id=user)
-        )
+        ).distinct()
         
     def get_object(self):
         # Override to ensure object-level permission checks if necessary
