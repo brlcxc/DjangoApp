@@ -68,7 +68,7 @@ class GroupListCreate(generics.ListCreateAPIView):
         # An owner is not listed as a member which is why this needs to be done
         return Group.objects.filter(
             Q(members=user) | Q(group_owner_id=user)
-        )
+        ).distinct()
     
     def perform_create(self, serializer):
         if serializer.is_valid():
