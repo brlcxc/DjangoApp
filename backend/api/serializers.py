@@ -55,6 +55,12 @@ class GroupSerializer(serializers.ModelSerializer):
         ret['members'] = UserSerializer(instance.members, many=True).data
         return ret
 
+    # It might be better and more efficient to take in a list of users to add to lower GET requests
+    def update(self, instance, validated_data):
+        if 'members' in validated_data:
+            instance.members.set(validated_data['members'])
+        return super().update(instance, validated_data)
+
 class TransactionSerializer(serializers.ModelSerializer):
     # allows for the group name of a transaction to be included
     group_name = serializers.CharField(source='group_id.group_name', read_only=True)
