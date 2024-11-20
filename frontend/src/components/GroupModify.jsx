@@ -1,5 +1,6 @@
 import { useSelectedGroup } from "../context/GroupModifyContext";
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
+import { GroupContext } from "../context/GroupContext";
 import api from "../api";
 
 const GroupModify = ({ groups = [], onDelete }) => {
@@ -11,6 +12,8 @@ const GroupModify = ({ groups = [], onDelete }) => {
   const [userResults, setUserResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+
+  const { deleteGroup } = useContext(GroupContext);
 
   const [error, setError] = useState(null);
   if (!selectedGroup) {
@@ -58,13 +61,17 @@ const GroupModify = ({ groups = [], onDelete }) => {
 
   console.log(selectedGroup);
 
-  const handleDelete = () => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the group: ${selectedGroup.group_name}?`
-      )
-    ) {
-      onDelete(selectedGroup.group_id);
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete the group: ${selectedGroup.group_name}?`)) {
+      try {
+        await deleteGroup(selectedGroup.group_id)
+        alert("Group deleted successfully.");
+        toggleSelectedGroup(null); // Reset the selected group
+        onDelete(selectedGroup.group_id); // Call parent callback to update the UI
+      } catch (error) {
+        console.error("Failed to delete the group:", error);
+        // alert("An error occurred while deleting the group.");
+      }
     }
   };
 

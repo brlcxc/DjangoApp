@@ -25,6 +25,17 @@ const GroupProvider = ({ children }) => {
         fetchGroups();
     }, []);
 
+    const deleteGroup = async (groupId) => {
+        try {
+            await api.delete(`/api/groups/${groupId}/`);
+            setGroups((prevGroups) => prevGroups.filter((group) => group.group_id !== groupId));
+            console.log(`Group ${groupId} deleted successfully.`);
+        } catch (error) {
+            console.error(`Failed to delete group ${groupId}:`, error);
+            setError(error);
+        }
+    };
+
     const addGroup = async (newGroup) => {
         try {
             const response = await api.post('/api/groups/', newGroup, {
@@ -44,6 +55,7 @@ const GroupProvider = ({ children }) => {
         loading,
         error,
         addGroup,
+        deleteGroup,
     };
 
     return (
