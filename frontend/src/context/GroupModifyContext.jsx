@@ -1,13 +1,24 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const GroupModifyContext = createContext();
 
-export const GroupModifyProvider = ({ children }) => {
+export const GroupModifyProvider = ({ children, groups = [] }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   const toggleSelectedGroup = (group) => {
-    setSelectedGroup((prev) => (prev?.group_id === group.group_id ? null : group));
+    if (selectedGroup?.group_id === group.group_id) {
+      setSelectedGroup(null); // Deselect the group if it's already selected
+    } else {
+      setSelectedGroup(group); // Select the new group
+    }
   };
+
+  // Select the first group when the component mounts, if no group is selected
+  useEffect(() => {
+    if (groups.length > 0 && !selectedGroup) {
+      setSelectedGroup(groups[0]); // Select the first group by default
+    }
+  }, [groups]); // Only depend on groups
 
   return (
     <GroupModifyContext.Provider value={{ selectedGroup, toggleSelectedGroup }}>

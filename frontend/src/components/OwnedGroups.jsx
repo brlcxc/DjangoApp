@@ -22,7 +22,7 @@ const OwnedGroups = () => {
         <div>Group</div>
         <div>Description</div>
       </div>
-      <div className="overflow-y-auto h-20">
+      <div className="overflow-y-auto h-28">
         {filteredGroups && filteredGroups.length > 0 ? (
           filteredGroups.map((group) => (
             <GroupRow key={group.group_id} group={group} />
