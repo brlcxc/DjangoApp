@@ -61,6 +61,10 @@ const GroupModify = ({ groups = [], onDelete }) => {
     setSelectedUsers(selectedUsers.filter((user) => user.id !== userId));
   };
 
+  const handleUserRemoveGroup = (userId) => {
+    removeMember(selectedGroup.group_id, userId);
+  };
+
   const inviteNew = () => {
     selectedUsers.forEach((user) => {
       addMember(selectedGroup.group_id, user.id);
@@ -117,8 +121,11 @@ const GroupModify = ({ groups = [], onDelete }) => {
                     className="text-gray-700 flex items-center"
                   >
                     {isOwner && (
-                      // Here
-                      <button className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none">
+                      <button
+                        type="button"
+                        onClick={() => handleUserRemoveGroup(member.id)}
+                        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+                      >
                         -
                       </button>
                     )}
