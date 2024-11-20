@@ -140,8 +140,11 @@ function LLMInterface() {
   };
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
-        <Loading3D />
+      //H band-aid fix
+      <div className="h-[700px]">
+        <div className="flex items-center justify-center w-full h-full">
+          <Loading3D />
+        </div>
       </div>
     );
   }
@@ -149,14 +152,14 @@ function LLMInterface() {
   return (
     <div className="flex flex-col w-full items-center gap-6">
       {showTransactionList && showSelectStage && (
-        <div className="grid grid-cols-2 gap-8">
-          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col bg-white p-4 md:p-8 rounded-xl shadow-lg">
             <TransactionList
               mergeData={mergeData}
               title={"Transactions provided by gemini-1.5-flash-002"}
             />
           </div>
-          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+          <div className="flex flex-col bg-white p-4 md:p-8 rounded-xl shadow-lg">
             <TransactionList
               mergeData={mergeData2}
               title={"Transactions provided by gpt-3.5-turbo"}
@@ -165,14 +168,14 @@ function LLMInterface() {
         </div>
       )}
       {showTransactionList && !showSelectStage && (
-        <div className="grid grid-cols-2 gap-8">
-          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8">
+          <div className="flex flex-col bg-white p-6 sm:p-8 rounded-xl shadow-lg">
             <TransactionList
               mergeData={mergeData3}
               title={"Transaction List"}
             />
           </div>
-          <div className="flex flex-col bg-white p-8 rounded-xl shadow-lg">
+          <div className="flex flex-col bg-white p-6 sm:p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData3} />
           </div>
         </div>
@@ -180,14 +183,14 @@ function LLMInterface() {
       {showTransactionList && showSelectStage && (
         <div className="grid grid-cols-2 w-full gap-8">
           <button
-            className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+            className="w-full md:w-auto px-4 py-2 text-lg md:text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
             onClick={() => handleSelectingList(true)}
           >
             Select
           </button>
           <button
-            className="px-5 py-3 text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
-            onClick={() => handleSelectingList(false)}
+            className="w-full md:w-auto px-4 py-2 text-lg md:text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+            onClick={() => handleSelectingList(true)}
           >
             Select
           </button>
@@ -201,17 +204,17 @@ function LLMInterface() {
           </div>
         )}
       {!showTransactionList && situationsSubject && (
-        <div className="flex flex-col space-y-4 h-16 text-xl items-center justify-center">
+        <div className="flex flex-col space-y-4 text-xl items-center justify-center w-full">
           {situationsSubject && (
-            <div className="py-3 px-5 font-bold bg-dodger-blue text-2xl text-white rounded text-center transition w-fit">
+            <div className="py-3 px-5 font-bold bg-dodger-blue text-lg md:text-2xl text-white rounded text-center transition w-fit">
               {situationsSubject}
             </div>
           )}
-          <div className="flex space-x-4 h-16 text-xl">
+          <div className="flex flex-wrap gap-4 justify-center items-center w-full">
             {situations.map((situation, index) => (
               <div
                 key={index}
-                className="p-4 bg-dodger-blue text-white rounded cursor-pointer transition flex items-center space-x-2 h-full"
+                className="p-3 bg-dodger-blue text-white rounded cursor-pointer transition flex items-center space-x-2 w-full sm:w-auto"
               >
                 <button
                   onClick={() => handleRemoveSituation(index)}
@@ -219,20 +222,23 @@ function LLMInterface() {
                 >
                   &times;
                 </button>
-                <span onClick={() => handleEditClick(index)}>
+                <span
+                  onClick={() => handleEditClick(index)}
+                  className="break-words"
+                >
                   {situation.text}
                 </span>
               </div>
             ))}
 
             {situations.length > 0 && (
-              <div className="p-4 bg-dodger-blue text-black rounded space-x-3 cursor-pointer flex items-center">
+              <div className="p-3 bg-dodger-blue text-black rounded flex items-center space-x-3 w-full sm:w-auto">
                 <input
                   type="text"
                   placeholder="Add new category..."
                   value={newSituationText}
                   onChange={(e) => setNewSituationText(e.target.value)}
-                  className="p-2 rounded border border-gray-300"
+                  className="w-full sm:w-auto p-2 rounded border border-gray-300"
                 />
                 <button
                   className="font-bold flex items-center justify-center size-9 p-1 bg-green-300 hover:bg-green-400 text-white rounded cursor-pointer"
@@ -248,8 +254,8 @@ function LLMInterface() {
       {/* width full is only of this small size */}
       {situations.length === 0 && (
         <textarea
-          className="w-[30%] p-4 border text-lg rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
-          rows="2"
+          className="w-full md:w-[30%] p-4 border text-base md:text-lg rounded-lg shadow-lg focus:outline-none focus:ring focus:ring-indigo-500"
+          rows="3"
           placeholder="Type a financial situation you would like to predict for here..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
@@ -289,10 +295,3 @@ function LLMInterface() {
 }
 
 export default LLMInterface;
-
-//Maybe instruction thing always at top
-//Transaction list should order with newest first
-
-//I need to fix the gap at the top for the unloaded stuff not making it center
-//I might move subject to the top line and remove the word subject
-//different color for subject too maybe?

@@ -10,24 +10,25 @@ import { GroupContext } from "../context/GroupContext";
 function Groups() {
   const { groups, loading, error } = useContext(GroupContext);
   const style = "bg-white p-8 rounded-xl shadow-lg";
+
   return (
     <GroupModifyProvider groups={groups}>
-      <div className="grid grid-cols-2 gap-8 size-full p-8 bg-custom-gradient animate-gradient">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-custom-gradient min-h-screen">
         <div className="flex flex-col gap-8">
           {" "}
-          <div className={`${style} h-[65%]`}>
+          <div className={`${style} h-[65%] md:h-[65%]`}>
             <GroupModify />
           </div>
-          <div className={`${style} h-[30%]`}>
+          <div className={`${style} h-[30%] md:h-[30%]`}>
             <OwnedGroups />
           </div>
         </div>
         <div className="flex flex-col gap-8">
           {" "}
-          <div className={`${style} h-[65%]`}>
+          <div className={`${style} h-[65%] md:h-[65%]`}>
             <GroupAdd />
           </div>
-          <div className={`${style} h-[30%]`}>
+          <div className={`${style} h-[30%] md:h-[30%]`}>
             <GroupMembership />
           </div>
         </div>
