@@ -43,6 +43,8 @@ const GroupModify = ({ groups = [], onDelete }) => {
     }
   };
 
+  //I need to remove users from the query who are already members or owners
+  //I can compare the two queries
   const handleUserSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -62,6 +64,9 @@ const GroupModify = ({ groups = [], onDelete }) => {
   const inviteNew = () => {
     selectedUsers.forEach((user) => {
       addMember(selectedGroup.group_id, user.id);
+      setSelectedUsers((prevSelectedUsers) =>
+        prevSelectedUsers.filter((selectedUser) => selectedUser.id !== user.id)
+      );
     });
   };
 
