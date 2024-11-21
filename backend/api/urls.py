@@ -14,7 +14,7 @@ urlpatterns = [
     # Transaction URLs
     path('groups/<uuid:group_uuid>/transactions/', views.TransactionCreate.as_view(), name='transaction-create'),  # Create a transaction in a specific group
     path('transactions/<str:group_uuid_list>/', views.TransactionList.as_view(), name='transaction-list'),  # List transactions for one or more groups
-    path('transactions/<uuid:pk>/', views.TransactionRetrieveUpdateDestroyView.as_view(), name='transaction-retrieve-update-destroy'),  # Retrieve, update, or destroy a specific transaction
+    path('transaction/<uuid:pk>/', views.TransactionRetrieveUpdateDestroyView.as_view(), name='transaction-retrieve-update-destroy'),  # Retrieve, update, or destroy a specific transaction
 
     # Invite URLs
     path('groups/<uuid:group_uuid>/invites/<str:recipient_uuids>/', views.InviteCreateView.as_view(), name='invite-create'),  # Create an invite for multiple recipients in a group
