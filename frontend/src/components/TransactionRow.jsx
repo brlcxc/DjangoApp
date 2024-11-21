@@ -10,7 +10,6 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
     ...transaction,
   });
 
-
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
     if (!isEditing) {
@@ -117,9 +116,11 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
           </div>
           <div
             className={`truncate w-20 ${
-              parseFloat(transaction.amount) > 0
-                ? "text-green-500"
-                : "text-red-500"
+              !isEditing
+                ? parseFloat(transaction.amount) > 0
+                  ? "text-green-500"
+                  : "text-red-500"
+                : ""
             }`}
           >
             {isEditing ? (
