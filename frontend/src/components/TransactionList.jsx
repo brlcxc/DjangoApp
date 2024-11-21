@@ -10,10 +10,12 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
     ...transaction,
   });
 
+  const { updateTransaction } = useContext(TransactionContext);
+
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
-    if (isEditing) {
-      setEditableTransaction({ ...transaction }); // Reset changes if canceled
+    if (!isEditing) {
+      setEditableTransaction({ ...transaction }); // Reset changes when entering edit mode
     }
   };
 
@@ -21,9 +23,17 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
     setEditableTransaction((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    onSave(editableTransaction); // Pass the updated transaction to the parent
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      await updateTransaction(
+        editableTransaction.transaction_id,
+        editableTransaction
+      ); // Update the transaction via context
+      onSave(editableTransaction); // Notify the parent about the saved transaction
+      setIsEditing(false); // Exit edit mode
+    } catch (error) {
+      console.error("Error saving transaction:", error);
+    }
   };
 
   return (
@@ -167,7 +177,7 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
 };
 
 const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
-  const { transactions, loading, error, removeTransaction } =
+  const { transactions, loading, error, removeTransaction, updateTransaction } =
     useContext(TransactionContext);
   const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
   const [filterType, setFilterType] = useState("All");
@@ -177,6 +187,11 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
     // Call the removeTransaction function from the context or API
     removeTransaction(transactionId);
   };
+
+  // const handleSaveTransaction = (transactionId) => {
+  //   // Call the removeTransaction function from the context or API
+  //   removeTransaction(transactionId);
+  // };
 
   useEffect(() => {
     if (transactions && transactions.length > 0) {
