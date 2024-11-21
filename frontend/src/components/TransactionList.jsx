@@ -4,7 +4,7 @@ import { TransactionContext } from "../context/TransactionContext";
 
 // Note: this still kind of breaks in smaller sizes
 // It also needs components with relative sizes rather than hard set sizes
-const TransactionRow = ({ transaction, mergeData }) => (
+const TransactionRow = ({ transaction, mergeData, onDelete }) => (
   <div className="flex w-full">
     <div className="w-full">
       <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-h-[60px]">
@@ -15,6 +15,7 @@ const TransactionRow = ({ transaction, mergeData }) => (
         >
           <button
             type="button"
+            onClick={() => onDelete(transaction.transaction_id)} // Pass the transaction ID to onDelete
             className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
           >
             -
@@ -57,10 +58,16 @@ const TransactionRow = ({ transaction, mergeData }) => (
 );
 
 const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
-  const { transactions, loading, error } = useContext(TransactionContext);
+  const { transactions, loading, error, removeTransaction } =
+    useContext(TransactionContext);
   const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
   const [filterType, setFilterType] = useState("All");
   const [sortOption, setSortOption] = useState("date");
+
+  const handleDeleteTransaction = (transactionId) => {
+    // Call the removeTransaction function from the context or API
+    removeTransaction(transactionId);
+  };
 
   useEffect(() => {
     if (transactions && transactions.length > 0) {
@@ -146,6 +153,7 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
                 key={index}
                 transaction={transaction}
                 mergeData={mergeData}
+                onDelete={handleDeleteTransaction}
               />
             ))
           ) : (

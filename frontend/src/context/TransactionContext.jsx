@@ -45,11 +45,23 @@ useEffect(() => {
         }
     };
 
+    const removeTransaction = async (transactionId) => {
+        try {
+          await api.delete(`/api/transaction/${transactionId}/`);
+          setTransactions((prev) =>
+            prev.filter((transaction) => transaction.transaction_id !== transactionId)
+          );
+        } catch (error) {
+          console.error("Error deleting transaction:", error);
+        }
+      };
+
     const contextValue = {
         transactions,
         loading,
         error,
         addTransaction,
+        removeTransaction,
     };
 
     return (
