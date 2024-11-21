@@ -1,61 +1,160 @@
 import React, { useState, useEffect, useContext } from "react";
+import { FaCheck, FaTimes } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import { TransactionContext } from "../context/TransactionContext";
 
 // Note: this still kind of breaks in smaller sizes
 // It also needs components with relative sizes rather than hard set sizes
-const TransactionRow = ({ transaction, mergeData, onDelete }) => (
-  <div className="flex w-full">
-    <div className="w-full">
-      <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-h-[60px]">
-        <div
-          className={`flex items-center w-16 ${
-            mergeData.length > 0 ? "invisible" : ""
-          }`}
-        >
-          <button
-            type="button"
-            onClick={() => onDelete(transaction.transaction_id)} // Pass the transaction ID to onDelete
-            className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableTransaction, setEditableTransaction] = useState({
+    ...transaction,
+  });
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    if (isEditing) {
+      setEditableTransaction({ ...transaction }); // Reset changes if canceled
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditableTransaction((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    onSave(editableTransaction); // Pass the updated transaction to the parent
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="flex w-full">
+      <div className="w-full">
+        <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-h-[60px]">
+          <div
+            className={`flex items-center w-16 ${
+              mergeData.length > 0 ? "invisible" : ""
+            }`}
           >
-            -
-          </button>
-          <button
-            type="button"
-            className="flex font-bold border-2 border-gray-400 text-l mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+            <button
+              type="button"
+              onClick={() => onDelete(transaction.transaction_id)} // Pass the transaction ID to onDelete
+              className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+            >
+              -
+            </button>
+            {isEditing ? (
+              <div>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className="flex font-bold border-2 border-green-400 text-l mr-1 size-5 justify-center items-center rounded p-1 focus:outline-none bg-green-100 hover:bg-green-300"
+                >
+                  <FaCheck />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEditToggle}
+                  className="flex font-bold border-2 border-red-400 text-l size-5 justify-center items-center rounded p-1 focus:outline-none bg-red-100 hover:bg-red-300"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleEditToggle}
+                className="flex font-bold border-2 border-gray-400 text-l mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+              >
+                <FaPencil />
+              </button>
+            )}
+          </div>
+          <div className="truncate w-24">
+            {isEditing ? (
+              <input
+                type="date"
+                value={editableTransaction.start_date || ""}
+                onChange={(e) =>
+                  handleInputChange("start_date", e.target.value)
+                }
+                className="border border-gray-300 rounded p-1 w-[91px]"
+              />
+            ) : transaction.start_date ? (
+              new Date(transaction.start_date).toLocaleDateString()
+            ) : (
+              "N/A"
+            )}
+          </div>
+          <div className="truncate w-32">
+            {isEditing ? (
+              <input
+                type="text"
+                value={editableTransaction.description || ""}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
+                className="border border-gray-300 rounded p-1 w-[123px]"
+              />
+            ) : (
+              transaction.description || "No description"
+            )}
+          </div>
+          <div
+            className={`truncate w-20 ${
+              parseFloat(transaction.amount) > 0
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
           >
-            <FaPencil />
-          </button>
+            {isEditing ? (
+              <input
+                type="number"
+                value={editableTransaction.amount || ""}
+                onChange={(e) => handleInputChange("amount", e.target.value)}
+                className="border border-gray-300 rounded p-1 w-[75px] "
+              />
+            ) : transaction.amount ? (
+              parseFloat(transaction.amount) > 0 ? (
+                `+${parseFloat(transaction.amount).toFixed(2)}`
+              ) : (
+                parseFloat(transaction.amount).toFixed(2)
+              )
+            ) : (
+              "0.00"
+            )}
+          </div>
+          <div className="truncate w-44">
+            {isEditing ? (
+              <input
+                type="text"
+                value={editableTransaction.category || ""}
+                onChange={(e) => handleInputChange("category", e.target.value)}
+                className="border border-gray-300 rounded p-1 w-[171px]"
+              />
+            ) : (
+              transaction.category || "Uncategorized"
+            )}
+          </div>
+          <div className="truncate">
+            {isEditing ? (
+              <input
+                type="text"
+                value={editableTransaction.group_name || ""}
+                onChange={(e) =>
+                  handleInputChange("group_name", e.target.value)
+                }
+                className="border border-gray-300 rounded p-1"
+              />
+            ) : (
+              transaction.group_name || "No Group"
+            )}
+          </div>
         </div>
-        <div className="truncate w-24">
-          {transaction.start_date
-            ? new Date(transaction.start_date).toLocaleDateString()
-            : "N/A"}
-        </div>
-        <div className="truncate w-32">
-          {transaction.description || "No description"}
-        </div>
-        <div
-          className={`truncate w-20 ${
-            parseFloat(transaction.amount) > 0
-              ? "text-green-500"
-              : "text-red-500"
-          }`}
-        >
-          {transaction.amount
-            ? parseFloat(transaction.amount) > 0
-              ? `+${parseFloat(transaction.amount).toFixed(2)}`
-              : parseFloat(transaction.amount).toFixed(2)
-            : "0.00"}
-        </div>
-        <div className="truncate w-44">
-          {transaction.category || "Uncategorized"}
-        </div>
-        <div className="truncate">{transaction.group_name || "No Group"}</div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
   const { transactions, loading, error, removeTransaction } =
