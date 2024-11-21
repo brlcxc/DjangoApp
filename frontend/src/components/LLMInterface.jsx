@@ -165,6 +165,18 @@ function LLMInterface() {
               title={"Transactions provided by gpt-3.5-turbo"}
             />
           </div>
+          <button
+            className="w-full md:w-auto px-4 py-2 text-lg md:text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+            onClick={() => handleSelectingList(true)}
+          >
+            Select
+          </button>
+          <button
+            className="w-full md:w-auto px-4 py-2 text-lg md:text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
+            onClick={() => handleSelectingList(false)}
+          >
+            Select
+          </button>
         </div>
       )}
       {showTransactionList && !showSelectStage && (
@@ -178,22 +190,6 @@ function LLMInterface() {
           <div className="flex flex-col bg-white p-6 sm:p-8 rounded-xl shadow-lg">
             <TransactionLineChart mergeData={mergeData3} />
           </div>
-        </div>
-      )}
-      {showTransactionList && showSelectStage && (
-        <div className="grid grid-cols-2 w-full gap-8">
-          <button
-            className="w-full md:w-auto px-4 py-2 text-lg md:text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
-            onClick={() => handleSelectingList(true)}
-          >
-            Select
-          </button>
-          <button
-            className="w-full md:w-auto px-4 py-2 text-lg md:text-2xl font-semibold text-white bg-dodger-blue rounded-lg hover:bg-blue-500"
-            onClick={() => handleSelectingList(true)}
-          >
-            Select
-          </button>
         </div>
       )}
 
