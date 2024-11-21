@@ -8,7 +8,7 @@ import { TransactionContext } from "../context/TransactionContext";
 //maybe just mid list return the stuff
 const TransactionRow = ({ transaction }) => (
   <div className="flex w-full">
-    <div>
+    <div className="w-full">
       <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
         <div className="flex items-center w-16">
           <button
@@ -29,7 +29,7 @@ const TransactionRow = ({ transaction }) => (
             ? new Date(transaction.start_date).toLocaleDateString()
             : "N/A"}
         </div>
-        <div className="truncate w-24">
+        <div className="truncate w-32">
           {transaction.description || "No description"}
         </div>
         <div
@@ -45,7 +45,7 @@ const TransactionRow = ({ transaction }) => (
               : parseFloat(transaction.amount).toFixed(2)
             : "0.00"}
         </div>
-        <div className="truncate w-28">
+        <div className="truncate w-44">
           {transaction.category || "Uncategorized"}
         </div>
         <div className="truncate">{transaction.group_name || "No Group"}</div>
@@ -129,25 +129,25 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
           </select>
         </div>
       </div>
-
-      {/* I need to flex row the columsn maybe - what if I want a consistent size - how do I keep that */}
-      <div className="overflow-y-auto	max-h-[390px]">
+      <div>
         <div className="flex flex-row py-2 pl-9 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
-          <div className="text-center w-32">Date</div>
-          <div className="text-center w-28">Description</div>
-          <div className="text-center w-24">Amount</div>
-          <div className="text-center w-16">Category</div>
-          <div className="text-center w-40">Group</div>
+          <div className="text-right w-20">Date</div>
+          <div className="text-right w-36">Description</div>
+          <div className="text-right w-[120px]">Amount</div>
+          <div className="text-right w-24">Category</div>
+          <div className="text-right w-40">Group</div>
         </div>
-        {filteredTransactions && filteredTransactions.length > 0 ? (
-          filteredTransactions.map((transaction, index) => (
-            <TransactionRow key={index} transaction={transaction} />
-          ))
-        ) : (
-          <div className="text-center py-10 text-gray-500">
-            No transactions found
-          </div>
-        )}
+        <div className="overflow-y-auto	max-h-[390px]">
+          {filteredTransactions && filteredTransactions.length > 0 ? (
+            filteredTransactions.map((transaction, index) => (
+              <TransactionRow key={index} transaction={transaction} />
+            ))
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              No transactions found
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
