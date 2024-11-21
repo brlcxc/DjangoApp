@@ -38,7 +38,18 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
           >
             <button
               type="button"
-              onClick={() => onDelete(transaction.transaction_id)} // Pass the transaction ID to onDelete
+              onClick={async () => {
+                const confirmDelete = await new Promise((resolve) => {
+                  const userConfirmed = window.confirm(
+                    "Are you sure you want to delete this transaction?"
+                  );
+                  resolve(userConfirmed);
+                });
+
+                if (confirmDelete) {
+                  onDelete(transaction.transaction_id); // Call onDelete only if confirmed
+                }
+              }}
               className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
             >
               -
