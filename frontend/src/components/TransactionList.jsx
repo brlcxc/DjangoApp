@@ -13,6 +13,8 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
     removeTransaction(transactionId);
   };
 
+  //Note: not currently in use
+  //There is a greater delay when updateTransaction is called in the list
   const handleSaveTransaction = (transactionId, editedTransaction) => {
     updateTransaction(transactionId, editedTransaction);
   };
