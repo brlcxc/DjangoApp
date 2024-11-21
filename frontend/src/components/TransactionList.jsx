@@ -2,12 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { TransactionContext } from "../context/TransactionContext";
 
-const TransactionRow = ({ transaction }) => (
+const TransactionRow = ({ transaction, mergeData }) => (
   <div className="flex w-full">
     <div className="w-full">
       <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
-        {/* TODO: make buttons invisible if merge data isnt empty */}
-        <div className="flex items-center w-16">
+        <div className={`flex items-center w-16 ${
+            mergeData.length > 0
+              ? "invisible"
+              : ""
+          }`}>
           <button
             type="button"
             className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
@@ -137,7 +140,7 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
         <div className="overflow-y-auto	max-h-[390px]">
           {filteredTransactions && filteredTransactions.length > 0 ? (
             filteredTransactions.map((transaction, index) => (
-              <TransactionRow key={index} transaction={transaction} />
+              <TransactionRow key={index} transaction={transaction} mergeData={mergeData}/>
             ))
           ) : (
             <div className="text-center py-10 text-gray-500">
