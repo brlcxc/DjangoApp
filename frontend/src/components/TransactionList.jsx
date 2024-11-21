@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaCheck, FaTimes } from "react-icons/fa";
-import { FaPencil } from "react-icons/fa6";
+import { FaPencil, FaCheck, FaXmark } from "react-icons/fa6";
 import { TransactionContext } from "../context/TransactionContext";
 
 // Note: this still kind of breaks in smaller sizes
@@ -30,7 +29,7 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
   return (
     <div className="flex w-full">
       <div className="w-full">
-        <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-h-[60px]">
+        <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black h-[60px] items-center">
           <div
             className={`flex items-center w-16 ${
               mergeData.length > 0 ? "invisible" : ""
@@ -68,7 +67,7 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
                   onClick={handleEditToggle}
                   className="flex font-bold border-2 border-red-400 text-l size-5 justify-center items-center rounded p-1 focus:outline-none bg-red-100 hover:bg-red-300"
                 >
-                  <FaTimes />
+                  <FaXmark />
                 </button>
               </div>
             ) : (
