@@ -2,14 +2,11 @@ import React, { useState, useEffect, useContext } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { TransactionContext } from "../context/TransactionContext";
 
-// Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
-// for chart it will follow a different form so I will probably need a new chart for that
-
-//maybe just mid list return the stuff
 const TransactionRow = ({ transaction }) => (
   <div className="flex w-full">
     <div className="w-full">
       <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
+        {/* TODO: make buttons invisible if merge data isnt empty */}
         <div className="flex items-center w-16">
           <button
             type="button"
@@ -134,8 +131,8 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
           <div className="text-right w-20">Date</div>
           <div className="text-right w-36">Description</div>
           <div className="text-right w-[120px]">Amount</div>
-          <div className="text-right w-24">Category</div>
-          <div className="text-right w-40">Group</div>
+          <div className="text-right w-[92px]">Category</div>
+          <div className="text-left pl-[120px]">Group</div>
         </div>
         <div className="overflow-y-auto	max-h-[390px]">
           {filteredTransactions && filteredTransactions.length > 0 ? (
