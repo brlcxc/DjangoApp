@@ -2,15 +2,17 @@ import React, { useState, useEffect, useContext } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { TransactionContext } from "../context/TransactionContext";
 
+// Note: this still kind of breaks in smaller sizes
+// It also needs components with relative sizes rather than hard set sizes
 const TransactionRow = ({ transaction, mergeData }) => (
   <div className="flex w-full">
     <div className="w-full">
-      <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
-        <div className={`flex items-center w-16 ${
-            mergeData.length > 0
-              ? "invisible"
-              : ""
-          }`}>
+      <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-h-[60px]">
+        <div
+          className={`flex items-center w-16 ${
+            mergeData.length > 0 ? "invisible" : ""
+          }`}
+        >
           <button
             type="button"
             className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
@@ -129,18 +131,22 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
           </select>
         </div>
       </div>
-      <div>
-        <div className="flex flex-row py-2 pl-9 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[640px] flex flex-row py-2 pl-9 border-b font-semibold text-left bg-dodger-blue text-white">
           <div className="text-right w-20">Date</div>
           <div className="text-right w-36">Description</div>
           <div className="text-right w-[120px]">Amount</div>
           <div className="text-right w-[92px]">Category</div>
           <div className="text-left pl-[120px]">Group</div>
         </div>
-        <div className="overflow-y-auto	max-h-[390px]">
+        <div className="min-w-[640px] overflow-y-auto max-h-[390px]">
           {filteredTransactions && filteredTransactions.length > 0 ? (
             filteredTransactions.map((transaction, index) => (
-              <TransactionRow key={index} transaction={transaction} mergeData={mergeData}/>
+              <TransactionRow
+                key={index}
+                transaction={transaction}
+                mergeData={mergeData}
+              />
             ))
           ) : (
             <div className="text-center py-10 text-gray-500">
