@@ -1,8 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { FaPencil, FaCheck, FaXmark } from "react-icons/fa6";
-import { TransactionContext } from "../context/TransactionContext";
 
-//TODO: It might be best to pass the update transaction back out since it would allow me to remove transaction context from this file
 // Also, just pass a boolean for merge data instead of the whole thing
 // Note: this still kind of breaks in smaller sizes
 // It also needs components with relative sizes rather than hard set sizes
@@ -12,7 +10,6 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
     ...transaction,
   });
 
-  const { updateTransaction } = useContext(TransactionContext);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -27,11 +24,7 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
 
   const handleSave = async () => {
     try {
-      await updateTransaction(
-        editableTransaction.transaction_id,
-        editableTransaction
-      ); // Update the transaction via context
-      onSave(transaction.transaction_id)
+      await onSave(editableTransaction.transaction_id, editableTransaction); // Update the transaction via context
       setIsEditing(false); // Exit edit mode
     } catch (error) {
       console.error("Error saving transaction:", error);

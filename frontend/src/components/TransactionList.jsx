@@ -13,8 +13,8 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
     removeTransaction(transactionId);
   };
 
-  const handleSaveTransaction = (transactionId) => {
-    updateTransaction(transactionId);
+  const handleSaveTransaction = (transactionId, editedTransaction) => {
+    updateTransaction(transactionId, editedTransaction);
   };
 
   useEffect(() => {
