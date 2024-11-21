@@ -4,34 +4,36 @@ import { TransactionContext } from "../context/TransactionContext";
 
 // Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
 // for chart it will follow a different form so I will probably need a new chart for that
+
+//maybe just mid list return the stuff
 const TransactionRow = ({ transaction }) => (
-  <div className="flex">
-    <div className="flex items-center">
-      <button
-        type="button"
-        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
-      >
-        -
-      </button>
-      <button
-        type="button"
-        className="flex font-bold border-2 border-gray-400 text-l mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
-      >
-        <FaPencil />
-      </button>
-    </div>
+  <div className="flex w-full">
     <div>
-      <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
-        <div className="truncate">
+      <div className="flex flex-row py-3 gap-2 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
+        <div className="flex items-center w-16">
+          <button
+            type="button"
+            className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+          >
+            -
+          </button>
+          <button
+            type="button"
+            className="flex font-bold border-2 border-gray-400 text-l mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+          >
+            <FaPencil />
+          </button>
+        </div>
+        <div className="truncate w-24">
           {transaction.start_date
             ? new Date(transaction.start_date).toLocaleDateString()
             : "N/A"}
         </div>
-        <div className="truncate">
+        <div className="truncate w-24">
           {transaction.description || "No description"}
         </div>
         <div
-          className={`truncate ${
+          className={`truncate w-20 ${
             parseFloat(transaction.amount) > 0
               ? "text-green-500"
               : "text-red-500"
@@ -43,7 +45,7 @@ const TransactionRow = ({ transaction }) => (
               : parseFloat(transaction.amount).toFixed(2)
             : "0.00"}
         </div>
-        <div className="truncate">
+        <div className="truncate w-28">
           {transaction.category || "Uncategorized"}
         </div>
         <div className="truncate">{transaction.group_name || "No Group"}</div>
@@ -128,13 +130,14 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
         </div>
       </div>
 
+      {/* I need to flex row the columsn maybe - what if I want a consistent size - how do I keep that */}
       <div className="overflow-y-auto	max-h-[390px]">
-        <div className="grid grid-cols-6 py-2 pl-20 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
-          <div>Date</div>
-          <div>Description</div>
-          <div>Amount</div>
-          <div>Category</div>
-          <div>Group</div>
+        <div className="flex flex-row py-2 pl-9 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
+          <div className="text-center w-32">Date</div>
+          <div className="text-center w-28">Description</div>
+          <div className="text-center w-24">Amount</div>
+          <div className="text-center w-16">Category</div>
+          <div className="text-center w-40">Group</div>
         </div>
         {filteredTransactions && filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
