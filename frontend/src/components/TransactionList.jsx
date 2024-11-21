@@ -1,31 +1,54 @@
 import React, { useState, useEffect, useContext } from "react";
+import { FaPencil } from "react-icons/fa6";
 import { TransactionContext } from "../context/TransactionContext";
 
 // Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
 // for chart it will follow a different form so I will probably need a new chart for that
 const TransactionRow = ({ transaction }) => (
-  <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
-    <div className="truncate">
-      {transaction.start_date
-        ? new Date(transaction.start_date).toLocaleDateString()
-        : "N/A"}
+  <div className="flex">
+    <div className="flex items-center">
+      <button
+        type="button"
+        className="flex font-bold text-white text-l bg-coral mr-3 size-5 justify-center items-center rounded p-1 hover:bg-deep-coral focus:outline-none"
+      >
+        -
+      </button>
+      <button
+        type="button"
+        className="flex font-bold border-2 border-gray-400 text-l mr-3 size-5 justify-center items-center rounded p-1 focus:outline-none"
+      >
+        <FaPencil />
+      </button>
     </div>
-    <div className="truncate">
-      {transaction.description || "No description"}
+    <div>
+      <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
+        <div className="truncate">
+          {transaction.start_date
+            ? new Date(transaction.start_date).toLocaleDateString()
+            : "N/A"}
+        </div>
+        <div className="truncate">
+          {transaction.description || "No description"}
+        </div>
+        <div
+          className={`truncate ${
+            parseFloat(transaction.amount) > 0
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {transaction.amount
+            ? parseFloat(transaction.amount) > 0
+              ? `+${parseFloat(transaction.amount).toFixed(2)}`
+              : parseFloat(transaction.amount).toFixed(2)
+            : "0.00"}
+        </div>
+        <div className="truncate">
+          {transaction.category || "Uncategorized"}
+        </div>
+        <div className="truncate">{transaction.group_name || "No Group"}</div>
+      </div>
     </div>
-    <div
-      className={`truncate ${
-        parseFloat(transaction.amount) > 0 ? "text-green-500" : "text-red-500"
-      }`}
-    >
-      {transaction.amount
-        ? parseFloat(transaction.amount) > 0
-          ? `+${parseFloat(transaction.amount).toFixed(2)}`
-          : parseFloat(transaction.amount).toFixed(2)
-        : "0.00"}
-    </div>
-    <div className="truncate">{transaction.category || "Uncategorized"}</div>
-    <div className="truncate">{transaction.group_name || "No Group"}</div>
   </div>
 );
 
@@ -105,8 +128,8 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
         </div>
       </div>
 
-      <div className="overflow-y-auto max-h-[390px]">
-        <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
+      <div className="overflow-y-auto	max-h-[390px]">
+        <div className="grid grid-cols-6 py-2 pl-20 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
           <div>Date</div>
           <div>Description</div>
           <div>Amount</div>
