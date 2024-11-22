@@ -65,7 +65,6 @@ class TransactionSerializer(serializers.ModelSerializer):
     # allows for the group name of a transaction to be included
     group_name = serializers.CharField(source='group_id.group_name', read_only=True)
 
-
     class Meta:
         model = Transaction
         fields = ["transaction_id", "category", "amount", "description", "start_date", "end_date", "is_recurrent", "frequency", "group_id", "group_name"]

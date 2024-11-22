@@ -43,7 +43,7 @@ const GroupModify = ({ groups = [], onDelete }) => {
     }
   };
 
-  //I need to remove users from the query who are already members or owners
+  //TODO I need to remove users from the query who are already members or owners
   //I can compare the two queries
   const handleUserSearch = (e) => {
     const query = e.target.value;

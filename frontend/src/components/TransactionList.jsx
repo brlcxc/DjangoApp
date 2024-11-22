@@ -1,39 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import { TransactionContext } from "../context/TransactionContext";
-
-// Since transaction context is already in the list I might pass a var which can provide data and merge it with the data here
-// for chart it will follow a different form so I will probably need a new chart for that
-const TransactionRow = ({ transaction }) => (
-  <div className="grid grid-cols-5 py-3 pl-2 border-b hover:bg-gray-100 transition text-black min-w-[640px] min-h-[60px]">
-    <div className="truncate">
-      {transaction.start_date
-        ? new Date(transaction.start_date).toLocaleDateString()
-        : "N/A"}
-    </div>
-    <div className="truncate">
-      {transaction.description || "No description"}
-    </div>
-    <div
-      className={`truncate ${
-        parseFloat(transaction.amount) > 0 ? "text-green-500" : "text-red-500"
-      }`}
-    >
-      {transaction.amount
-        ? parseFloat(transaction.amount) > 0
-          ? `+${parseFloat(transaction.amount).toFixed(2)}`
-          : parseFloat(transaction.amount).toFixed(2)
-        : "0.00"}
-    </div>
-    <div className="truncate">{transaction.category || "Uncategorized"}</div>
-    <div className="truncate">{transaction.group_name || "No Group"}</div>
-  </div>
-);
+import TransactionRow from "./TransactionRow.jsx"
 
 const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
-  const { transactions, loading, error } = useContext(TransactionContext);
+  const { transactions, loading, error, removeTransaction, updateTransaction } =
+    useContext(TransactionContext);
   const [categories, setCategories] = useState(["Direct Payment", "Deposit"]);
   const [filterType, setFilterType] = useState("All");
   const [sortOption, setSortOption] = useState("date");
+
+  const handleDeleteTransaction = (transactionId) => {
+    removeTransaction(transactionId);
+  };
+
+  //Note: not currently in use
+  //There is a greater delay when updateTransaction is called in the list
+  const handleSaveTransaction = (transactionId, editedTransaction) => {
+    updateTransaction(transactionId, editedTransaction);
+  };
 
   useEffect(() => {
     if (transactions && transactions.length > 0) {
@@ -104,24 +88,31 @@ const TransactionList = ({ mergeData = [], title = "Transaction List" }) => {
           </select>
         </div>
       </div>
-
-      <div className="overflow-y-auto max-h-[390px]">
-        <div className="grid grid-cols-5 p-2 border-b font-semibold text-left bg-dodger-blue text-white min-w-[640px]">
-          <div>Date</div>
-          <div>Description</div>
-          <div>Amount</div>
-          <div>Category</div>
-          <div>Group</div>
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[640px] flex flex-row py-2 pl-9 border-b font-semibold text-left bg-dodger-blue text-white">
+          <div className="text-right w-20">Date</div>
+          <div className="text-right w-36">Description</div>
+          <div className="text-right w-[120px]">Amount</div>
+          <div className="text-right w-[92px]">Category</div>
+          <div className="text-left pl-[120px]">Group</div>
         </div>
-        {filteredTransactions && filteredTransactions.length > 0 ? (
-          filteredTransactions.map((transaction, index) => (
-            <TransactionRow key={index} transaction={transaction} />
-          ))
-        ) : (
-          <div className="text-center py-10 text-gray-500">
-            No transactions found
-          </div>
-        )}
+        <div className="min-w-[640px] overflow-y-auto max-h-[390px]">
+          {filteredTransactions && filteredTransactions.length > 0 ? (
+            filteredTransactions.map((transaction, index) => (
+              <TransactionRow
+                key={index}
+                transaction={transaction}
+                mergeData={mergeData}
+                onDelete={handleDeleteTransaction}
+                onSave={handleSaveTransaction}
+              />
+            ))
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              No transactions found
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
