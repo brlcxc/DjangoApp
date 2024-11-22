@@ -11,8 +11,7 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
   const [editableTransaction, setEditableTransaction] = useState({
     ...transaction,
   });
-  const { updateTransaction } =
-    useContext(TransactionContext);
+  const { updateTransaction } = useContext(TransactionContext);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -27,7 +26,10 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
 
   const handleSave = async () => {
     try {
-      await updateTransaction(editableTransaction.transaction_id, editableTransaction); // Update the transaction via context
+      await updateTransaction(
+        editableTransaction.transaction_id,
+        editableTransaction
+      ); // Update the transaction via context
       setIsEditing(false); // Exit edit mode
     } catch (error) {
       console.error("Error saving transaction:", error);
@@ -92,7 +94,13 @@ const TransactionRow = ({ transaction, mergeData, onDelete, onSave }) => {
             {isEditing ? (
               <input
                 type="date"
-                value={editableTransaction.start_date || ""}
+                value={
+                  editableTransaction.start_date
+                    ? new Date(editableTransaction.start_date)
+                        .toISOString()
+                        .split("T")[0]
+                    : ""
+                }
                 onChange={(e) =>
                   handleInputChange("start_date", e.target.value)
                 }
