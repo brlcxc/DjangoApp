@@ -1,18 +1,34 @@
 import { FaHouse, FaGear, FaUser, FaUserGroup, FaRegCalendarPlus, FaChartLine, FaDollarSign, FaDoorOpen, FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-  
+import { ONBOARDING_COMPLETION } from "../constants";
+
 function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
   const navigate = useNavigate();
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const handleOnboarding = () => {
+    const onboardingCompleted = localStorage.getItem(ONBOARDING_COMPLETION);
+    if (true) {
+      toggleModal
+    }
+}
+
+const completeOnboarding = () => {
+  localStorage.setItem(ON_BOARDING_COMPLETION, 'true');
+};
+
   const handleLogout = () => {
     localStorage.clear();
     navigate("/logout");
   };
   
   return (
+    <div className="">
     <div className="flex">
       {/* Sidebar */}
       <div
@@ -42,6 +58,12 @@ function NavBar({ setActivePage }) {
       >
         <FaBars size={iconSize} />
       </button>
+    </div>
+    {true && (
+    <div
+    className="fixed inset-0 bg-slate-500 bg-opacity-40 z-40"
+    ></div>
+  )}
     </div>
   );
 }
