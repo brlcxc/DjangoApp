@@ -14,11 +14,14 @@ const GroupAdd = () => {
 
   const { addGroup } = useContext(GroupContext);
 
+  const uuid = localStorage.getItem("USER_ID");
+
   const fetchUsers = async (query) => {
     if (!query) {
       setUserResults([]);
       return;
     }
+    const uuid = localStorage.getItem("USER_ID");
 
     setLoadingUsers(true);
     try {
@@ -26,7 +29,11 @@ const GroupAdd = () => {
       const filteredResults = response.data.filter(
         (user) =>
           user.display_name.toLowerCase().includes(query.toLowerCase()) ||
-          user.email.toLowerCase().includes(query.toLowerCase())
+          user.email.toLowerCase().includes(query.toLowerCase())&&
+          // Exclude users already selected
+          !selectedUsers.some((selectedUser) => selectedUser.id === user.id)&&
+          // Exclude current user
+          (user.id !== uuid)
       );
 
       setUserResults(filteredResults);
