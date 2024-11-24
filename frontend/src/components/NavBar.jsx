@@ -138,16 +138,23 @@ function NavBar({ setActivePage }) {
   );
 }
 
-const NavBarIcon = ({ icon, text, onboardingText, onClick, isOnboarding, onNext }) => {
+const NavBarIcon = ({
+  icon,
+  text,
+  onboardingText,
+  onClick,
+  isOnboarding,
+  onNext,
+}) => {
   return (
     <div className="nav-button group" onClick={onClick}>
       {icon}
       {isOnboarding && (
-        <div className="tooltip scale-100 flex flex-row gap-2 justify-between items-center">
-          <div>{onboardingText}</div>
+        <div className="tooltip scale-100 justify-between items-center">
+          <div className="w-64">{onboardingText}</div>
           <button
             type="button"
-            className="pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
+            className="float-end pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
             onClick={(e) => {
               e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
               onNext();
