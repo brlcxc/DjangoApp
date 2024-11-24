@@ -16,9 +16,12 @@ function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(true);
   const [currentTooltip, setCurrentTooltip] = useState(0); // State for current tooltip
 
+  const onboardingCompletion = localStorage.getItem(ONBOARDING_COMPLETION);
+  const [isModalOpen, setIsModalOpen] = useState(onboardingCompletion === "false");
+
+  console.log(onboardingCompletion)
   const handleNextTooltip = () => {
     if ((currentTooltip < 6) && isModalOpen) {
       // Assuming 7 icons in total
@@ -27,6 +30,7 @@ function NavBar({ setActivePage }) {
       // End onboarding
       setCurrentTooltip(-1); // Set to -1 if no tooltip should be visible
       localStorage.setItem(ONBOARDING_COMPLETION, "true");
+      toggleModal;
     }
   };
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -125,9 +129,9 @@ function NavBar({ setActivePage }) {
           <FaBars size={iconSize} />
         </button>
       </div>
-      {false && (
-        <div className="fixed inset-0 bg-slate-900 bg-opacity-40 z-40"></div>
-      )}
+      {/* {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900 bg-opacity-40 z-40 fade-in"></div>
+      )} */}
     </div>
   );
 }
