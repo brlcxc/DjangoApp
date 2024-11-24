@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ONBOARDING_COMPLETION } from "../constants";
 
+//The hover does not return after the onboarding text is done
+//modal fade starts black then refades
 function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
@@ -19,11 +21,13 @@ function NavBar({ setActivePage }) {
   const [currentTooltip, setCurrentTooltip] = useState(0); // State for current tooltip
 
   const onboardingCompletion = localStorage.getItem(ONBOARDING_COMPLETION);
-  const [isModalOpen, setIsModalOpen] = useState(onboardingCompletion === "false");
+  const [isModalOpen, setIsModalOpen] = useState(
+    onboardingCompletion === "false"
+  );
 
-  console.log(onboardingCompletion)
+  console.log(onboardingCompletion);
   const handleNextTooltip = () => {
-    if ((currentTooltip < 6) && isModalOpen) {
+    if (currentTooltip < 6 && isModalOpen) {
       // Assuming 7 icons in total
       setCurrentTooltip(currentTooltip + 1);
     } else {
