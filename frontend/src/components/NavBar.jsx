@@ -16,11 +16,11 @@ function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [currentTooltip, setCurrentTooltip] = useState(0); // State for current tooltip
 
   const handleNextTooltip = () => {
-    if (currentTooltip < 6) {
+    if ((currentTooltip < 6) && isModalOpen) {
       // Assuming 7 icons in total
       setCurrentTooltip(currentTooltip + 1);
     } else {
@@ -30,19 +30,6 @@ function NavBar({ setActivePage }) {
     }
   };
   const toggleModal = () => setIsModalOpen(!isModalOpen);
-
-  const handleOnboarding = () => {
-    const onboardingCompleted = localStorage.getItem(ONBOARDING_COMPLETION);
-    if (true) {
-      toggleModal;
-    }
-  };
-
-  // maybe slight pause before modal is active and then fade to it
-
-  const completeOnboarding = () => {
-    localStorage.setItem(ON_BOARDING_COMPLETION, "true");
-  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -66,6 +53,7 @@ function NavBar({ setActivePage }) {
             onClick={() => setActivePage("Welcome")}
             isOnboarding={currentTooltip === 0}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
           <NavBarIcon
             icon={<FaDollarSign size={iconSize} />}
@@ -74,6 +62,7 @@ function NavBar({ setActivePage }) {
             onClick={() => setActivePage("Budget")}
             isOnboarding={currentTooltip === 1}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
           <NavBarIcon
             icon={<FaRegCalendarPlus size={iconSize} />}
@@ -82,6 +71,7 @@ function NavBar({ setActivePage }) {
             onClick={() => setActivePage("Calendar")}
             isOnboarding={currentTooltip === 2}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
           <NavBarIcon
             icon={<FaChartLine size={iconSize} />}
@@ -90,6 +80,7 @@ function NavBar({ setActivePage }) {
             onClick={() => setActivePage("AI Analytics")}
             isOnboarding={currentTooltip === 3}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
           <NavBarIcon
             icon={<FaUserGroup size={iconSize} />}
@@ -98,6 +89,7 @@ function NavBar({ setActivePage }) {
             onClick={() => setActivePage("Groups")}
             isOnboarding={currentTooltip === 4}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
           <NavBarIcon
             icon={<FaUser size={iconSize} />}
@@ -106,6 +98,7 @@ function NavBar({ setActivePage }) {
             onClick={() => setActivePage("User")}
             isOnboarding={currentTooltip === 5}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
           <NavBarIcon
             icon={<FaDoorOpen size={iconSize} />}
@@ -114,6 +107,7 @@ function NavBar({ setActivePage }) {
             onClick={handleLogout}
             isOnboarding={currentTooltip === 6}
             onNext={handleNextTooltip}
+            isModalOpen={isModalOpen}
           />
         </div>
 
@@ -131,9 +125,9 @@ function NavBar({ setActivePage }) {
           <FaBars size={iconSize} />
         </button>
       </div>
-      {/* {true && (
-        <div className="fixed inset-0 bg-slate-900 bg-opacity-40 z-40 fade-in"></div>
-      )} */}
+      {false && (
+        <div className="fixed inset-0 bg-slate-900 bg-opacity-40 z-40"></div>
+      )}
     </div>
   );
 }
@@ -145,24 +139,29 @@ const NavBarIcon = ({
   onClick,
   isOnboarding,
   onNext,
+  isModalOpen,
 }) => {
   return (
     <div className="nav-button group" onClick={onClick}>
       {icon}
-      {isOnboarding && (
-        <div className="tooltip scale-100 justify-between items-center">
-          <div className="w-64">{onboardingText}</div>
-          <button
-            type="button"
-            className="float-end pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
-              onNext();
-            }}
-          >
-            Next
-          </button>
-        </div>
+      {!isModalOpen ? (
+        <span className="tooltip group-hover:scale-100">{text}</span>
+      ) : (
+        isOnboarding && (
+          <div className="tooltip scale-100 justify-between items-center">
+            <div className="w-64">{onboardingText}</div>
+            <button
+              type="button"
+              className="float-end pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
+                onNext();
+              }}
+            >
+              Next
+            </button>
+          </div>
+        )
       )}
     </div>
   );
