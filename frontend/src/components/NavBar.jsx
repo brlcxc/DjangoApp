@@ -62,7 +62,7 @@ function NavBar({ setActivePage }) {
           <NavBarIcon
             icon={<FaHouse size={iconSize} />}
             text="Home"
-            onboardingText="Welcome to Home"
+            onboardingText="Welcome page"
             onClick={() => setActivePage("Welcome")}
             isOnboarding={currentTooltip === 0}
             onNext={handleNextTooltip}
@@ -70,7 +70,7 @@ function NavBar({ setActivePage }) {
           <NavBarIcon
             icon={<FaDollarSign size={iconSize} />}
             text="Budget"
-            onboardingText="Manage your budgets"
+            onboardingText="Budget: adding and removing transactions in groups with graphical representations"
             onClick={() => setActivePage("Budget")}
             isOnboarding={currentTooltip === 1}
             onNext={handleNextTooltip}
@@ -78,7 +78,7 @@ function NavBar({ setActivePage }) {
           <NavBarIcon
             icon={<FaRegCalendarPlus size={iconSize} />}
             text="Calendar"
-            onboardingText="Organize your schedule"
+            onboardingText="Calendar: chronology transaction representation"
             onClick={() => setActivePage("Calendar")}
             isOnboarding={currentTooltip === 2}
             onNext={handleNextTooltip}
@@ -86,15 +86,15 @@ function NavBar({ setActivePage }) {
           <NavBarIcon
             icon={<FaChartLine size={iconSize} />}
             text="Analytics"
-            onboardingText="View analytics"
-            onClick={() => setActivePage("AI")}
+            onboardingText="AI Analytics: provides proactive, situational, budgeting suggestions"
+            onClick={() => setActivePage("AI Analytics")}
             isOnboarding={currentTooltip === 3}
             onNext={handleNextTooltip}
           />
           <NavBarIcon
             icon={<FaUserGroup size={iconSize} />}
             text="Groups"
-            onboardingText="Collaborate in groups"
+            onboardingText="Groups: modifying and creating groups"
             onClick={() => setActivePage("Groups")}
             isOnboarding={currentTooltip === 4}
             onNext={handleNextTooltip}
@@ -102,7 +102,7 @@ function NavBar({ setActivePage }) {
           <NavBarIcon
             icon={<FaUser size={iconSize} />}
             text="User Profile"
-            onboardingText="Manage your profile"
+            onboardingText="User Profile: location for changing user information and application settings"
             onClick={() => setActivePage("User")}
             isOnboarding={currentTooltip === 5}
             onNext={handleNextTooltip}
