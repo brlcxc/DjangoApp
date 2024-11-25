@@ -25,22 +25,22 @@ function NavBar({ setActivePage }) {
     onboardingCompletion === "false"
   );
 
-  // I could lock page access, I could stop when another page is selected, or I could allow the user to continue through - how do i stop though (maybe end walkthrough button?)? 
+  // I could lock page access, I could stop when another page is selected, or I could allow the user to continue through - how do i stop though (maybe end walkthrough button?)?
   console.log(onboardingCompletion);
 
   const pageRoutes = [
-    "Budget",          // Home
-    "Calendar",    // Budget
-    "AI",  // Calendar
-    "Groups",        // AI Analytics
-    "User",    // Groups
-    "Welcome",    // Logout
+    "Budget", // Home
+    "Calendar", // Budget
+    "AI", // Calendar
+    "Groups", // AI Analytics
+    "User", // Groups
+    "Welcome", // Logout
   ];
-  
+
   const handleNextTooltip = () => {
     if (currentTooltip < 6 && isModalOpen) {
       // Navigate to the next page
-      // setActivePage(pageRoutes[currentTooltip]); 
+      // setActivePage(pageRoutes[currentTooltip]);
       setCurrentTooltip(currentTooltip + 1);
     } else {
       // End onboarding
@@ -131,8 +131,8 @@ function NavBar({ setActivePage }) {
           />
         </div>
         <div className="flex-1 ml-0 md:ml-24">
-        {/* Page content goes here */}
-      </div>
+          {/* Page content goes here */}
+        </div>
         {/* Toggle Button - Visible only on mobile */}
         <button
           className="text-white p-3 fixed bottom-3 right-5 z-50 md:hidden bg-lavender rounded-full"
@@ -166,16 +166,28 @@ const NavBarIcon = ({
         isOnboarding && (
           <div className="tooltip scale-100 justify-between items-center">
             <div className="w-64">{onboardingText}</div>
-            <button
-              type="button"
-              className="float-end pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
-                onNext();
-              }}
-            >
-              Next
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="float-end pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
+                  onNext();
+                }}
+              >
+                Next
+              </button>
+              <button
+                type="button"
+                className="float-end pointer-events-auto bg-deep-sky-blue py-1 px-2 rounded-md"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
+                  onNext();
+                }}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )
       )}
