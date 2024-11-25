@@ -13,7 +13,7 @@ import { useState } from "react";
 import { ONBOARDING_COMPLETION } from "../constants";
 
 //The hover does not return after the onboarding text is done
-//modal fade starts black then refades
+//modal fade starts black then fades again
 function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
@@ -25,16 +25,28 @@ function NavBar({ setActivePage }) {
     onboardingCompletion === "false"
   );
 
+  // I could lock page access, I could stop when another page is selected, or I could allow the user to continue through - how do i stop though (maybe end walkthrough button?)? 
   console.log(onboardingCompletion);
+
+  const pageRoutes = [
+    "Budget",          // Home
+    "Calendar",    // Budget
+    "AI",  // Calendar
+    "Groups",        // AI Analytics
+    "User",    // Groups
+    "Welcome",    // Logout
+  ];
+  
   const handleNextTooltip = () => {
     if (currentTooltip < 6 && isModalOpen) {
-      // Assuming 7 icons in total
+      // Navigate to the next page
+      // setActivePage(pageRoutes[currentTooltip]); 
       setCurrentTooltip(currentTooltip + 1);
     } else {
       // End onboarding
       setCurrentTooltip(-1); // Set to -1 if no tooltip should be visible
       localStorage.setItem(ONBOARDING_COMPLETION, "true");
-      toggleModal;
+      toggleModal();
     }
   };
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -83,9 +95,9 @@ function NavBar({ setActivePage }) {
           />
           <NavBarIcon
             icon={<FaChartLine size={iconSize} />}
-            text="Analytics"
+            text="AI Analytics"
             onboardingText="AI Analytics: provides proactive, situational, budgeting suggestions"
-            onClick={() => setActivePage("AI Analytics")}
+            onClick={() => setActivePage("AI")}
             isOnboarding={currentTooltip === 3}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
@@ -118,13 +130,9 @@ function NavBar({ setActivePage }) {
             isModalOpen={isModalOpen}
           />
         </div>
-
-        {/* logout: for signing out of the application */}
-        {/* Page Content */}
         <div className="flex-1 ml-0 md:ml-24">
-          {/* Page content goes here */}
-        </div>
-
+        {/* Page content goes here */}
+      </div>
         {/* Toggle Button - Visible only on mobile */}
         <button
           className="text-white p-3 fixed bottom-3 right-5 z-50 md:hidden bg-lavender rounded-full"
@@ -176,3 +184,5 @@ const NavBarIcon = ({
 };
 
 export default NavBar;
+
+// end walkthrough button as well

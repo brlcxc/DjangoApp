@@ -15,13 +15,27 @@ input:invalid {
     transition-all duration-300 ease-linear cursor-pointer;
   }
   .tooltip{
-    @apply absolute w-auto p-2 m-2 min-w-max left-24 rounded-md shadow-md
+    @apply absolute inline-block w-auto p-2 m-2 min-w-max left-24 rounded-md shadow-md
     text-white bg-dodger-blue text-lg font-bold transition-all duration-100
     scale-0 origin-left border-white border;
 
     z-index: 1000;
     pointer-events: none;
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in forwards;
+  animation-delay: 1s; /* Delay the fade-in by 1 second */
 }
 
 @layer utilities {
