@@ -74,6 +74,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 0}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
           <NavBarIcon
             icon={<FaDollarSign size={iconSize} />}
@@ -83,6 +84,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 1}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
           <NavBarIcon
             icon={<FaRegCalendarPlus size={iconSize} />}
@@ -92,6 +94,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 2}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
           <NavBarIcon
             icon={<FaChartLine size={iconSize} />}
@@ -101,6 +104,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 3}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
           <NavBarIcon
             icon={<FaUserGroup size={iconSize} />}
@@ -110,6 +114,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 4}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
           <NavBarIcon
             icon={<FaUser size={iconSize} />}
@@ -119,6 +124,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 5}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
           <NavBarIcon
             icon={<FaDoorOpen size={iconSize} />}
@@ -128,6 +134,7 @@ function NavBar({ setActivePage }) {
             isOnboarding={currentTooltip === 6}
             onNext={handleNextTooltip}
             isModalOpen={isModalOpen}
+            setCurrentTooltip={setCurrentTooltip}
           />
         </div>
         <div className="flex-1 ml-0 md:ml-24">
@@ -156,6 +163,7 @@ const NavBarIcon = ({
   isOnboarding,
   onNext,
   isModalOpen,
+  setCurrentTooltip,
 }) => {
   return (
     <div className="nav-button group" onClick={onClick}>
@@ -169,13 +177,14 @@ const NavBarIcon = ({
             <div className="flex gap-2">
               <button
                 type="button"
-                className="float-end pointer-events-auto ml-auto bg-deep-sky-blue py-1 px-2 rounded-md"
+                className="float-end pointer-events-auto ml-auto py-1 px-2 rounded-md bg-coral hover:bg-deep-coral"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent triggering onClick of NavBarIcon
-                  onNext();
+                  setCurrentTooltip(-1); // Set to -1 if no tooltip should be visible
+                  localStorage.setItem(ONBOARDING_COMPLETION, "true");
                 }}
               >
-                Next
+                End
               </button>
               <button
                 type="button"
