@@ -62,6 +62,19 @@ function NavBar({ setActivePage }) {
 
   return (
     <div className="">
+      {/* Help Button */}
+      <button
+        className="fixed right-4 text-white bg-deep-sky-blue text-lg px-4 rounded-b-md shadow-md font-lg hover:bg-coral transition"
+        onClick={() => {
+          // Restart onboarding process
+          localStorage.setItem(ONBOARDING_COMPLETION, "false");
+          localStorage.setItem("currentTooltip", "0");
+          setCurrentTooltip(0); // Reset tooltip to the first step
+          setIsModalOpen(true); // Reopen the modal
+        }}
+      >
+        Help
+      </button>
       <div className="flex">
         {/* Sidebar */}
         <div
