@@ -64,7 +64,7 @@ function NavBar({ setActivePage }) {
     <div className="">
       {/* Help Button */}
       <button
-        className="fixed right-4 text-white bg-deep-sky-blue text-lg px-4 rounded-b-md shadow-md font-lg hover:bg-coral transition"
+        className="fixed right-8 text-white bg-dodger-blue text-xl font-semibold px-5 rounded-b-md shadow-md font-lg hover:bg-coral transition"
         onClick={() => {
           // Restart onboarding process
           localStorage.setItem(ONBOARDING_COMPLETION, "false");
@@ -73,7 +73,7 @@ function NavBar({ setActivePage }) {
           setIsModalOpen(true); // Reopen the modal
         }}
       >
-        Help
+        Help?
       </button>
       <div className="flex">
         {/* Sidebar */}
@@ -165,9 +165,6 @@ function NavBar({ setActivePage }) {
           <FaBars size={iconSize} />
         </button>
       </div>
-      {/* {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900 bg-opacity-40 z-40 fade-in"></div>
-      )} */}
     </div>
   );
 }
@@ -222,5 +219,3 @@ const NavBarIcon = ({
 };
 
 export default NavBar;
-
-// end walkthrough button as well
