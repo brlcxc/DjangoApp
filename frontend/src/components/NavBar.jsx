@@ -12,8 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ONBOARDING_COMPLETION } from "../constants";
 
-//The hover does not return after the onboarding text is done
-//modal fade starts black then fades again
+//TODO: The hover does not return if onboarding is ended partway through
+//TODO: Maybe the page can be switched to during the onboarding
 function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
@@ -26,21 +26,11 @@ function NavBar({ setActivePage }) {
   const [isModalOpen, setIsModalOpen] = useState(
     onboardingCompletion === "false"
   );
+
   useEffect(() => {
     // Save currentTooltip to localStorage whenever it changes
     localStorage.setItem("currentTooltip", currentTooltip);
   }, [currentTooltip]);
-  // I could lock page access, I could stop when another page is selected, or I could allow the user to continue through - how do i stop though (maybe end walkthrough button?)?
-  console.log(onboardingCompletion);
-
-  const pageRoutes = [
-    "Budget", // Home
-    "Calendar", // Budget
-    "AI", // Calendar
-    "Groups", // AI Analytics
-    "User", // Groups
-    "Welcome", // Logout
-  ];
 
   const handleNextTooltip = () => {
     if (currentTooltip < 6 && isModalOpen) {
@@ -53,6 +43,7 @@ function NavBar({ setActivePage }) {
       toggleModal();
     }
   };
+
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const handleLogout = () => {
