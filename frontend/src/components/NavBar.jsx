@@ -9,7 +9,7 @@ import {
   FaBars,
 } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ONBOARDING_COMPLETION } from "../constants";
 
 //The hover does not return after the onboarding text is done
@@ -18,13 +18,18 @@ function NavBar({ setActivePage }) {
   const [isOpen, setIsOpen] = useState(false); // State to track nav visibility
   const iconSize = "36";
   const navigate = useNavigate();
-  const [currentTooltip, setCurrentTooltip] = useState(0); // State for current tooltip
-
+  const savedTooltip = localStorage.getItem("currentTooltip");
+  const [currentTooltip, setCurrentTooltip] = useState(
+    savedTooltip !== null ? parseInt(savedTooltip, 10) : 0
+  );
   const onboardingCompletion = localStorage.getItem(ONBOARDING_COMPLETION);
   const [isModalOpen, setIsModalOpen] = useState(
     onboardingCompletion === "false"
   );
-
+  useEffect(() => {
+    // Save currentTooltip to localStorage whenever it changes
+    localStorage.setItem("currentTooltip", currentTooltip);
+  }, [currentTooltip]);
   // I could lock page access, I could stop when another page is selected, or I could allow the user to continue through - how do i stop though (maybe end walkthrough button?)?
   console.log(onboardingCompletion);
 
@@ -39,13 +44,12 @@ function NavBar({ setActivePage }) {
 
   const handleNextTooltip = () => {
     if (currentTooltip < 6 && isModalOpen) {
-      // Navigate to the next page
-      // setActivePage(pageRoutes[currentTooltip]);
       setCurrentTooltip(currentTooltip + 1);
     } else {
       // End onboarding
       setCurrentTooltip(-1); // Set to -1 if no tooltip should be visible
       localStorage.setItem(ONBOARDING_COMPLETION, "true");
+      localStorage.removeItem("currentTooltip");
       toggleModal();
     }
   };
