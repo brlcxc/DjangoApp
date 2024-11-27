@@ -3,6 +3,7 @@ import React, { useState, useContext } from "react";
 import { GroupContext } from "../context/GroupContext";
 import api from "../api";
 
+//I need to move search along with other functions to their own file
 const GroupModify = ({ groups = [], onDelete }) => {
   const { selectedGroup, toggleSelectedGroup } = useSelectedGroup();
   const [groupName, setGroupName] = useState("");
@@ -31,7 +32,11 @@ const GroupModify = ({ groups = [], onDelete }) => {
       const filteredResults = response.data.filter(
         (user) =>
           user.display_name.toLowerCase().includes(query.toLowerCase()) ||
-          user.email.toLowerCase().includes(query.toLowerCase())
+          user.email.toLowerCase().includes(query.toLowerCase())&&
+          // Exclude users already selected
+          !selectedUsers.some((selectedUser) => selectedUser.id === user.id)&&
+          // Exclude current user
+          (user.id !== uuid)
       );
 
       setUserResults(filteredResults);
