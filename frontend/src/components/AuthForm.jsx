@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import { ACCESS_TOKEN, REFRESH_TOKEN, ONBOARDING_COMPLETION } from "../constants";
 
 export default function AuthForm({ route, isRegistration }) {
   const [email, setEmail] = useState("");
@@ -36,6 +36,7 @@ export default function AuthForm({ route, isRegistration }) {
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
         navigate("/");
       } else {
+        localStorage.setItem(ONBOARDING_COMPLETION, 'false');
         navigate("/login");
       }
     } catch (error) {
