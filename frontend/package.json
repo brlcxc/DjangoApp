@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "9.108",
     "@react-three/fiber": "8.16",
+    "@react-three/rapier": "1.4",
     "axios": "^1.7.7",
     "chart.js": "^4.4.5",
     "chartjs-plugin-annotation": "^3.1.0",
