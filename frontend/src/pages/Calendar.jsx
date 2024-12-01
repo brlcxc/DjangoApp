@@ -22,35 +22,30 @@ function Calendar() {
   return (
     <div className="size-full p-8 bg-custom-gradient animate-gradient">
       <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={()=>handleAdjacentMonth(false)}
-          className="bg-gray-200 p-2 rounded hover:bg-gray-300"
-        >
+        
+        <button onClick={()=>handleAdjacentMonth(false)} className="bg-gray-200 p-2 rounded hover:bg-gray-300">
           &lt; Prev
         </button>
-        <select
-          value={currentMonthIndex}
-          onChange={handleMonthSelect}
-          className="bg-white border border-gray-300 rounded p-2"
-        >
+        
+        <select value={currentMonthIndex} onChange={handleMonthSelect} className="bg-white border border-gray-300 rounded p-2">
           {Array.from({ length: 12 }, (_, i) => (
             <option key={i} value={i}>
               {dayjs(new Date(dayjs().year(), i)).format("MMMM")}
             </option>
           ))}
         </select>
-        <button
-          onClick={()=>handleAdjacentMonth(true)}
-          className="bg-gray-200 p-2 rounded hover:bg-gray-300"
-        >
+        
+        <button onClick={()=>handleAdjacentMonth(true)} className="bg-gray-200 p-2 rounded hover:bg-gray-300">
           Next &gt;
         </button>
       </div>
+      
       <div className="size-full flex bg-white rounded-xl">
         <div className="size-full flex p-4">
           <Month month={currentMonth} />
         </div>
       </div>
+    
     </div>
   );
 }
