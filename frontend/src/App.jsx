@@ -4,6 +4,7 @@ import Register from "./routes/Register";
 import NotFound from "./routes/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./routes/Dashboard";
+import Homepage from "./pages/Homepage";
 
 function Logout() {
   localStorage.clear();
