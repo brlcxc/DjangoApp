@@ -18,23 +18,22 @@ function RegisterAndLogout() {
 
 function App() {
   return (
-    <Homepage />
-    // <HashRouter>
-    //   <Routes>
-    //     <Route
-    //       path="/"
-    //       element={
-    //         <ProtectedRoute>
-    //           <Dashboard />
-    //         </ProtectedRoute>
-    //       }
-    //     />
-    //     <Route path="/login" element={<Login />} />
-    //     <Route path="/logout" element={<Logout />} />
-    //     <Route path="/register" element={<RegisterAndLogout />} />
-    //     <Route path="*" element={<NotFound />} />
-    //   </Routes>
-    // </HashRouter>
+    <HashRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/register" element={<RegisterAndLogout />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </HashRouter>
   );
 }
 
