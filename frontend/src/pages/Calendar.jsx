@@ -29,6 +29,12 @@ function Calendar() {
     setCurrentWeek(newMonth[0]);
   }
 
+  const handleAdjacentWeek = (isNext) => {
+    const currentWeekIndex = currentMonth.findIndex((week)=>week[0].isSame(currentWeek[0],"day"));
+    const newWeekIndex = isNext ? (currentWeekIndex + 1) % currentMonth.length : (currentWeekIndex - 1 + currentMonth.length) % currentMonth.length;
+    setCurrentWeek(currentMonth[newWeekIndex]);
+  }
+
   return (
     <div className="size-full p-8 bg-custom-gradient animate-gradient">
       <div className="flex justify-between items-center mb-4">
