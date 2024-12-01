@@ -9,18 +9,20 @@ export default function AuthForm({ route, isRegistration }) {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrors({});
   
     try {
       const requestData = { email, password };
   
       if (isRegistration) {
         if (password !== passwordConfirm) {
-          alert("Passwords do not match");
+          setErrors({passwordConfirm: "Passwords do not match"});
           setLoading(false);
           return;
         }
@@ -40,19 +42,27 @@ export default function AuthForm({ route, isRegistration }) {
       }
     } catch (error) {
       if (error.response) {
-        // Check if the error is field-specific
-        const errors = error.response.data;
-    
-        // Collect all field-specific error messages
-        const errorMessages = Object.keys(errors)
-          .map((field) => `${field}: ${errors[field].join(", ")}`)
-          .join("\n");
-    
-        alert(`Error:\n${errorMessages}`);
+        console.error("API Response Error:", error.response.data);
+        const apiErrors = error.response.data;
+        const newErrors = {};
+
+        for (const [field, messages] of Object.entries(apiErrors)) {
+          if (field === "non_field_errors") {
+            newErrors.general = messages.join(", ");
+          } else if (field === "detail"){
+            newErrors.general = messages;
+          } else if (Array.isArray(messages)) {
+            newErrors[field] = messages.join(", ");
+          } else{
+            newErrors[field] = messages;
+          }
+        }
+
+        setErrors(newErrors);
       } else if (error.request) {
-        alert("No response received from the server. Please try again.");
+        setErrors({ general: "No response received from the server. Please try again." });
       } else {
-        alert(`Error: ${error.message}`);
+        setErrors({ general: `Error: ${error.message}` });
       }
     } finally {
       setLoading(false);}
@@ -71,14 +81,15 @@ export default function AuthForm({ route, isRegistration }) {
 
         {/* Email Input Field */}
         <div className="flex flex-col py-2">
-        <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="border-2 rounded-xl p-2 placeholder:italic placeholder:text-slate-800 outline-none border-gray-500 placeholder-gray-500"
-            placeholder="Email"
-        />
+          <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="border-2 rounded-xl p-2 placeholder:italic placeholder:text-slate-800 outline-none border-gray-500 placeholder-gray-500"
+              placeholder="Email"
+          />
+          {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
         </div>
 
         {/* Display Name Field for Registration */}
@@ -92,19 +103,21 @@ export default function AuthForm({ route, isRegistration }) {
             className="border-2 rounded-xl p-2 placeholder:italic placeholder:text-slate-800 outline-none border-gray-500 placeholder-gray-500"
             placeholder="Display Name"
             />
+            {errors.display_name && <p className="text-red-600 text-sm mt-1">{errors.display_name}</p>}
         </div>
         )}
 
         {/* Password Input Field */}
         <div className="flex flex-col py-2">
-        <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="border-2 rounded-xl p-2 placeholder:italic placeholder:text-slate-800 outline-none border-gray-500 placeholder-gray-500"
-            placeholder="Password"
-        />
+          <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="border-2 rounded-xl p-2 placeholder:italic placeholder:text-slate-800 outline-none border-gray-500 placeholder-gray-500"
+              placeholder="Password"
+          />
+          {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
         </div>
 
         {/* Password Confirmation for Registration */}
@@ -118,6 +131,7 @@ export default function AuthForm({ route, isRegistration }) {
             className="border-2 rounded-xl p-2 placeholder:italic placeholder:text-slate-800 outline-none border-gray-500 placeholder-gray-500"
             placeholder="Confirm Password"
             />
+            {errors.passwordConfirm && <p className="text-red-600 text-sm mt-1">{errors.passwordConfirm}</p>}
         </div>
         )}
 
@@ -129,6 +143,8 @@ export default function AuthForm({ route, isRegistration }) {
         >
         {loading ? "Loading..." : isRegistration ? "Register" : "Login"}
         </button>
+
+        {errors.general && <p className="text-red-600 text-sm text-center">{errors.general}</p>}
 
         {/* Toggle Links */}
         <div>
