@@ -6,17 +6,27 @@ import { useState } from "react";
 function Calendar() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(dayjs().month());
   const [currentMonth, setCurrentMonth] = useState(getMonth());
+  const [viewMode, setViewMode] = useState("month");
+  const [currentWeek, setCurrentWeek] = useState(getMonth()[0]);
+
+  const toggleViewMode = () => {
+    setViewMode((prev)=>(prev === "month" ? "week" : "month"));
+  }
 
   const handleAdjacentMonth = (isNext) => {
     const newMonthIndex = isNext ? (currentMonthIndex + 1) % 12 : (currentMonthIndex + 11) % 12;
     setCurrentMonthIndex(newMonthIndex);
-    setCurrentMonth(getMonth(newMonthIndex));
+    const newMonth = getMonth(newMonthIndex);
+    setCurrentMonth(newMonth);
+    setCurrentWeek(newMonth[0]);
   }
 
   const handleMonthSelect = (event) => {
     const newMonthIndex = parseInt(event.target.value, 10);
     setCurrentMonthIndex(newMonthIndex);
-    setCurrentMonth(getMonth(newMonthIndex));
+    const newMonth = getMonth(newMonthIndex);
+    setCurrentMonth(newMonth);
+    setCurrentWeek(newMonth[0]);
   }
 
   return (
