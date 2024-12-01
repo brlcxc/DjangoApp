@@ -1,4 +1,5 @@
 import Month from "../components/Month";
+import Week from "../components/Week";
 import { getMonth } from "../components/util";
 import dayjs from 'dayjs';
 import { useState } from "react";
@@ -36,29 +37,42 @@ function Calendar() {
   }
 
   return (
-    <div className="size-full p-8 bg-custom-gradient animate-gradient">
+    <div className="size-full p-8 bg-custom-gradient animate-gradient overflow-hidden">
       <div className="flex justify-between items-center mb-4">
         
-        <button onClick={()=>handleAdjacentMonth(false)} className="bg-gray-200 p-2 rounded hover:bg-gray-300">
+        <button onClick={viewMode === "month" ? () => handleAdjacentMonth(false) : () => handleAdjacentWeek(false)}
+          className="bg-gray-200 p-2 rounded hover:bg-gray-300"
+        >
           &lt; Prev
         </button>
         
-        <select value={currentMonthIndex} onChange={handleMonthSelect} className="bg-white border border-gray-300 rounded p-2">
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i} value={i}>
-              {dayjs(new Date(dayjs().year(), i)).format("MMMM")}
-            </option>
-          ))}
-        </select>
+        <div className="flex gap-2">
+          <button onClick={toggleViewMode} className="bg-gray-200 p-2 rounded hover:bg-gray-300">
+            {viewMode === "month" ? "Switch to Week View" : "Switch to Month View"}
+          </button>
+          <select value={currentMonthIndex} onChange={handleMonthSelect} className="bg-white border border-gray-300 rounded p-2">
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i}>
+                {dayjs(new Date(dayjs().year(), i)).format("MMMM")}
+              </option>
+            ))}
+          </select>
+        </div>
         
-        <button onClick={()=>handleAdjacentMonth(true)} className="bg-gray-200 p-2 rounded hover:bg-gray-300">
+        <button onClick={viewMode === "month" ? () => handleAdjacentMonth(true) : () => handleAdjacentWeek(true)}
+          className="bg-gray-200 p-2 rounded hover:bg-gray-300"
+        >
           Next &gt;
         </button>
       </div>
-      
+
       <div className="size-full flex bg-white rounded-xl">
         <div className="size-full flex p-4">
-          <Month month={currentMonth} />
+          {viewMode === "month" ? (
+            <Month month={currentMonth} />
+          ) : (
+            <Week week={currentWeek} />
+          )}
         </div>
       </div>
     
