@@ -1,13 +1,9 @@
-function UserProfile2(){
-    
-    return(
-        <div className="w-full h-full flex flex-col justify-center items-center bg-custom-gradient animate-gradient">User</div>
-    )
-}
-
 import React, { useState } from 'react';
 
 function UserProfile() {
+
+  // Feel free to rip out all of these handlers, they do not have souls  
+
   // State variables for user information
   const [profilePicture, setProfilePicture] = useState('https://placehold.co/600x400/EEE/31343C?font=montserrat&text=Profile%20Picture');
   const [displayName, setDisplayName] = useState('John Doe');
@@ -38,10 +34,11 @@ function UserProfile() {
   };
 
   return (
-    <div className="bg-custom-gradient animate-gradient min-h-screen flex items-center justify-center">
+    <div className="bg-custom-gradient animate-gradient min-h-screen flex items-center justify-center font-archivo">
       <div className="bg-white rounded-lg p-6 w-full max-w-5xl overflow-hidden shadow-lg">
         {/* Profile Header */}
         <div className="flex items-center mb-6">
+            {/* Profile Picture */}
           <img
             src={profilePicture}
             alt="Profile"
@@ -52,8 +49,7 @@ function UserProfile() {
             <p className="text-gray-600">{email}</p>
           </div>
         </div>
-
-        {/* Sections Grid */}
+        
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           {/* Change Display Name */}
           <section>
