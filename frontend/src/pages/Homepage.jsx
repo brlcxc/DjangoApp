@@ -2,6 +2,7 @@ import { Canvas, useThree } from '@react-three/fiber'
 import { Environment, useGLTF  } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useRef, useEffect, Suspense, useMemo} from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as THREE from 'three'
 import { Perf } from 'r3f-perf'
 import logo from '/Holofund.png';
@@ -120,6 +121,8 @@ const Pointer = () => {
 
 // Renders the actual page
 function LandingPage() {
+  const navigate = useNavigate();
+
     return (
       <>
         {/* React Three Fiber Canvas Layer */}
@@ -141,10 +144,12 @@ function LandingPage() {
   
             {/* Navigation Buttons */}
             <div>
-              <button className="mr-4 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-100">
+              <button className="mr-4 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-100"
+              onClick={()=>navigate("/login")}>
                 Login
               </button>
-              <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700">
+              <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
+              onClick={()=>navigate("/register")}>
                 Register
               </button>
             </div>
