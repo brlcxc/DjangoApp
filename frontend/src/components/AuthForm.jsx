@@ -36,7 +36,7 @@ export default function AuthForm({ route, isRegistration }) {
       if (!isRegistration) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        navigate("/");
+        navigate("/dash");
       } else {
         localStorage.setItem(ONBOARDING_COMPLETION, 'false');
         navigate("/login");

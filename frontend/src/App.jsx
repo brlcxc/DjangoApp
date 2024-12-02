@@ -20,8 +20,9 @@ function App() {
   return (
     <HashRouter>
       <Routes>
+        <Route path="/" element={<Homepage/>}/>
         <Route
-          path="/"
+          path="/dash"
           element={
             <ProtectedRoute>
               <Dashboard />

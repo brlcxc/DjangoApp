@@ -37,7 +37,7 @@ function Calendar() {
   }
 
   return (
-    <div className="size-full p-8 bg-custom-gradient animate-gradient overflow-hidden">
+    <div className="h-screen flex flex-col p-8 bg-custom-gradient animate-gradient">
       <div className="flex justify-between items-center mb-4">
         
         <button onClick={viewMode === "month" ? () => handleAdjacentMonth(false) : () => handleAdjacentWeek(false)}
@@ -66,7 +66,7 @@ function Calendar() {
         </button>
       </div>
 
-      <div className="size-full flex bg-white rounded-xl">
+      <div className="w-full flex-1 bg-white rounded-xl">
         <div className="size-full flex p-4">
           {viewMode === "month" ? (
             <Month month={currentMonth} />
