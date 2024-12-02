@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from "../api";
 
 function UserProfile() {
 
@@ -6,26 +7,73 @@ function UserProfile() {
 
   // State variables for user information
   const [profilePicture, setProfilePicture] = useState('https://placehold.co/600x400/EEE/31343C?font=montserrat&text=Profile%20Picture');
-  const [displayName, setDisplayName] = useState('John Doe');
-  const [email, setEmail] = useState('johndoe@example.com');
+  const [displayName, setDisplayName] = useState(localStorage.getItem('DISPLAY_NAME'));
+  const [newDisplayName, setNewDisplayName] = useState(displayName);
+  const [email, setEmail] = useState(localStorage.getItem('USER_EMAIL'));
+  const [newEmail, setNewEmail] = useState(email);
+  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Handlers for form submissions
-  const handleDisplayNameChange = (e) => {
+  const handleDisplayNameChange = async (e) => {
     e.preventDefault();
-    // Implement logic to update display name
-    alert('Display name updated successfully!');
+    setLoading(true);
+  
+    const data = { display_name: newDisplayName };
+
+    try {
+      const response = await api.patch('/api/users/me/', data);
+      alert('Display name updated successfully!');
+      setDisplayName(newDisplayName);
+      localStorage.setItem('DISPLAY_NAME', newDisplayName); // Update local storage
+    } catch (error) {
+      console.error('Error updating display name:', error);
+      alert('Failed to update display name.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
-    // Implement logic to update password
-    alert('Password updated successfully!');
+    setLoading(true);
+
+    const data = { };
+    if (newPassword && newPassword === confirmPassword) data.password = newPassword;
+
+    try {
+      const response = await api.patch('/api/users/me/', data);
+      alert('Password updated successfully!');
+    } catch (error) {
+      console.error('Error updating password:', error);
+      alert(`Failed to update password: ${error.response.data.non_field_errors}`);
+    } finally {
+      setPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+      setLoading(false);
+    }
   };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = async (e) => {
     e.preventDefault();
-    // Implement logic to update email
-    alert('Email updated successfully!');
+    setLoading(true);
+  
+    const data = { email: newEmail };
+
+    try {
+      const response = await api.patch('/api/users/me/', data);
+      alert('Email updated successfully!');
+      setEmail(newEmail);
+      localStorage.setItem('USER_EMAIL', newEmail); // Update local storage
+    } catch (error) {
+      console.error('Error updating email:', error);
+      alert('Failed to update email.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleResendVerification = () => {
@@ -35,7 +83,7 @@ function UserProfile() {
 
   return (
     <div className="bg-custom-gradient animate-gradient min-h-screen flex items-center justify-center font-archivo">
-      <div className="bg-white rounded-lg p-6 w-full max-w-5xl overflow-hidden shadow-lg">
+      <div className="bg-white rounded-xl p-6 w-full max-w-5xl overflow-hidden shadow-lg">
         {/* Profile Header */}
         <div className="flex items-center mb-6">
             {/* Profile Picture */}
@@ -57,14 +105,14 @@ function UserProfile() {
             <form onSubmit={handleDisplayNameChange}>
               <input
                 type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                value={newDisplayName}
+                onChange={(e) => setNewDisplayName(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="New Display Name"
               />
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-dodger-blue hover:bg-blue-500 text-white p-2 rounded"
               >
                 Update Display Name
               </button>
@@ -77,22 +125,31 @@ function UserProfile() {
             <form onSubmit={handlePasswordChange}>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="Current Password"
+                disabled={loading}
               />
               <input
                 type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="New Password"
+                disabled={loading}
               />
               <input
                 type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="Confirm New Password"
+                disabled={loading}
               />
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-dodger-blue hover:bg-blue-500 text-white p-2 rounded"
               >
                 Update Password
               </button>
@@ -105,14 +162,14 @@ function UserProfile() {
             <form onSubmit={handleEmailChange}>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="New Email Address"
               />
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-dodger-blue hover:bg-blue-500 text-white p-2 rounded"
               >
                 Update Email
               </button>
@@ -124,7 +181,7 @@ function UserProfile() {
             <h2 className="text-xl font-semibold mb-2">Email Verification</h2>
             <button
               onClick={handleResendVerification}
-              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+              className="w-full bg-green-300 hover:bg-green-400 text-white p-2 rounded"
             >
               Resend Verification Email
             </button>

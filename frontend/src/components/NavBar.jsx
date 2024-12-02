@@ -47,15 +47,21 @@ function NavBar({ setActivePage }) {
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/logout");
+    if (
+      window.confirm(
+        "Are you sure you want to logout?"
+      )
+    ) {
+      localStorage.clear();
+      navigate("/logout");
+    }
   };
 
   return (
     <div className="">
       {/* Help Button */}
       <button
-        className="fixed right-8 text-white bg-dodger-blue text-xl font-semibold px-5 rounded-b-md shadow-md font-lg hover:bg-coral transition"
+        className="fixed right-8 text-white bg-dodger-blue hover:bg-blue-500 text-xl font-semibold px-5 rounded-b-md shadow-md font-lg transition"
         onClick={() => {
           // Restart onboarding process
           localStorage.setItem(ONBOARDING_COMPLETION, "false");

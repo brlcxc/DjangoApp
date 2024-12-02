@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User, Group, Transaction, Invite
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.hashers import make_password
 
 # serializer checks to make sure all data is correct before being sent to model
 # Note: fields = '__all__' can be used if all fields need to be serialized
@@ -17,12 +18,31 @@ class UserSerializer(serializers.ModelSerializer):
                 "display_name": {"required": True}
             }
 
+    def update(self, instance, validated_data):
+            # Update email if provided
+            if 'email' in validated_data:
+                instance.email = validated_data.pop('email')
+
+            # Update display name if provided
+            if 'display_name' in validated_data:
+                instance.display_name = validated_data.pop('display_name')
+
+            # Update password if provided
+            if 'password' in validated_data:
+                password = validated_data.pop('password')
+                validate_password(password, user=instance)  # Validate password
+                instance.password = make_password(password)
+
+            # Update any other fields (if necessary)
+            return super().update(instance, validated_data)
+
     # ensures that the password passes the checks within the settings.py
     # TODO add second password for verification
-    def validate(self, attrs):
-        password = attrs.get('password')
-        validate_password(password)  # Ensures password is validated
-        return attrs
+    def validate(self, data):
+        password = data.get('password')
+        if password:  # Only validate if password is provided
+            validate_password(password)
+        return data
     
     # method called when we want to create new version of user
     # we accept validated data which has already passed the checks in the serializer
