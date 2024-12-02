@@ -11,6 +11,9 @@ function UserProfile() {
   const [newDisplayName, setNewDisplayName] = useState(displayName);
   const [email, setEmail] = useState(localStorage.getItem('USER_EMAIL'));
   const [newEmail, setNewEmail] = useState(email);
+  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Handlers for form submissions
@@ -35,8 +38,23 @@ function UserProfile() {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    // Implement logic to update password
-    alert('Password updated successfully!');
+    setLoading(true);
+
+    const data = { };
+    if (newPassword && newPassword === confirmPassword) data.password = newPassword;
+
+    try {
+      const response = await api.patch('/api/users/me/', data);
+      alert('Password updated successfully!');
+    } catch (error) {
+      console.error('Error updating password:', error);
+      alert(`Failed to update password: ${error.response.data.non_field_errors}`);
+    } finally {
+      setPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+      setLoading(false);
+    }
   };
 
   const handleEmailChange = async (e) => {
@@ -107,18 +125,27 @@ function UserProfile() {
             <form onSubmit={handlePasswordChange}>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="Current Password"
+                disabled={loading}
               />
               <input
                 type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="New Password"
+                disabled={loading}
               />
               <input
                 type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="Confirm New Password"
+                disabled={loading}
               />
               <button
                 type="submit"
