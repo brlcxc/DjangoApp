@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from "../api";
 
 function UserProfile() {
 
@@ -6,23 +7,36 @@ function UserProfile() {
 
   // State variables for user information
   const [profilePicture, setProfilePicture] = useState('https://placehold.co/600x400/EEE/31343C?font=montserrat&text=Profile%20Picture');
-  const [displayName, setDisplayName] = useState('John Doe');
-  const [email, setEmail] = useState('johndoe@example.com');
+  const [displayName, setDisplayName] = useState(localStorage.getItem('DISPLAY_NAME'));
+  const [email, setEmail] = useState(localStorage.getItem('USER_EMAIL'));
+  const [loading, setLoading] = useState(false);
 
   // Handlers for form submissions
-  const handleDisplayNameChange = (e) => {
+  const handleDisplayNameChange = async (e) => {
     e.preventDefault();
-    // Implement logic to update display name
-    alert('Display name updated successfully!');
+    setLoading(true);
+  
+    const data = { display_name: displayName };
+
+    try {
+      const response = await api.patch('/api/users/me/', data);
+      alert('Display name updated successfully!');
+      localStorage.setItem('DISPLAY_NAME', displayName); // Update local storage
+    } catch (error) {
+      console.error('Error updating display name:', error);
+      alert('Failed to update display name.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
     // Implement logic to update password
     alert('Password updated successfully!');
   };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = async (e) => {
     e.preventDefault();
     // Implement logic to update email
     alert('Email updated successfully!');
