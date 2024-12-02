@@ -8,6 +8,7 @@ function UserProfile() {
   // State variables for user information
   const [profilePicture, setProfilePicture] = useState('https://placehold.co/600x400/EEE/31343C?font=montserrat&text=Profile%20Picture');
   const [displayName, setDisplayName] = useState(localStorage.getItem('DISPLAY_NAME'));
+  const [newDisplayName, setNewDisplayName] = useState(displayName);
   const [email, setEmail] = useState(localStorage.getItem('USER_EMAIL'));
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +22,7 @@ function UserProfile() {
     try {
       const response = await api.patch('/api/users/me/', data);
       alert('Display name updated successfully!');
+      setDisplayName(newDisplayName);
       localStorage.setItem('DISPLAY_NAME', displayName); // Update local storage
     } catch (error) {
       console.error('Error updating display name:', error);
@@ -71,8 +73,8 @@ function UserProfile() {
             <form onSubmit={handleDisplayNameChange}>
               <input
                 type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                value={newDisplayName}
+                onChange={(e) => setNewDisplayName(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="New Display Name"
               />
