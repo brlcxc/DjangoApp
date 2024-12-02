@@ -47,8 +47,14 @@ function NavBar({ setActivePage }) {
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/logout");
+    if (
+      window.confirm(
+        "Are you sure you want to logout?"
+      )
+    ) {
+      localStorage.clear();
+      navigate("/logout");
+    }
   };
 
   return (
