@@ -10,6 +10,7 @@ function UserProfile() {
   const [displayName, setDisplayName] = useState(localStorage.getItem('DISPLAY_NAME'));
   const [newDisplayName, setNewDisplayName] = useState(displayName);
   const [email, setEmail] = useState(localStorage.getItem('USER_EMAIL'));
+  const [newEmail, setNewEmail] = useState(email);
   const [loading, setLoading] = useState(false);
 
   // Handlers for form submissions
@@ -17,13 +18,13 @@ function UserProfile() {
     e.preventDefault();
     setLoading(true);
   
-    const data = { display_name: displayName };
+    const data = { display_name: newDisplayName };
 
     try {
       const response = await api.patch('/api/users/me/', data);
       alert('Display name updated successfully!');
       setDisplayName(newDisplayName);
-      localStorage.setItem('DISPLAY_NAME', displayName); // Update local storage
+      localStorage.setItem('DISPLAY_NAME', newDisplayName); // Update local storage
     } catch (error) {
       console.error('Error updating display name:', error);
       alert('Failed to update display name.');
@@ -40,8 +41,21 @@ function UserProfile() {
 
   const handleEmailChange = async (e) => {
     e.preventDefault();
-    // Implement logic to update email
-    alert('Email updated successfully!');
+    setLoading(true);
+  
+    const data = { email: newEmail };
+
+    try {
+      const response = await api.patch('/api/users/me/', data);
+      alert('Email updated successfully!');
+      setEmail(newEmail);
+      localStorage.setItem('USER_EMAIL', newEmail); // Update local storage
+    } catch (error) {
+      console.error('Error updating email:', error);
+      alert('Failed to update email.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleResendVerification = () => {
@@ -121,8 +135,8 @@ function UserProfile() {
             <form onSubmit={handleEmailChange}>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="New Email Address"
               />

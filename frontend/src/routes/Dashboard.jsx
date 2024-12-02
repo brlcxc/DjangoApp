@@ -32,6 +32,9 @@ function Dashboard() {
 
         localStorage.setItem('DISPLAY_NAME', response.data.display_name); // Store user display name in local storage
         localStorage.setItem('USER_ID', response.data.id); // Store user ID in local storage
+        localStorage.setItem('USER_EMAIL', response.data.email);
+
+        console.log(response.data)
 
         console.log(response.data.id)
       } catch (error) {
