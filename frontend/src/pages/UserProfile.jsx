@@ -35,7 +35,7 @@ function UserProfile() {
 
   return (
     <div className="bg-custom-gradient animate-gradient min-h-screen flex items-center justify-center font-archivo">
-      <div className="bg-white rounded-lg p-6 w-full max-w-5xl overflow-hidden shadow-lg">
+      <div className="bg-white rounded-xl p-6 w-full max-w-5xl overflow-hidden shadow-lg">
         {/* Profile Header */}
         <div className="flex items-center mb-6">
             {/* Profile Picture */}
@@ -64,7 +64,7 @@ function UserProfile() {
               />
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-dodger-blue hover:bg-blue-500 text-white p-2 rounded"
               >
                 Update Display Name
               </button>
@@ -92,7 +92,7 @@ function UserProfile() {
               />
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-dodger-blue hover:bg-blue-500 text-white p-2 rounded"
               >
                 Update Password
               </button>
@@ -112,7 +112,7 @@ function UserProfile() {
               />
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-dodger-blue hover:bg-blue-500 text-white p-2 rounded"
               >
                 Update Email
               </button>
@@ -124,7 +124,7 @@ function UserProfile() {
             <h2 className="text-xl font-semibold mb-2">Email Verification</h2>
             <button
               onClick={handleResendVerification}
-              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+              className="w-full bg-green-300 hover:bg-green-400 text-white p-2 rounded"
             >
               Resend Verification Email
             </button>
