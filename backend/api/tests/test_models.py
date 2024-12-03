@@ -1,43 +1,98 @@
 from django.test import TestCase
+from django.utils.timezone import now, timedelta
 from ..models import User, Group, Transaction, Invite
-from uuid import uuid4
+from uuid import UUID
+
 
 class UserModelTests(TestCase):
-    def test_create_user(self):
-        user = User.objects.create_user(email="testuser@example.com", password="testpass123", display_name="Test User")
-        self.assertEqual(user.email, "testuser@example.com")
-        self.assertFalse(user.is_superuser)
-
-    def test_create_superuser(self):
-        superuser = User.objects.create_superuser(email="admin@example.com", password="adminpass123", display_name="Admin User")
-        self.assertTrue(superuser.is_superuser)
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="testuser@example.com", password="securepassword", display_name="Test User"
+        )
+    
+    def test_user_creation(self):
+        self.assertIsInstance(self.user.id, UUID)
+        self.assertEqual(self.user.email, "testuser@example.com")
+        self.assertEqual(self.user.display_name, "Test User")
+        self.assertFalse(self.user.user_verified)
+    
+    def test_superuser_creation(self):
+        superuser = User.objects.create_superuser(
+            email="admin@example.com", password="superpassword", display_name="Admin User"
+        )
         self.assertTrue(superuser.is_staff)
+        self.assertTrue(superuser.is_superuser)
+
 
 class GroupModelTests(TestCase):
-    def test_create_group(self):
-        # Step 1: Create and save a User instance
-        owner = User.objects.create_user(email="owner@example.com", password="testpass123", display_name="Group Owner")
-        
-        # Step 2: Create a Group instance with group_owner_id assigned to the created user
-        group = Group.objects.create(group_name="Finance Group", group_owner_id=owner)
-        
-        # Step 3: Assert that group_owner_id is not null and is correctly set
-        self.assertEqual(group.group_name, "Finance Group")
-        self.assertEqual(group.group_owner_id, owner)
+    def setUp(self):
+        self.owner = User.objects.create_user(
+            email="owner@example.com", password="password", display_name="Group Owner"
+        )
+        self.group = Group.objects.create(
+            group_name="Test Group", description="A test group", group_owner_id=self.owner
+        )
+        self.member = User.objects.create_user(
+            email="member@example.com", password="password", display_name="Group Member"
+        )
+        self.group.members.add(self.member)
+    
+    def test_group_creation(self):
+        self.assertIsInstance(self.group.group_id, UUID)
+        self.assertEqual(self.group.group_name, "Test Group")
+        self.assertEqual(self.group.description, "A test group")
+        self.assertEqual(self.group.group_owner_id, self.owner)
+        self.assertIn(self.member, self.group.members.all())
+
 
 class TransactionModelTests(TestCase):
-    def test_transaction_ordering(self):
-        group = Group.objects.create(group_name="Finance Group")
-        transaction1 = Transaction.objects.create(amount=100.00, start_date="2024-10-01", is_recurrent=False, frequency=1, group_id=group)
-        transaction2 = Transaction.objects.create(amount=200.00, start_date="2024-10-02", is_recurrent=False, frequency=1, group_id=group)
-        transactions = Transaction.objects.all()
-        self.assertEqual(transactions[0], transaction1)
-        self.assertEqual(transactions[1], transaction2)
+    def setUp(self):
+        self.owner = User.objects.create_user(
+            email="owner@example.com", password="password", display_name="Group Owner"
+        )
+        self.group = Group.objects.create(
+            group_name="Transaction Group", description="Group for transactions", group_owner_id=self.owner
+        )
+        self.transaction = Transaction.objects.create(
+            category="Groceries",
+            amount=50.75,
+            description="Weekly groceries",
+            start_date=now(),
+            end_date=now() + timedelta(days=1),
+            is_recurrent=False,
+            frequency=0,
+            group_id=self.group
+        )
+    
+    def test_transaction_creation(self):
+        self.assertIsInstance(self.transaction.transaction_id, UUID)
+        self.assertEqual(self.transaction.category, "Groceries")
+        self.assertEqual(self.transaction.amount, 50.75)
+        self.assertEqual(self.transaction.description, "Weekly groceries")
+        self.assertEqual(self.transaction.group_id, self.group)
+        self.assertFalse(self.transaction.is_recurrent)
+        self.assertEqual(self.transaction.frequency, 0)
+
 
 class InviteModelTests(TestCase):
-    def test_create_invite(self):
-        sender = User.objects.create_user(email="sender@example.com", password="testpass123", display_name="Invite Sender")
-        group = Group.objects.create(group_name="Social Club", group_owner_id=sender)
-        invite = Invite.objects.create(content="You're invited!", sender_id=sender, group_id=group)
-        self.assertEqual(invite.content, "You're invited!")
-        self.assertEqual(invite.sender_id, sender)
+    def setUp(self):
+        self.sender = User.objects.create_user(
+            email="sender@example.com", password="password", display_name="Invite Sender"
+        )
+        self.recipient = User.objects.create_user(
+            email="recipient@example.com", password="password", display_name="Invite Recipient"
+        )
+        self.group = Group.objects.create(
+            group_name="Invite Group", description="Group for invites", group_owner_id=self.sender
+        )
+        self.invite = Invite.objects.create(
+            content="You are invited to join our group!", sender_id=self.sender, group_id=self.group
+        )
+        self.invite.recipients.add(self.recipient)
+    
+    def test_invite_creation(self):
+        self.assertIsInstance(self.invite.invite_id, UUID)
+        self.assertEqual(self.invite.content, "You are invited to join our group!")
+        self.assertEqual(self.invite.sender_id, self.sender)
+        self.assertEqual(self.invite.group_id, self.group)
+        self.assertIn(self.recipient, self.invite.recipients.all())
