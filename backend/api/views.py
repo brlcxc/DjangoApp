@@ -225,31 +225,41 @@ class InviteCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Get the recipient and group UUIDs from the URL parameters
-        recipient_uuid = self.kwargs.get('recipient_uuid')
+        # Get the recipient UUIDs and group UUID from the URL parameters
+        recipient_uuids = self.kwargs.get('recipient_uuids').split(',')  # Split the comma-separated UUIDs
         group_uuid = self.kwargs.get('group_uuid')
 
-        if serializer.is_valid():
-            invite = serializer.save(
-                sender_id=self.request.user, 
-                received_invites=recipient_uuid, 
-                group_id=group_uuid
-            )
-            # Retrieve recipient email
-            recipient = User.objects.get(id=recipient_uuid)  # Assumes recipient_uuid is a User ID
-            group = Group.objects.get(group_id=group_uuid)  # Fetch group for email content
+        group = Group.objects.get(group_id=group_uuid)  # Fetch group for email content
 
-            # Send email notification
-            send_mail(
-                subject=f"You've been invited to join {group.group_name}!",
-                message=f"{self.request.user.display_name} has invited you to join the group '{group.group_name}'.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[recipient.email],
-                fail_silently=False,
-            )
-        else:
-            print(serializer.errors)
+        for recipient_uuid in recipient_uuids:
+            recipient = User.objects.get(id=recipient_uuid)  # Fetch each recipient
 
+            if serializer.is_valid():
+                # Create an invite for each recipient
+                invite = serializer.save(
+                    sender_id=self.request.user,
+                    received_invites=recipient_uuid,
+                    group_id=group_uuid
+                )
+
+                # Get the message from the serializer (if provided)
+                message = serializer.validated_data.get('message', None)
+                if message:
+                    email_message = f"{self.request.user.display_name} has invited you to join the group '{group.group_name}'.\n\"{message}\""
+                else:
+                    email_message = f"{self.request.user.display_name} has invited you to join the group '{group.group_name}'."
+
+                # Send email notification to each recipient
+                send_mail(
+                    subject=f"You've been invited to join {group.group_name}!",
+                    message=email_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=["lohmanbishop@gmail.com"],
+                    fail_silently=False,
+                )
+            else:
+                print(serializer.errors)
+                
 # TODO verify this
 # When is this even called?
 # What is request doing here?
@@ -272,7 +282,8 @@ class VerifyEmail(APIView):
         if user is not None and email_verification_token.check_token(user, token):
             user.user_verified = True
             user.save()
-            return redirect('http://localhost:5173/')
+            # return redirect('http://localhost:5173/')
+            return redirect('https://www.holofund.tech/')
         else:
             return Response({'status': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
 
