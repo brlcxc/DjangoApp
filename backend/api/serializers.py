@@ -91,15 +91,17 @@ class TransactionSerializer(serializers.ModelSerializer):
         extra_kwargs = {"group_id": {"read_only": True}}
  
 class InviteSerializer(serializers.ModelSerializer):
-    recipients = UserSerializer(read_only=True, many=True)
+    message = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
-        model = Invite
-        fields = ["invite_id", "content", "sender_id", "recipients"]
+        model = Invite  # Use your Invite model
+        fields = ['message', 'group_id', 'received_invites']  # Add other necessary fields from your Invite model
 
-        # foreign keys are set as "read_only" since they are automatically set
-        # we only want the sender set by backend which is why writing is restricted
-        extra_kwargs = {"sender_id": {"read_only": True}}
+    def validate_message(self, value):
+        # Optional: Add custom validation logic for the message if needed
+        if len(value) > 1000:
+            raise serializers.ValidationError("Message is too long. Maximum length is 500 characters.")
+        return value
 
 class LLMRequestSerializer(serializers.Serializer):
     question = serializers.CharField()

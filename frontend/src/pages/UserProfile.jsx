@@ -1,36 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import api from "../api";
 
-function UserProfile() {
+//I need a way to indicate verified
 
-  // Feel free to rip out all of these handlers, they do not have souls  
+function UserProfile() {
+  // Feel free to rip out all of these handlers, they do not have souls
 
   // State variables for user information
-  const [profilePicture, setProfilePicture] = useState('https://placehold.co/600x400/EEE/31343C?font=montserrat&text=Profile%20Picture');
-  const [displayName, setDisplayName] = useState(localStorage.getItem('DISPLAY_NAME'));
+  const [profilePicture, setProfilePicture] = useState(
+    "https://placehold.co/600x400/EEE/31343C?font=montserrat&text=Profile%20Picture"
+  );
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem("DISPLAY_NAME")
+  );
   const [newDisplayName, setNewDisplayName] = useState(displayName);
-  const [email, setEmail] = useState(localStorage.getItem('USER_EMAIL'));
+  const [email, setEmail] = useState(localStorage.getItem("USER_EMAIL"));
   const [newEmail, setNewEmail] = useState(email);
-  const [password, setPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Handlers for form submissions
   const handleDisplayNameChange = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const data = { display_name: newDisplayName };
 
     try {
-      const response = await api.patch('/api/users/me/', data);
-      alert('Display name updated successfully!');
+      const response = await api.patch("/api/users/me/", data);
+      alert("Display name updated successfully!");
       setDisplayName(newDisplayName);
-      localStorage.setItem('DISPLAY_NAME', newDisplayName); // Update local storage
+      localStorage.setItem("DISPLAY_NAME", newDisplayName); // Update local storage
     } catch (error) {
-      console.error('Error updating display name:', error);
-      alert('Failed to update display name.');
+      console.error("Error updating display name:", error);
+      alert("Failed to update display name.");
     } finally {
       setLoading(false);
     }
@@ -40,19 +45,22 @@ function UserProfile() {
     e.preventDefault();
     setLoading(true);
 
-    const data = { };
-    if (newPassword && newPassword === confirmPassword) data.password = newPassword;
+    const data = {};
+    if (newPassword && newPassword === confirmPassword)
+      data.password = newPassword;
 
     try {
-      const response = await api.patch('/api/users/me/', data);
-      alert('Password updated successfully!');
+      const response = await api.patch("/api/users/me/", data);
+      alert("Password updated successfully!");
     } catch (error) {
-      console.error('Error updating password:', error);
-      alert(`Failed to update password: ${error.response.data.non_field_errors}`);
+      console.error("Error updating password:", error);
+      alert(
+        `Failed to update password: ${error.response.data.non_field_errors}`
+      );
     } finally {
-      setPassword("")
-      setNewPassword("")
-      setConfirmPassword("")
+      setPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
       setLoading(false);
     }
   };
@@ -60,44 +68,56 @@ function UserProfile() {
   const handleEmailChange = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const data = { email: newEmail };
 
     try {
-      const response = await api.patch('/api/users/me/', data);
-      alert('Email updated successfully!');
+      const response = await api.patch("/api/users/me/", data);
+      alert("Email updated successfully!");
       setEmail(newEmail);
-      localStorage.setItem('USER_EMAIL', newEmail); // Update local storage
+      localStorage.setItem("USER_EMAIL", newEmail); // Update local storage
     } catch (error) {
-      console.error('Error updating email:', error);
-      alert('Failed to update email.');
+      console.error("Error updating email:", error);
+      alert("Failed to update email.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResendVerification = () => {
-    // Implement logic to resend email verification
-    alert('Verification email resent!');
+  const handleResendVerification = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const response = await api.post("/api/resend-verification/", { email });
+  
+      if (response.status === 200) {
+        alert(response.data.detail); // Show success message
+      } else {
+        alert(response.data.detail); // Show error message
+      }
+    } catch (error) {
+      console.error("Error resending verification email:", error);
+      alert(error.response.data.detail);
+    }
   };
-
+  
   return (
     <div className="bg-custom-gradient animate-gradient min-h-screen flex items-center justify-center font-archivo">
       <div className="bg-white rounded-xl p-6 w-full max-w-5xl overflow-hidden shadow-lg">
         {/* Profile Header */}
         <div className="flex items-center mb-6">
-            {/* Profile Picture */}
-          <img
+          {/* Profile Picture */}
+          {/* <img
             src={profilePicture}
             alt="Profile"
             className="w-20 h-20 rounded-full object-cover mr-4"
-          />
+          /> */}
           <div>
             <h1 className="text-2xl font-bold">{displayName}</h1>
             <p className="text-gray-600">{email}</p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           {/* Change Display Name */}
           <section>
