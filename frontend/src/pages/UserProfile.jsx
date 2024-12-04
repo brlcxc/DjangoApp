@@ -97,7 +97,7 @@ function UserProfile() {
       }
     } catch (error) {
       console.error("Error resending verification email:", error);
-      alert("An error occurred while resending the verification email.");
+      alert(error.response.data.detail);
     }
   };
   
