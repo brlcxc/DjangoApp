@@ -48,10 +48,13 @@ function UserProfile() {
     const data = {};
     if (newPassword && newPassword === confirmPassword)
       data.password = newPassword;
+    console.log(newPassword)
+    console.log(confirmPassword)
 
     try {
       const response = await api.patch("/api/users/me/", data);
       alert("Password updated successfully!");
+      console.log(response)
     } catch (error) {
       console.error("Error updating password:", error);
       alert(

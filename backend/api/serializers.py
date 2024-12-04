@@ -2,39 +2,39 @@ from rest_framework import serializers
 from .models import User, Group, Transaction, Invite
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
+from rest_framework.exceptions import ValidationError
+
 
 # serializer checks to make sure all data is correct before being sent to model
 # Note: fields = '__all__' can be used if all fields need to be serialized
 
-class UserSerializer(serializers.ModelSerializer):    
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # The fields var contains all fields we want to serialize when accepting or returning new user
         fields = ["id", "email", "password", "display_name"]
-        # ensures that password will be accepted when a new user is created but that we won't return the password
         extra_kwargs = {
-                "password": {"write_only": True},
-                "email": {"required": True},
-                "display_name": {"required": True}
-            }
+            "password": {"write_only": True},
+            "email": {"required": True},
+            "display_name": {"required": True}
+        }
 
     def update(self, instance, validated_data):
-            # Update email if provided
-            if 'email' in validated_data:
-                instance.email = validated_data.pop('email')
-
-            # Update display name if provided
-            if 'display_name' in validated_data:
-                instance.display_name = validated_data.pop('display_name')
-
-            # Update password if provided
-            if 'password' in validated_data:
-                password = validated_data.pop('password')
-                validate_password(password, user=instance)  # Validate password
-                instance.password = make_password(password)
-
-            # Update any other fields (if necessary)
-            return super().update(instance, validated_data)
+        # Handle password update
+        if 'password' in validated_data:
+            password = validated_data.pop('password')
+            try:
+                validate_password(password, user=instance)
+            except ValidationError as e:
+                raise serializers.ValidationError({"password": e.messages})
+            instance.password = make_password(password)
+        
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        # Save the instance
+        instance.save()
+        return instance
 
     # ensures that the password passes the checks within the settings.py
     # TODO add second password for verification
